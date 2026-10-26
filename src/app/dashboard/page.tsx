@@ -1,13 +1,94 @@
+import Link from "next/link";
 import { requireRole } from "@/lib/auth";
+import { getCourse } from "@/lib/course";
+import { enrollmentFor } from "@/lib/learning";
+import { createClient } from "@/lib/supabase/server";
+import { adminClient } from "@/lib/supabase/admin";
 import { logKeluar } from "@/app/log-masuk/actions";
+
+export const dynamic = "force-dynamic";
+
+const STEP: Record<string, string> = {
+  enrolled: "Tonton semua video dalam setiap bab. MCQ akhir dibuka selepas setiap video dicapai.",
+  learning: "Tonton semua video dalam setiap bab. MCQ akhir dibuka selepas setiap video dicapai.",
+  final_mcq: "Jawab MCQ akhir.",
+  part2_review: "Subjektif dan skematik anda sedang disemak.",
+  theory_passed: "Teori lulus. Pilih trek anda.",
+  practical: "Trek praktikal. Ikut langkah di papan praktikal. Jangan masukkan bekalan sehingga kelulusan AHZ direkod.",
+  completed: "Tahniah, program selesai.",
+};
 
 export default async function Page() {
   const p = await requireRole(["student"]);
+  const course = await getCourse();
+  const { enrollment, active } = course ? await enrollmentFor(course.id) : { enrollment: null, active: false };
+  const fmt = new Intl.DateTimeFormat("ms-MY", { dateStyle: "long", timeZone: "Asia/Kuala_Lumpur" });
+
+  if (!course || !enrollment) {
+    return (
+      <main className="mx-auto w-full max-w-2xl p-6">
+        <h1 className="text-2xl font-semibold">Dashboard</h1>
+        <p className="mt-2">Selamat datang, {p.fullName}. Anda belum mendaftar dalam kursus.</p>
+        <Link href="/beli" className="mt-4 inline-block rounded bg-black px-4 py-2 text-white">Daftar dan bayar</Link>
+      </main>
+    );
+  }
+
+  const db = adminClient(); // senarai tajuk sahaja; video_ref dan r2_key TIDAK dihantar ke halaman ini
+  const [{ data: chapters }, { data: lessons }, { data: materials }] = await Promise.all([
+    db.from("chapters").select("id, position, title").eq("course_id", course.id).order("position"),
+    db.from("lessons").select("id, chapter_id, position, title, duration_seconds").eq("course_id", course.id).order("position"),
+    db.from("materials").select("id, chapter_id, title").eq("course_id", course.id).order("title"),
+  ]);
+  const supabase = await createClient();
+  const { data: prog } = await supabase.from("lesson_progress").select("lesson_id, watched_seconds_unique, completed_at").eq("enrollment_id", enrollment.id);
+  const byLesson = new Map((prog ?? []).map((r) => [r.lesson_id, r]));
+  const pct = Number((course.config as Record<string, unknown>).video_complete_pct ?? 0.9);
+  const done = (lessons ?? []).filter((l) => byLesson.get(l.id)?.completed_at).length;
+  const total = lessons?.length ?? 0;
+  const ends = new Date(enrollment.access_ends_at);
+
   return (
     <main className="mx-auto w-full max-w-2xl p-6">
-      <h1 className="text-2xl font-semibold">Dashboard pelajar</h1>
-      <p className="mt-2">Selamat datang, {p.fullName} ({p.role}).</p>
-      <form action={logKeluar} className="mt-4"><button className="underline">Log keluar</button></form>
+      <h1 className="text-2xl font-semibold">{course.title}</h1>
+      <p className="mt-1 text-sm">{p.fullName}</p>
+      {enrollment.refunded_at ? (
+        <p role="status" className="mt-3 rounded border border-red-500 p-3">Akses ditutup (refund).</p>
+      ) : active ? (
+        <p className="mt-3 text-sm">Akses sehingga {fmt.format(ends)}.</p>
+      ) : (
+        <p role="status" className="mt-3 rounded border border-amber-500 p-3">Akses video dan bahan tamat pada {fmt.format(ends)}. Sijil dan rekod anda kekal sah.</p>
+      )}
+
+      <section className="mt-4 rounded border p-3">
+        <h2 className="font-medium">Anda di langkah ini</h2>
+        <p className="mt-1 text-sm">{STEP[enrollment.stage] ?? STEP.enrolled}</p>
+        <p className="mt-1 text-sm">Video selesai: {done} / {total} (selesai = {Math.round(pct * 100)}% saat unik ditonton).</p>
+      </section>
+
+      {(chapters ?? []).map((c) => (
+        <section key={c.id} className="mt-6">
+          <h2 className="text-lg font-medium">Bab {c.position}: {c.title}</h2>
+          <ul className="mt-2 flex flex-col gap-2">
+            {(lessons ?? []).filter((l) => l.chapter_id === c.id).map((l) => {
+              const r = byLesson.get(l.id);
+              const w = r ? Math.min(100, Math.round((r.watched_seconds_unique / l.duration_seconds) * 100)) : 0;
+              return (
+                <li key={l.id} className="rounded border p-3">
+                  {active ? <Link className="underline" href={`/belajar/${l.id}`}>{l.title}</Link> : <span>{l.title}</span>}
+                  <span className="ml-2 text-sm">{r?.completed_at ? "Selesai" : `${w}%`}</span>
+                </li>
+              );
+            })}
+            {(materials ?? []).filter((m) => m.chapter_id === c.id).map((m) => (
+              <li key={m.id} className="rounded border p-3 text-sm">
+                {active ? <a className="underline" href={`/api/materials/${m.id}`}>PDF: {m.title}</a> : <span>PDF: {m.title} (akses tamat)</span>}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+      <form action={logKeluar} className="mt-8"><button className="underline">Log keluar</button></form>
     </main>
   );
 }
