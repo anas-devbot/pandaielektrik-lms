@@ -42,3 +42,4 @@ next-env.d.ts
 
 # Benarkan templat env (tiada nilai sebenar)
 !.env.example
+/backups/
