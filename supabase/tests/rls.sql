@@ -3,10 +3,10 @@
 begin;
 \set a '''aaaaaaaa-0000-0000-0000-000000000001'''
 \set b '''bbbbbbbb-0000-0000-0000-000000000002'''
-insert into auth.users (id, instance_id, aud, role, email) values
-  (:a, '00000000-0000-0000-0000-000000000000','authenticated','authenticated','a@test.local'),
-  (:b, '00000000-0000-0000-0000-000000000000','authenticated','authenticated','b@test.local');
-insert into profiles (id, full_name) values (:a,'A'),(:b,'B');
+-- profil dicipta oleh trigger handle_new_user (slice 3)
+insert into auth.users (id, instance_id, aud, role, email, raw_user_meta_data) values
+  (:a, '00000000-0000-0000-0000-000000000000','authenticated','authenticated','a@test.local','{"full_name":"A","privacy_accepted":true}'),
+  (:b, '00000000-0000-0000-0000-000000000000','authenticated','authenticated','b@test.local','{"full_name":"B","privacy_accepted":true}');
 insert into courses (slug,title,price) values ('t','T',14900);
 insert into chapters (course_id,position,title) select id,1,'Bab 1' from courses where slug='t';
 insert into lessons (course_id,chapter_id,position,title,video_ref,duration_seconds)
