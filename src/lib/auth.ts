@@ -27,6 +27,12 @@ export async function requireRole(allowed: Role[]) {
 
 export { RANK };
 
+/** Awalan laluan yang dibenarkan sebagai tujuan `next` selepas log masuk, ikut peranan. */
+export const NEXT_PREFIXES: Record<Role, string[]> = {
+  student: ["/dashboard", "/beli", "/pesanan", "/belajar", "/kuiz", "/bahagian2"],
+  reviewer: ["/staff"], approver: ["/staff"], admin: ["/admin", "/staff"],
+};
+
 /** `next` hanya path dalaman (elak open redirect). */
 export function safeNext(next: unknown): string | null {
   return typeof next === "string" && /^\/(?!\/|\\)/.test(next) ? next : null;

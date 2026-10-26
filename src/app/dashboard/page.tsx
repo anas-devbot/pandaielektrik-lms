@@ -13,7 +13,7 @@ const STEP: Record<string, string> = {
   learning: "Tonton semua video dalam setiap bab. MCQ akhir dibuka selepas setiap video dicapai.",
   final_mcq: "Jawab MCQ akhir.",
   part2_review: "MCQ akhir lulus. Hantar subjektif dan skematik (bahagian 2).",
-  theory_passed: "Teori lulus. Pilih trek anda.",
+  theory_passed: "Bahagian 2 lulus. Teori lulus. Pilihan trek menyusul.",
   practical: "Trek praktikal. Ikut langkah di papan praktikal. Jangan masukkan bekalan sehingga kelulusan AHZ direkod.",
   completed: "Tahniah, program selesai.",
 };
@@ -70,6 +70,12 @@ export default async function Page() {
         <p className="mt-1 text-sm">Video selesai: {done} / {total} (selesai = {Math.round(pct * 100)}% saat unik ditonton).</p>
       </section>
 
+      {active && ["part2_review", "theory_passed"].includes(enrollment.stage) && (
+        <section className="mt-4 rounded border p-3">
+          <h2 className="font-medium">Bahagian 2</h2>
+          <Link className="mt-1 inline-block text-sm underline" href="/bahagian2">Subjektif dan skematik</Link>
+        </section>
+      )}
       {active && (
         <section className="mt-4 rounded border p-3">
           <h2 className="font-medium">MCQ akhir</h2>

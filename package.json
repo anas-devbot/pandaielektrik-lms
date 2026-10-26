@@ -19,10 +19,12 @@
     "@supabase/supabase-js": "^2.107.0",
     "bayarcash": "1.0.1",
     "bcryptjs": "^3.0.3",
+    "heic-convert": "2.1.0",
     "jose": "^6.2.3",
     "next": "^15.5.19",
     "react": "^19.2.7",
-    "react-dom": "^19.2.7"
+    "react-dom": "^19.2.7",
+    "sharp": "0.34.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

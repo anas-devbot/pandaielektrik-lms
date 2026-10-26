@@ -1,7 +1,7 @@
 "use server";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getProfile, homeFor, safeNext } from "@/lib/auth";
+import { NEXT_PREFIXES, getProfile, homeFor, safeNext } from "@/lib/auth";
 import type { FormState } from "../daftar/actions";
 
 export async function logMasuk(_: FormState, form: FormData): Promise<FormState> {
@@ -14,9 +14,9 @@ export async function logMasuk(_: FormState, form: FormData): Promise<FormState>
   const p = await getProfile();
   if (!p) return { error: "Akaun tiada profil. Hubungi admin." };
   const next = safeNext(form.get("next"));
-  // `next` hanya dihormati jika dalam kawasan peranan pengguna; jika tidak, ke rumah peranan.
-  const home = homeFor(p.role);
-  redirect(next && next.startsWith(home) ? next : home);
+  // `next` hanya dihormati jika dalam kawasan yang dibenarkan untuk peranan itu; jika tidak, ke rumah peranan.
+  const allowed = next && NEXT_PREFIXES[p.role].some((pre) => next === pre || next.startsWith(pre + "/") || next.startsWith(pre + "?"));
+  redirect(allowed ? next : homeFor(p.role));
 }
 
 export async function logKeluar() {

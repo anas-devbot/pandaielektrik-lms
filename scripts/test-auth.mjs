@@ -58,7 +58,7 @@ try {
     student:  { "/dashboard": 200, "/staff": "/dashboard", "/admin": "/dashboard" },
     reviewer: { "/dashboard": "/staff", "/staff": 200, "/admin": "/staff" },
     approver: { "/dashboard": "/staff", "/staff": 200, "/admin": "/staff" },
-    admin:    { "/dashboard": "/admin", "/staff": "/admin", "/admin": 200 },
+    admin:    { "/dashboard": "/admin", "/staff": 200, "/admin": 200 },
   };
   for (const [role, paths] of Object.entries(matrix)) {
     const c = await cookieFor(users[role].email);
