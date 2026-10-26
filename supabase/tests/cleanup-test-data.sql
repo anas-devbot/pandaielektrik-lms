@@ -6,5 +6,6 @@ delete from payment_events where order_number in (select order_number from order
 delete from enrollments where user_id in (select id from auth.users where email like 'cb-%@test.local');
 delete from orders where user_id in (select id from auth.users where email like 'cb-%@test.local');
 delete from payment_events where order_id is null and order_number like 'TAKADA%';
+delete from profiles where id in (select id from auth.users where email like 'cb-%@test.local');  -- cascade mati bila trigger FK dimatikan
 delete from auth.users where email like 'cb-%@test.local';
 commit;
