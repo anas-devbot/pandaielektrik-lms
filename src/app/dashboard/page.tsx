@@ -12,7 +12,7 @@ const STEP: Record<string, string> = {
   enrolled: "Tonton semua video dalam setiap bab. MCQ akhir dibuka selepas setiap video dicapai.",
   learning: "Tonton semua video dalam setiap bab. MCQ akhir dibuka selepas setiap video dicapai.",
   final_mcq: "Jawab MCQ akhir.",
-  part2_review: "Subjektif dan skematik anda sedang disemak.",
+  part2_review: "MCQ akhir lulus. Hantar subjektif dan skematik (bahagian 2).",
   theory_passed: "Teori lulus. Pilih trek anda.",
   practical: "Trek praktikal. Ikut langkah di papan praktikal. Jangan masukkan bekalan sehingga kelulusan AHZ direkod.",
   completed: "Tahniah, program selesai.",
@@ -41,6 +41,10 @@ export default async function Page() {
     db.from("materials").select("id, chapter_id, title").eq("course_id", course.id).order("title"),
   ]);
   const supabase = await createClient();
+  const { data: practice } = await db.from("quiz_questions").select("chapter_id").eq("course_id", course.id).eq("type", "practice");
+  const practiceChapters = new Set((practice ?? []).map((q) => q.chapter_id));
+  const { data: gate } = await db.rpc("final_gate", { p_enrollment: enrollment.id });
+  const { data: finals } = await supabase.from("quiz_attempts").select("score_pct, passed, submitted_at").eq("enrollment_id", enrollment.id).eq("type", "final").not("submitted_at", "is", null);
   const { data: prog } = await supabase.from("lesson_progress").select("lesson_id, watched_seconds_unique, completed_at").eq("enrollment_id", enrollment.id);
   const byLesson = new Map((prog ?? []).map((r) => [r.lesson_id, r]));
   const pct = Number((course.config as Record<string, unknown>).video_complete_pct ?? 0.9);
@@ -66,6 +70,15 @@ export default async function Page() {
         <p className="mt-1 text-sm">Video selesai: {done} / {total} (selesai = {Math.round(pct * 100)}% saat unik ditonton).</p>
       </section>
 
+      {active && (
+        <section className="mt-4 rounded border p-3">
+          <h2 className="font-medium">MCQ akhir</h2>
+          {finals?.some((f) => f.passed) ? <p className="mt-1 text-sm">Lulus ({finals.find((f) => f.passed)?.score_pct}%).</p>
+            : gate?.open ? <Link className="mt-1 inline-block text-sm underline" href="/kuiz/akhir">Buka MCQ akhir</Link>
+            : <p className="mt-1 text-sm">Dibuka selepas setiap video dicapai ({gate?.videos_done ?? 0} / {gate?.videos_total ?? 0}).</p>}
+        </section>
+      )}
+
       {(chapters ?? []).map((c) => (
         <section key={c.id} className="mt-6">
           <h2 className="text-lg font-medium">Bab {c.position}: {c.title}</h2>
@@ -80,6 +93,9 @@ export default async function Page() {
                 </li>
               );
             })}
+            {active && practiceChapters.has(c.id) && (
+              <li className="rounded border p-3 text-sm"><Link className="underline" href={`/kuiz/bab/${c.id}`}>Kuiz latihan bab ini</Link></li>
+            )}
             {(materials ?? []).filter((m) => m.chapter_id === c.id).map((m) => (
               <li key={m.id} className="rounded border p-3 text-sm">
                 {active ? <a className="underline" href={`/api/materials/${m.id}`}>PDF: {m.title}</a> : <span>PDF: {m.title} (akses tamat)</span>}

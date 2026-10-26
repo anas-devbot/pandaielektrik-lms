@@ -1,0 +1,56 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { quizContext, rpc } from "@/lib/quiz";
+import { hantar } from "../actions";
+
+export const dynamic = "force-dynamic";
+
+type Opt = { id: string; label: string; body: string };
+type Q = { id: string; body: string; options: Opt[]; explanation?: string; correct_option_id?: string; chosen_option_id?: string };
+
+export default async function Page({ params }: { params: Promise<{ attemptId: string }> }) {
+  const { attemptId } = await params;
+  if (!/^[0-9a-f-]{36}$/i.test(attemptId)) notFound();
+  const { enrollment } = await quizContext();
+  // Muatan daripada fungsi DB: TIADA is_correct. Jawapan hanya untuk latihan yang sudah dihantar.
+  const { data: a, error } = await rpc().rpc("get_attempt", { p_attempt: attemptId, p_enrollment: enrollment.id });
+  if (error || !a) notFound();
+  const questions = a.questions as Q[];
+
+  if (a.submitted) {
+    return (
+      <main className="mx-auto w-full max-w-2xl p-6">
+        <h1 className="text-2xl font-semibold">{a.type === "final" ? "Keputusan MCQ akhir" : "Keputusan latihan"}</h1>
+        <p className="mt-2 text-xl">{a.score_pct}%{a.type === "final" && (a.passed ? " · Lulus" : " · Gagal")}</p>
+        {a.type === "final" && !a.passed && <p className="mt-1 text-sm">Anda boleh cuba lagi jika masih ada percubaan. Jawapan MCQ akhir tidak dipaparkan.</p>}
+        {a.type === "practice" && questions.map((q, i) => (
+          <section key={q.id} className="mt-4 rounded border p-3">
+            <p className="font-medium">{i + 1}. {q.body}</p>
+            <ul className="mt-1 text-sm">{q.options.map((o) => (
+              <li key={o.id}>{o.id === q.correct_option_id ? "✔ " : o.id === q.chosen_option_id ? "✘ " : "· "}{o.label}. {o.body}</li>))}</ul>
+            {q.explanation && <p className="mt-1 text-sm">Penjelasan: {q.explanation}</p>}
+          </section>
+        ))}
+        <Link className="mt-6 inline-block underline" href={a.type === "final" ? "/kuiz/akhir" : "/dashboard"}>Kembali</Link>
+      </main>
+    );
+  }
+  return (
+    <main className="mx-auto w-full max-w-2xl p-6">
+      <h1 className="text-2xl font-semibold">{a.type === "final" ? "MCQ akhir" : "Kuiz latihan"} (percubaan {a.attempt_no})</h1>
+      <form action={hantar} className="mt-4 flex flex-col gap-4">
+        <input type="hidden" name="attempt" value={attemptId} />
+        {questions.map((q, i) => (
+          <fieldset key={q.id} className="rounded border p-3">
+            <legend className="px-1 font-medium">{i + 1}. {q.body}</legend>
+            {q.options.map((o) => (
+              <label key={o.id} className="mt-1 flex items-start gap-2 text-sm">
+                <input type="radio" name={`q_${q.id}`} value={o.id} className="mt-1" /><span>{o.body}</span>
+              </label>))}
+          </fieldset>
+        ))}
+        <button className="rounded bg-black p-2 text-white">Hantar jawapan</button>
+      </form>
+    </main>
+  );
+}
