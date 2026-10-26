@@ -10,7 +10,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const { id } = await params;
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
   const supabase = await createClient();
-  const { data: o } = await supabase.from("orders").select("order_number, amount, status, paid_at").eq("id", id).maybeSingle(); // RLS: pesanan sendiri
+  const { data: o } = await supabase.from("orders").select("order_number, amount, status, paid_at, payment_url").eq("id", id).maybeSingle(); // RLS: pesanan sendiri
   if (!o) notFound();
   return (
     <main className="mx-auto w-full max-w-md p-6">
@@ -21,7 +21,10 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       ) : o.status === "refunded" ? (
         <p className="mt-2">Pesanan ini telah dipulangkan.</p>
       ) : (
-        <p className="mt-2">Pembayaran sedang disemak. Muat semula halaman ini sebentar lagi. (Pautan bayaran Bayarcash belum dihidupkan.)</p>
+        <>
+          <p className="mt-2">Pembayaran sedang disemak. Muat semula halaman ini sebentar lagi.</p>
+          {o.payment_url && <p className="mt-2 text-sm">Belum bayar? <a className="underline" href={o.payment_url}>Buka pautan bayaran</a> (sah 1 jam). Jika tamat, <Link className="underline" href="/beli">cipta pesanan baharu</Link>.</p>}
+        </>
       )}
     </main>
   );
