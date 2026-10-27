@@ -49,7 +49,9 @@ export default async function Page() {
   const { data: finals } = await supabase.from("quiz_attempts").select("score_pct, passed, submitted_at").eq("enrollment_id", enrollment.id).eq("type", "final").not("submitted_at", "is", null);
   const { data: certs } = await supabase.from("certificates").select("id, type, cert_id, verify_token, revoked_at, issued_at").eq("enrollment_id", enrollment.id).order("issued_at", { ascending: false });
   const validCert = (certs ?? []).find((c) => !c.revoked_at);
-  const canIssue = !validCert && !enrollment.refunded_at && enrollment.cert_track !== "theory_practical" && ["theory_passed", "completed"].includes(enrollment.stage);
+  const theoryReady = enrollment.cert_track !== "theory_practical" && ["theory_passed", "completed"].includes(enrollment.stage);
+  const practicalReady = enrollment.cert_track === "theory_practical" && enrollment.practical_result === "lulus" && ["practical", "completed"].includes(enrollment.stage);
+  const canIssue = !validCert && !enrollment.refunded_at && (theoryReady || practicalReady);
   const choosingTrack = !enrollment.refunded_at && enrollment.stage === "theory_passed" && !enrollment.cert_track;
   const onPractical = enrollment.cert_track === "theory_practical";
   const { data: prog } = await supabase.from("lesson_progress").select("lesson_id, watched_seconds_unique, completed_at").eq("enrollment_id", enrollment.id);
@@ -77,7 +79,7 @@ export default async function Page() {
         <p className="mt-1 text-sm">Video selesai: {done} / {total} (selesai = {Math.round(pct * 100)}% saat unik ditonton).</p>
       </section>
 
-      {onPractical && (
+      {onPractical && enrollment.practical_result !== "lulus" && (
         <section className="mt-4 rounded border p-3">
           <h2 className="font-medium">Trek praktikal</h2>
           <Link className="mt-1 inline-block text-sm underline" href="/praktikal">Buka halaman praktikal</Link>
@@ -95,12 +97,12 @@ export default async function Page() {
           <h2 className="font-medium">Sijil</h2>
           {validCert ? (
             <p className="mt-1 text-sm">
-              ID {validCert.cert_id}. <a className="underline" href={`/api/sijil/${validCert.id}`}>Muat turun PDF</a> ·{" "}
+              {validCert.type === "theory_practical" ? "Sijil teori dan praktikal" : "Sijil teori"}. ID {validCert.cert_id}. <a className="underline" href={`/api/sijil/${validCert.id}`}>Muat turun PDF</a> ·{" "}
               <a className="underline" href={`/semak/${validCert.verify_token}`}>Halaman semakan awam</a>
             </p>
           ) : (
             <>
-              <p className="mt-1 text-sm">Bahagian 2 lulus. Anda boleh mengeluarkan sijil teori anda.</p>
+              <p className="mt-1 text-sm">{practicalReady ? "Praktikal lulus. Anda boleh mengeluarkan Sijil Teori dan Praktikal anda." : "Bahagian 2 lulus. Anda boleh mengeluarkan sijil teori anda."}</p>
               <SijilForm defaultName={p.fullName} />
             </>
           )}

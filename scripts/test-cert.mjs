@@ -81,6 +81,20 @@ try {
   ok(t.includes(`/api/sijil/${certId}`) && t.includes(`/semak/${cert.verify_token}`) && !t.includes("Keluarkan sijil"), "dashboard: pautan muat turun + semakan, tiada borang");
   r = await get("/dashboard", cS2); ok(!r.buf.toString().includes("Keluarkan sijil"), "dashboard pelajar belum layak: tiada borang sijil");
 
+  // Sijil Teori & Praktikal (slice 10)
+  const S3 = await mk("s3"); const eS3 = await enr(S3, "practical"); await db.from("enrollments").update({ cert_track: "theory_practical", practical_result: "lulus" }).eq("id", eS3.id);
+  const cS3 = await cookieFor(S3.email);
+  r = await get("/dashboard", cS3); t = r.buf.toString();
+  ok(t.includes("Praktikal lulus. Anda boleh mengeluarkan Sijil Teori dan Praktikal") && t.includes('name="name"'), "dashboard (trek praktikal, praktikal lulus): borang sijil teori & praktikal");
+  const { data: pc } = await db.rpc("issue_certificate", { p_enrollment: eS3.id, p_type: "theory_practical", p_holder_name: "Siti Binti Ahmad" });
+  r = await get(`/api/sijil/${pc}`, cS3); ({ text } = pdfText(r.buf));
+  ok(r.s === 200 && text.replace(/\s+/g, " ").includes("SIJIL LULUS UJIAN TEORI & PRAKTIKAL") && text.includes("SITI BINTI AHMAD"), "PDF teori & praktikal: tajuk (2 baris) dan nama");
+  ok(text.includes("Telah Menyertai Dan Lulus Ujian Dengan Jayanya"), "PDF teori & praktikal: ayat pencapaian daripada config");
+  const { data: pcert } = await db.from("certificates").select("verify_token").eq("id", pc).single();
+  r = await get(`/semak/${pcert.verify_token}`); ok(r.buf.toString().includes("Sijil teori dan praktikal") && r.buf.toString().includes("Sijil ini SAH"), "semakan awam: jenis teori dan praktikal, SAH");
+  r = await get("/dashboard", cS3); ok(r.buf.toString().includes("Sijil teori dan praktikal") && r.buf.toString().includes(`/api/sijil/${pc}`), "dashboard: sijil teori dan praktikal + muat turun");
+  r = await get(`/api/sijil/${pc}`, cS); ok(r.s === 404, "sijil praktikal: pelajar lain 404");
+
   // batal
   await db.rpc("revoke_certificate", { p_actor: ADM.id, p_certificate: certId, p_reason: "ujian" });
   r = await get(`/api/sijil/${certId}`, cS); ok(r.s === 410, "sijil dibatalkan: muat turun = 410");

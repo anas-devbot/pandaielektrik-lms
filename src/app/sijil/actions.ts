@@ -12,7 +12,8 @@ const ERR: Record<string, string> = {
   track_locked: "Trek telah dipilih dan tidak boleh ditukar.", practical_not_ready: "Sijil trek praktikal belum dibuka.",
 };
 
-// Trek teori sahaja. Nama pada sijil disahkan pelajar (tidak boleh diubah selepas dikeluarkan; admin boleh batal dan keluarkan semula).
+// Nama pada sijil disahkan pelajar (tidak boleh diubah selepas dikeluarkan; admin boleh batal dan keluarkan semula).
+// Jenis sijil ikut trek: teori sahaja, atau teori & praktikal (hanya bila keputusan praktikal 'lulus', disemak lagi di DB).
 export async function terbitSijil(_: SijilState, form: FormData): Promise<SijilState> {
   await requireRole(["student"]);
   const course = await getCourse();
@@ -21,11 +22,12 @@ export async function terbitSijil(_: SijilState, form: FormData): Promise<SijilS
   if (!enrollment) return { error: "Anda belum berenrollment." };
   if (form.get("confirm") !== "on") return { error: "Sila sahkan ejaan nama anda." };
   const db = adminClient();
+  const type = enrollment.cert_track === "theory_practical" ? "theory_practical" : "theory";
   if (!enrollment.cert_track) {
     const { error } = await db.rpc("choose_track", { p_enrollment: enrollment.id, p_track: "theory" });
     if (error) return { error: ERR[error.message] ?? "Tidak dapat memilih trek." };
   }
-  const { error } = await db.rpc("issue_certificate", { p_enrollment: enrollment.id, p_type: "theory", p_holder_name: String(form.get("name") ?? "") });
+  const { error } = await db.rpc("issue_certificate", { p_enrollment: enrollment.id, p_type: type, p_holder_name: String(form.get("name") ?? "") });
   if (error) return { error: ERR[error.message] ?? "Sijil tidak dapat dikeluarkan." };
   revalidatePath("/dashboard");
   return { ok: "Sijil dikeluarkan." };

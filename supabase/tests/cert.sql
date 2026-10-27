@@ -40,7 +40,7 @@ select pg_temp.fails('stage belum theory_passed: tak boleh pilih trek', format($
 select pg_temp.fails('trek tak sah', format($q$select choose_track(%L,'xyz')$q$, :e1), 'bad_track');
 select pg_temp.eq('pilih trek teori', choose_track(:e1, 'theory'), 'theory');
 select pg_temp.fails('trek terkunci', format($q$select choose_track(%L,'theory_practical')$q$, :e1), 'track_locked');
-select pg_temp.fails('theory_practical belum sedia (slice 9/10)', format($q$select issue_certificate(%L,'theory_practical','Ali Bin Abu')$q$, :e1), 'practical_not_ready');
+select pg_temp.fails('trek teori tak boleh dapat sijil teori & praktikal', format($q$select issue_certificate(%L,'theory_practical','Ali Bin Abu')$q$, :e1), 'not_eligible');
 
 -- 2. nama pada sijil
 select pg_temp.fails('nama terlalu pendek', format($q$select issue_certificate(%L,'theory','A')$q$, :e1), 'bad_name');
