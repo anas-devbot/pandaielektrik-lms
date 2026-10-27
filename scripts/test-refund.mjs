@@ -60,7 +60,8 @@ const txt = pdfText(r.buf);
 ok(txt.includes("SURAT PERMOHONAN REFUND") && txt.includes("Ujian Refund s1".replace("s1", "s1")) && txt.includes(`RF${tag}S1`) && txt.includes("149.00"), "surat: tajuk, nama, no. order dan jumlah (RM 149.00)");
 ok(txt.includes("DRAF") && /Tidak sesuai/.test(txt), "surat: DRAF watermark + sebab pelajar");
 ok(!/no\.? ?k[ap]|kad pengenalan/i.test(txt) && txt.includes("akses saya kepada kursus akan ditutup"), "surat: tiada No. KP, ada pengakuan akses ditutup/sijil dibatalkan");
-ok(!/dipulangkan sepenuhnya|yuran Bayarcash/i.test(txt), "surat: tidak memutuskan kadar/yuran Bayarcash");
+ok(!/dipulangkan sepenuhnya|yuran Bayarcash/i.test(txt), "surat: tidak memutuskan kadar pemulangan");
+ok(/Butiran akaun bank/.test(txt) && /No\. akaun/.test(txt), "surat: ruang akaun bank tulis tangan (tidak disimpan dalam sistem)");
 r = await get(`/api/refund/${q1.id}/surat`, c2); ok(r.s === 404, "surat: pelajar lain 404");
 r = await get(`/api/refund/${q1.id}/surat`, cA); ok(r.s === 200, "surat: admin 200");
 r = await get(`/api/refund/${q1.id}/surat`); ok(r.s === 401, "surat: tetamu 401");
@@ -82,7 +83,7 @@ f = await fetch(`${BASE}/api/refund/${q1.id}/fail`, { headers: { cookie: c2 } })
 r = await get("/admin/refund", cA); ok(r.t.includes("Luluskan") && r.t.includes("Surat bertandatangan"), "admin: butang luluskan + pautan surat bertandatangan");
 await db.rpc("decide_refund", { p_actor: ADM.id, p_request: q1.id, p_decision: "approved", p_note: null });
 r = await get("/refund", c1); ok(r.t.includes("Permohonan diluluskan") && r.t.toLowerCase().includes("akses anda kekal"), "S1: diluluskan, akses KEKAL sehingga dipulangkan");
-r = await get("/admin/refund", cA); ok(r.t.includes("Telah dipulangkan di Bayarcash"), "admin: butang 'telah dipulangkan' selepas lulus");
+r = await get("/admin/refund", cA); ok(r.t.includes("Telah dipulangkan (transfer bank)"), "admin: butang 'telah dipulangkan' selepas lulus");
 const { data: cert } = await db.from("certificates").insert({ course_id: course.id, enrollment_id: eS1.id, type: "theory", cert_id: `AHZ-RF-${tag}`, holder_name: "Ujian Refund s1", course_title: "T", period_start: "2026-10-01", period_end: "2026-10-02" }).select("id, verify_token").single();
 await db.rpc("mark_refunded", { p_actor: ADM.id, p_request: q1.id, p_note: "BC-REF-1" });
 r = await get("/refund", c1); ok(r.t.includes("Refund telah diproses"), "S1: refund diproses, akses ditutup");

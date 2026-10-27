@@ -1,6 +1,6 @@
 -- Slice 11: refund. Semakan automatik di DB (nilai daripada courses.config, bukan hardcode), surat refund dijana, kelulusan admin,
--- refund sebenar dibuat MANUAL di dashboard Bayarcash (tiada endpoint refund), kemudian mark_refunded menutup akses dan membatalkan sijil.
--- Tidak memutuskan sama ada yuran Bayarcash ditolak atau dipulangkan (CLAUDE.md bahagian 8).
+-- refund sebenar dibuat MANUAL melalui transfer bank oleh AHZ selepas Bayarcash membuat payout (Bayarcash tiada refund; kos Bayarcash ditanggung AHZ),
+-- kemudian mark_refunded menutup akses dan membatalkan sijil. Tidak memutuskan jumlah pemulangan.
 -- ASSUMPTION: "progres kurang daripada X%" ditafsir sebagai < refund_progress_max_pct (sama dengan X = gagal).
 -- ASSUMPTION: refund_pdf_downloads_max (had log akses PDF) belum ditetapkan AHZ: jika tiada dalam config, kriteria itu tidak dikuatkuasakan.
 
@@ -98,7 +98,7 @@ begin
   return p_decision;
 end $$;
 
--- Dipanggil SELEPAS admin membuat refund sebenar di dashboard Bayarcash (manual). Menutup akses dan membatalkan sijil.
+-- Dipanggil SELEPAS admin membuat transfer bank refund (manual). Menutup akses dan membatalkan sijil.
 create function public.mark_refunded(p_actor uuid, p_request uuid, p_note text) returns jsonb
 language plpgsql security definer set search_path = public as $$
 declare r public.refund_requests; e public.enrollments; certs uuid[];
