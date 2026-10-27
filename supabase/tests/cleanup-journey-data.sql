@@ -1,0 +1,23 @@
+-- LOCAL sahaja: buang data ujian perjalanan (jn-*@test.local) + fixture JRN-*, dan pulihkan config kursus.
+begin;
+set local session_replication_role = replica;
+delete from admin_actions where actor_id in (select id from auth.users where email like 'jn-%@test.local') or enrollment_id in (select e.id from enrollments e join auth.users u on u.id=e.user_id where u.email like 'jn-%@test.local');
+delete from payment_events where order_id in (select o.id from orders o join auth.users u on u.id=o.user_id where u.email like 'jn-%@test.local');
+update enrollments set approved_submission_id = null where user_id in (select id from auth.users where email like 'jn-%@test.local');
+commit;
+begin;
+delete from reminders where enrollment_id in (select e.id from enrollments e join auth.users u on u.id=e.user_id where u.email like 'jn-%@test.local');
+delete from certificates where enrollment_id in (select e.id from enrollments e join auth.users u on u.id=e.user_id where u.email like 'jn-%@test.local');
+delete from submissions where enrollment_id in (select e.id from enrollments e join auth.users u on u.id=e.user_id where u.email like 'jn-%@test.local');
+delete from quiz_attempts where enrollment_id in (select e.id from enrollments e join auth.users u on u.id=e.user_id where u.email like 'jn-%@test.local');
+delete from lesson_progress where enrollment_id in (select e.id from enrollments e join auth.users u on u.id=e.user_id where u.email like 'jn-%@test.local');
+delete from enrollments where user_id in (select id from auth.users where email like 'jn-%@test.local');
+delete from orders where user_id in (select id from auth.users where email like 'jn-%@test.local');
+delete from quiz_options where question_id in (select id from quiz_questions where body like 'JRNQ-%');
+delete from quiz_questions where body like 'JRNQ-%';
+delete from lessons where title like 'JRNL-%';
+delete from chapters where title like 'JRN-%';
+delete from staff_invites where email like 'jn-%@test.local';
+delete from auth.users where email like 'jn-%@test.local';
+update courses set config = jsonb_set(config - 'energize_guidance_text', '{mcq_count}', '40') where config ? 'energize_guidance_text' and config->>'energize_guidance_text' like 'PANDUAN-AHZ-UJI-%';
+commit;
