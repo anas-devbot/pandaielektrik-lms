@@ -1,6 +1,7 @@
 import { verifyPreTransactionCallbackData, verifyTransactionCallbackData } from "bayarcash";
 import { adminClient } from "@/lib/supabase/admin";
 import { bayarcashEnv, toSen } from "@/lib/bayarcash";
+import { sendReceipt } from "@/lib/notify";
 
 // SATU-SATUNYA sumber kebenaran bayaran (CLAUDE.md #2): callback server-ke-server.
 // Balas 200 hanya bila diproses/diabaikan dengan sah; 403 checksum salah; 500 ralat sementara (Bayarcash cuba semula, 5x/5min).
@@ -25,7 +26,7 @@ export async function POST(req: Request) {
   if (body.record_type !== "transaction") return new Response(null, { status: 200 });
   if (!verifyTransactionCallbackData(body, secret)) return new Response(null, { status: 403 });
 
-  const { error } = await adminClient().rpc("apply_payment_event", {
+  const { data: outcome, error } = await adminClient().rpc("apply_payment_event", {
     p_transaction_id: String(body.transaction_id ?? ""),
     p_status: Number(body.status),
     p_order_number: String(body.order_number ?? ""),
@@ -34,5 +35,6 @@ export async function POST(req: Request) {
     p_raw: body,
   });
   if (error) { console.error("apply_payment_event gagal", error.message); return new Response(null, { status: 500 }); }
+  if (outcome === "paid") await sendReceipt(String(body.order_number));   // kegagalan emel tidak menjejas balasan 200
   return new Response(null, { status: 200 });
 }
