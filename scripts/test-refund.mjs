@@ -29,7 +29,7 @@ async function enr(u, paidAgoMs, orderless) {
   }
   return (await db.from("enrollments").insert({ user_id: u.id, course_id: course.id, order_id: oid, access_ends_at: far }).select("id").single()).data;
 }
-const eS1 = await enr(S1, 3600e3), eS2 = await enr(S2, 3600e3), eS3 = await enr(S3, 5 * 864e5), eS4 = await enr(S4, 0, true);
+const eS1 = await enr(S1, 3600e3), eS2 = await enr(S2, 3600e3); await enr(S3, 5 * 864e5); await enr(S4, 0, true);
 await db.from("submissions").insert({ course_id: course.id, enrollment_id: eS2.id, type: "subjective", text_answer: "x", source: "lms", status: "pending" });   // S2 gagal semakan
 
 async function cookieFor(email) {
