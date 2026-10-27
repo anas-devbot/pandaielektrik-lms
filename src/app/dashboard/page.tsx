@@ -5,6 +5,7 @@ import { enrollmentFor } from "@/lib/learning";
 import { createClient } from "@/lib/supabase/server";
 import { adminClient } from "@/lib/supabase/admin";
 import { logKeluar } from "@/app/log-masuk/actions";
+import SijilForm from "@/app/sijil/form";
 
 export const dynamic = "force-dynamic";
 
@@ -45,6 +46,9 @@ export default async function Page() {
   const practiceChapters = new Set((practice ?? []).map((q) => q.chapter_id));
   const { data: gate } = await db.rpc("final_gate", { p_enrollment: enrollment.id });
   const { data: finals } = await supabase.from("quiz_attempts").select("score_pct, passed, submitted_at").eq("enrollment_id", enrollment.id).eq("type", "final").not("submitted_at", "is", null);
+  const { data: certs } = await supabase.from("certificates").select("id, type, cert_id, verify_token, revoked_at, issued_at").eq("enrollment_id", enrollment.id).order("issued_at", { ascending: false });
+  const validCert = (certs ?? []).find((c) => !c.revoked_at);
+  const canIssue = !validCert && !enrollment.refunded_at && enrollment.cert_track !== "theory_practical" && ["theory_passed", "completed"].includes(enrollment.stage);
   const { data: prog } = await supabase.from("lesson_progress").select("lesson_id, watched_seconds_unique, completed_at").eq("enrollment_id", enrollment.id);
   const byLesson = new Map((prog ?? []).map((r) => [r.lesson_id, r]));
   const pct = Number((course.config as Record<string, unknown>).video_complete_pct ?? 0.9);
@@ -70,6 +74,22 @@ export default async function Page() {
         <p className="mt-1 text-sm">Video selesai: {done} / {total} (selesai = {Math.round(pct * 100)}% saat unik ditonton).</p>
       </section>
 
+      {(validCert || canIssue) && (
+        <section className="mt-4 rounded border p-3">
+          <h2 className="font-medium">Sijil</h2>
+          {validCert ? (
+            <p className="mt-1 text-sm">
+              ID {validCert.cert_id}. <a className="underline" href={`/api/sijil/${validCert.id}`}>Muat turun PDF</a> ·{" "}
+              <a className="underline" href={`/semak/${validCert.verify_token}`}>Halaman semakan awam</a>
+            </p>
+          ) : (
+            <>
+              <p className="mt-1 text-sm">Bahagian 2 lulus. Anda boleh mengeluarkan sijil teori anda.</p>
+              <SijilForm defaultName={p.fullName} />
+            </>
+          )}
+        </section>
+      )}
       {active && ["part2_review", "theory_passed"].includes(enrollment.stage) && (
         <section className="mt-4 rounded border p-3">
           <h2 className="font-medium">Bahagian 2</h2>
