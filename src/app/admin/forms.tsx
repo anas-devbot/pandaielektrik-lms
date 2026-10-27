@@ -1,6 +1,6 @@
 "use client";
 import { useActionState } from "react";
-import { rekodManual, tambahPercubaan, type AdminState } from "./actions";
+import { rekodManual, tambahPercubaan, tetapkanPautanTelegram, type AdminState } from "./actions";
 
 const Msg = ({ s }: { s: AdminState }) => (<>
   {s?.error && <p role="alert" className="text-sm text-red-600">{s.error}</p>}
@@ -37,6 +37,18 @@ export function RekodManual() {
       <input name="reason" required placeholder="Sebab laluan manual (wajib, direkod)" className={inp} />
       <Msg s={s} />
       <button disabled={p} className="rounded bg-black p-2 text-white disabled:opacity-50">Rekod</button>
+    </form>
+  );
+}
+
+export function PautanTelegram() {
+  const [s, a, p] = useActionState(tetapkanPautanTelegram, undefined);
+  return (
+    <form action={a} className="mt-2 flex flex-col gap-2">
+      <input name="email" type="email" required placeholder="Emel pelajar" className={inp} />
+      <input name="link" required placeholder="https://t.me/+..." className={inp} />
+      <Msg s={s} />
+      <button disabled={p} className="rounded bg-black p-2 text-white disabled:opacity-50">Tetapkan pautan</button>
     </form>
   );
 }

@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { adminClient } from "@/lib/supabase/admin";
 import { logKeluar } from "@/app/log-masuk/actions";
 import SijilForm from "@/app/sijil/form";
+import { PilihTrekForm } from "@/app/praktikal/forms";
 
 export const dynamic = "force-dynamic";
 
@@ -14,8 +15,8 @@ const STEP: Record<string, string> = {
   learning: "Tonton semua video dalam setiap bab. MCQ akhir dibuka selepas setiap video dicapai.",
   final_mcq: "Jawab MCQ akhir.",
   part2_review: "MCQ akhir lulus. Hantar subjektif dan skematik (bahagian 2).",
-  theory_passed: "Bahagian 2 lulus. Teori lulus. Pilihan trek menyusul.",
-  practical: "Trek praktikal. Ikut langkah di papan praktikal. Jangan masukkan bekalan sehingga kelulusan AHZ direkod.",
+  theory_passed: "Bahagian 2 lulus. Teori lulus. Pilih trek di bawah.",
+  practical: "Trek praktikal: ikut langkah di halaman praktikal. Menunggu pengesahan AHZ. Jangan masukkan bekalan.",
   completed: "Tahniah, program selesai.",
 };
 
@@ -49,6 +50,8 @@ export default async function Page() {
   const { data: certs } = await supabase.from("certificates").select("id, type, cert_id, verify_token, revoked_at, issued_at").eq("enrollment_id", enrollment.id).order("issued_at", { ascending: false });
   const validCert = (certs ?? []).find((c) => !c.revoked_at);
   const canIssue = !validCert && !enrollment.refunded_at && enrollment.cert_track !== "theory_practical" && ["theory_passed", "completed"].includes(enrollment.stage);
+  const choosingTrack = !enrollment.refunded_at && enrollment.stage === "theory_passed" && !enrollment.cert_track;
+  const onPractical = enrollment.cert_track === "theory_practical";
   const { data: prog } = await supabase.from("lesson_progress").select("lesson_id, watched_seconds_unique, completed_at").eq("enrollment_id", enrollment.id);
   const byLesson = new Map((prog ?? []).map((r) => [r.lesson_id, r]));
   const pct = Number((course.config as Record<string, unknown>).video_complete_pct ?? 0.9);
@@ -74,6 +77,19 @@ export default async function Page() {
         <p className="mt-1 text-sm">Video selesai: {done} / {total} (selesai = {Math.round(pct * 100)}% saat unik ditonton).</p>
       </section>
 
+      {onPractical && (
+        <section className="mt-4 rounded border p-3">
+          <h2 className="font-medium">Trek praktikal</h2>
+          <Link className="mt-1 inline-block text-sm underline" href="/praktikal">Buka halaman praktikal</Link>
+        </section>
+      )}
+      {choosingTrack && (
+        <section className="mt-4 rounded border p-3">
+          <h2 className="font-medium">Pilih trek</h2>
+          <p className="mt-1 text-sm">Anda boleh memilih trek teori sahaja (sijil di bawah) atau trek teori dan praktikal. Pilihan tidak boleh ditukar.</p>
+          <PilihTrekForm />
+        </section>
+      )}
       {(validCert || canIssue) && (
         <section className="mt-4 rounded border p-3">
           <h2 className="font-medium">Sijil</h2>

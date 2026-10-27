@@ -29,7 +29,7 @@ export { RANK };
 
 /** Awalan laluan yang dibenarkan sebagai tujuan `next` selepas log masuk, ikut peranan. */
 export const NEXT_PREFIXES: Record<Role, string[]> = {
-  student: ["/dashboard", "/beli", "/pesanan", "/belajar", "/kuiz", "/bahagian2"],
+  student: ["/dashboard", "/beli", "/pesanan", "/belajar", "/kuiz", "/bahagian2", "/praktikal"],
   reviewer: ["/staff"], approver: ["/staff"], admin: ["/admin", "/staff"],
 };
 

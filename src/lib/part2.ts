@@ -21,15 +21,22 @@ export const PART2_ERR: Record<string, string> = {
   actor_not_admin: "Hanya admin.",
   no_enrollment: "Enrollment tidak dijumpai.",
   bad_count: "Bilangan mesti 1 atau lebih.",
+  practical_closed: "Bahagian praktikal tidak dibuka atau sudah selesai.", consent_required: "Anda mesti bersetuju dengan notis privasi Telegram dahulu.",
+  form_required: "Muat naik borang bertandatangan dahulu.", bad_ref: "Rujukan video tidak sah (3 hingga 200 aksara).",
+  actor_not_approver: "Hanya approver AHZ boleh meluluskan kebenaran bekalan.", video_not_current: "Deklarasi video ini sudah diganti. Muat semula halaman.",
+  video_not_reviewed: "Video belum disemak dan diluluskan oleh penilai.", form_not_reviewed: "Borang belum disemak dan diluluskan oleh penilai.",
+  already_approved: "Kebenaran sudah direkodkan.", guidance_text_tiada: "Teks panduan keselamatan AHZ belum ditetapkan. Kelulusan tidak boleh dibuat.",
+  no_energize_approval: "Keputusan hanya direkod selepas kebenaran bekalan.", bad_result: "Keputusan tidak sah.", bad_link: "Pautan mesti https://t.me/...",
+  actor_not_allowed: "Tindakan tidak dibenarkan.", refunded: "Pendaftaran ini telah dipulangkan.", bad_file_key: "Fail tidak sah.",
 };
 
 /** Fail skematik: semak saiz (config), sahkan jenis, tukar HEIC->JPG, buang metadata, simpan di storan peribadi. */
-export async function storeSchematic(enrollmentId: string, file: File, maxMb: number): Promise<{ key: string } | { error: string }> {
+export async function storeSchematic(enrollmentId: string, file: File, maxMb: number, prefix: "schematic" | "form" = "schematic"): Promise<{ key: string } | { error: string }> {
   const maxBytes = Math.floor(maxMb * 1024 * 1024);
   if (file.size > maxBytes) return { error: `Fail terlalu besar (maksimum ${maxMb} MB).` };
   const r = await normalizeSchematic(Buffer.from(await file.arrayBuffer()), maxBytes);
   if (!r.ok) return { error: r.error === "bad_type" ? "Jenis fail tidak disokong. Guna JPG, PNG atau HEIC." : r.error === "too_large" ? `Fail terlalu besar (maksimum ${maxMb} MB).` : "Imej tidak dapat dibaca." };
-  const key = `submissions/${enrollmentId}/schematic-${Date.now()}-${randomBytes(4).toString("hex")}.jpg`;
+  const key = `submissions/${enrollmentId}/${prefix}-${Date.now()}-${randomBytes(4).toString("hex")}.jpg`;
   await putObject(key, r.jpeg, "image/jpeg");
   return { key };
 }

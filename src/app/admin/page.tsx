@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { requireRole } from "@/lib/auth";
 import { logKeluar } from "@/app/log-masuk/actions";
-import { RekodManual, TambahPercubaan } from "./forms";
+import { PautanTelegram, RekodManual, TambahPercubaan } from "./forms";
 
 // Slice 7: hanya dua tindakan admin yang diperlukan. Enam modul admin penuh dibina di slice 12.
 export default async function Page() {
@@ -18,6 +18,11 @@ export default async function Page() {
       <section className="mt-6 rounded border p-3">
         <h2 className="font-medium">Rekod penghantaran manual</h2>
         <RekodManual />
+      </section>
+      <section className="mt-6 rounded border p-3">
+        <h2 className="font-medium">Pautan jemputan Telegram (trek praktikal)</h2>
+        <p className="text-sm">Group dicipta manual oleh AHZ. Pautan dipaparkan di halaman praktikal pelajar.</p>
+        <PautanTelegram />
       </section>
       <form action={logKeluar} className="mt-8"><button className="underline">Log keluar</button></form>
     </main>

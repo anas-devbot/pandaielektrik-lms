@@ -60,3 +60,15 @@ export async function rekodManual(_: AdminState, f: FormData): Promise<AdminStat
   revalidatePath("/admin");
   return { ok: `Direkod (manual_fasi). ${key ? "Fail disimpan." : "Fail di luar sistem."} Direkod dalam admin_actions.` };
 }
+
+export async function tetapkanPautanTelegram(_: AdminState, f: FormData): Promise<AdminState> {
+  const me = await requireRole(["admin"]);
+  const uid = await userId(str(f, "email"));
+  if (!uid) return { error: "Pelajar tidak dijumpai." };
+  const eid = await enrollmentOf(uid);
+  if (!eid) return { error: "Pelajar belum berenrollment." };
+  const { error } = await adminClient().rpc("set_telegram_link", { p_actor: me.id, p_enrollment: eid, p_link: str(f, "link") });
+  if (error) return { error: PART2_ERR[error.message] ?? "Tindakan gagal." };
+  revalidatePath("/admin");
+  return { ok: "Pautan jemputan Telegram ditetapkan. Direkod dalam admin_actions." };
+}

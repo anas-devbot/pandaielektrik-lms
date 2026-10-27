@@ -12,7 +12,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
   if (!p) return new Response(null, { status: 401 });
   const db = adminClient();
   const { data: s } = await db.from("submissions").select("file_key, type, enrollment_id").eq("id", id).maybeSingle();
-  if (!s || s.type !== "schematic" || !s.file_key) return new Response(null, { status: 404 });
+  if (!s || !["schematic", "form"].includes(s.type) || !s.file_key) return new Response(null, { status: 404 });
   if (p.role === "student") {
     const { data: e } = await db.from("enrollments").select("user_id").eq("id", s.enrollment_id).single();
     if (e?.user_id !== p.id) return new Response(null, { status: 404 });   // tidak dedahkan kewujudan
