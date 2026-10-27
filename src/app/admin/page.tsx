@@ -9,7 +9,7 @@ export default async function Page() {
   return (
     <main className="mx-auto w-full max-w-2xl p-6">
       <h1 className="text-2xl font-semibold">Kawasan admin</h1>
-      <p className="mt-2">Selamat datang, {p.fullName} ({p.role}). <Link className="underline" href="/staff">Queue semakan</Link></p>
+      <p className="mt-2">Selamat datang, {p.fullName} ({p.role}). <Link className="underline" href="/staff">Queue semakan</Link> · <Link className="underline" href="/admin/refund">Permohonan refund</Link></p>
       <section className="mt-6 rounded border p-3">
         <h2 className="font-medium">Tambah percubaan MCQ akhir</h2>
         <p className="text-sm">Untuk pelajar yang telah menghabiskan had percubaan.</p>

@@ -54,6 +54,9 @@ export default async function Page() {
   const canIssue = !validCert && !enrollment.refunded_at && (theoryReady || practicalReady);
   const choosingTrack = !enrollment.refunded_at && enrollment.stage === "theory_passed" && !enrollment.cert_track;
   const onPractical = enrollment.cert_track === "theory_practical";
+  // Refund: pautan dipaparkan dalam tempoh refund (tanpa bayaran = rpc ralat = tiada pautan)
+  const { data: refundSnap } = enrollment.refunded_at ? { data: null } : await db.rpc("refund_eligibility", { p_enrollment: enrollment.id });
+  const { count: refundReqs } = await supabase.from("refund_requests").select("*", { count: "exact", head: true }).eq("enrollment_id", enrollment.id);
   const { data: prog } = await supabase.from("lesson_progress").select("lesson_id, watched_seconds_unique, completed_at").eq("enrollment_id", enrollment.id);
   const byLesson = new Map((prog ?? []).map((r) => [r.lesson_id, r]));
   const pct = Number((course.config as Record<string, unknown>).video_complete_pct ?? 0.9);
@@ -148,6 +151,9 @@ export default async function Page() {
           </ul>
         </section>
       ))}
+      {!enrollment.refunded_at && refundSnap && (refundSnap.window_ok || (refundReqs ?? 0) > 0) && (
+        <p className="mt-6 text-sm">Refund: <Link className="underline" href="/refund">{refundSnap.window_ok ? `mohon refund (sehingga ${fmt.format(new Date(refundSnap.deadline))})` : "status permohonan"}</Link></p>
+      )}
       <form action={logKeluar} className="mt-8"><button className="underline">Log keluar</button></form>
     </main>
   );

@@ -16,7 +16,7 @@ const W = 595.28, H = 841.89, GOLD = rgb(0.72, 0.53, 0.04), INK = rgb(0.07, 0.07
 const fmtDate = (iso: string) => { const [y, m, d] = iso.split("-").map(Number); return `${d}/${m}/${y}`; };
 
 /** Hanya aksara yang boleh dikodkan oleh fon standard PDF (WinAnsi); selebihnya dinormalkan atau diganti. */
-function safe(font: PDFFont, s: string) {
+export function safe(font: PDFFont, s: string) {
   const ok = new Set(font.getCharacterSet());
   return [...s.normalize("NFC")].map((ch) => {
     if (ok.has(ch.codePointAt(0)!)) return ch;
@@ -32,7 +32,7 @@ function centered(page: PDFPage, text: string, y: number, font: PDFFont, size: n
   for (const ch of t) { page.drawText(ch, { x, y, size, font, color }); x += font.widthOfTextAtSize(ch, size) + spacing; }
 }
 /** Pecah teks kepada baris yang muat dalam lebar maksimum. */
-function wrap(font: PDFFont, text: string, size: number, max: number) {
+export function wrap(font: PDFFont, text: string, size: number, max: number) {
   const out: string[] = []; let line = "";
   for (const w of safe(font, text).split(/\s+/)) {
     const next = line ? `${line} ${w}` : w;

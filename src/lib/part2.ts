@@ -27,16 +27,18 @@ export const PART2_ERR: Record<string, string> = {
   video_not_reviewed: "Video belum disemak dan diluluskan oleh penilai.", form_not_reviewed: "Borang belum disemak dan diluluskan oleh penilai.",
   already_approved: "Kebenaran sudah direkodkan.", guidance_text_tiada: "Teks panduan keselamatan AHZ belum ditetapkan. Kelulusan tidak boleh dibuat.",
   no_energize_approval: "Keputusan hanya direkod selepas kebenaran bekalan.", bad_result: "Keputusan tidak sah.", bad_link: "Pautan mesti https://t.me/...",
-  actor_not_allowed: "Tindakan tidak dibenarkan.", refunded: "Pendaftaran ini telah dipulangkan.", bad_file_key: "Fail tidak sah.",
+  actor_not_allowed: "Tindakan tidak dibenarkan.", refunded: "Pendaftaran ini telah dipulangkan.", bad_file_key: "Fail tidak sah.", window_closed: "Tempoh permohonan refund telah tamat.", already_requested: "Anda sudah mempunyai permohonan refund yang aktif.",
+  no_paid_order: "Tiada bayaran direkodkan untuk pendaftaran ini.", bad_status: "Tindakan tidak sesuai dengan status permohonan.", note_required: "Nota wajib diisi.",
+  config_refund_tiada: "Tetapan refund belum lengkap. Hubungi admin.",
 };
 
 /** Fail skematik: semak saiz (config), sahkan jenis, tukar HEIC->JPG, buang metadata, simpan di storan peribadi. */
-export async function storeSchematic(enrollmentId: string, file: File, maxMb: number, prefix: "schematic" | "form" = "schematic"): Promise<{ key: string } | { error: string }> {
+export async function storeSchematic(enrollmentId: string, file: File, maxMb: number, prefix: "schematic" | "form" | "surat" = "schematic", folder: "submissions" | "refunds" = "submissions"): Promise<{ key: string } | { error: string }> {
   const maxBytes = Math.floor(maxMb * 1024 * 1024);
   if (file.size > maxBytes) return { error: `Fail terlalu besar (maksimum ${maxMb} MB).` };
   const r = await normalizeSchematic(Buffer.from(await file.arrayBuffer()), maxBytes);
   if (!r.ok) return { error: r.error === "bad_type" ? "Jenis fail tidak disokong. Guna JPG, PNG atau HEIC." : r.error === "too_large" ? `Fail terlalu besar (maksimum ${maxMb} MB).` : "Imej tidak dapat dibaca." };
-  const key = `submissions/${enrollmentId}/${prefix}-${Date.now()}-${randomBytes(4).toString("hex")}.jpg`;
+  const key = `${folder}/${enrollmentId}/${prefix}-${Date.now()}-${randomBytes(4).toString("hex")}.jpg`;
   await putObject(key, r.jpeg, "image/jpeg");
   return { key };
 }
