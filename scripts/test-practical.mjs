@@ -77,7 +77,7 @@ ok(r.t.includes("Kebenaran memasukkan bekalan telah direkodkan oleh AHZ") && r.t
 r = await get("/staff", cR); ok(r.t.includes("menunggu keputusan praktikal"), "queue: menunggu keputusan praktikal");
 
 // hantar semula -> kembali tanpa kebenaran
-const { data: v2 } = await rpc("submit_practical", { p_enrollment: eS.id, p_type: "video", p_file_key: null, p_external_ref: "rakaman baharu Telegram", p_consent: true });
+await rpc("submit_practical", { p_enrollment: eS.id, p_type: "video", p_file_key: null, p_external_ref: "rakaman baharu Telegram", p_consent: true });
 r = await get("/praktikal", cS);
 ok(r.t.includes(WAIT) && !r.t.includes("telah direkodkan oleh AHZ") && !r.t.includes(GUIDE), "VIDEO DIHANTAR SEMULA: kebenaran lenyap, notis 'Jangan masukkan bekalan' kembali");
 const { data: e1 } = await db.from("enrollments").select("energize_approved_at, approved_submission_id").eq("id", eS.id).single();
