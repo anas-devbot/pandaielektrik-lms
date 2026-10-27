@@ -1,0 +1,30 @@
+// Kunci courses.config yang boleh diubah admin tanpa deploy. Disenaraikan juga di DB (update_course_config); DB yang memutuskan.
+export type CfgKind = "int" | "num" | "bool" | "text";
+export const CONFIG_FIELDS: { key: string; label: string; kind: CfgKind; hint?: string; group: string }[] = [
+  { key: "access_months", label: "Tempoh akses (bulan)", kind: "int", group: "Akses dan pembelajaran" },
+  { key: "video_complete_pct", label: "Video selesai (pecahan saat unik, cth. 0.9)", kind: "num", group: "Akses dan pembelajaran" },
+  { key: "video_max_rate", label: "Kelajuan main maksimum dikira (x)", kind: "num", group: "Akses dan pembelajaran" },
+  { key: "video_heartbeat_max_gap_sec", label: "Jurang heartbeat maksimum (saat)", kind: "num", group: "Akses dan pembelajaran" },
+  { key: "mcq_count", label: "Bilangan soalan MCQ akhir", kind: "int", group: "Ujian" },
+  { key: "pass_mark_mcq", label: "Markah lulus MCQ (%)", kind: "int", group: "Ujian" },
+  { key: "max_mcq_attempts", label: "Had percubaan MCQ akhir", kind: "int", group: "Ujian" },
+  { key: "claim_expiry_days", label: "Tuntutan penilai luput (hari)", kind: "int", group: "Ujian" },
+  { key: "schematic_max_mb", label: "Saiz fail maksimum (MB, had 11)", kind: "num", group: "Ujian" },
+  { key: "sla_business_days", label: "SLA semakan (hari bekerja)", kind: "int", group: "Ujian" },
+  { key: "refund_window_days", label: "Tetingkap refund (hari)", kind: "int", group: "Refund" },
+  { key: "refund_progress_max_pct", label: "Progres maksimum untuk refund (%, mesti kurang daripada)", kind: "int", group: "Refund" },
+  { key: "refund_pdf_downloads_max", label: "Had akses PDF untuk refund (kosong = tidak digunakan)", kind: "int", group: "Refund" },
+  { key: "refund_letter.approved", label: "Surat refund diluluskan AHZ (hilangkan DRAF)", kind: "bool", group: "Refund" },
+  { key: "telegram_member_delete_days", label: "Padam ahli Telegram selepas keputusan (hari)", kind: "int", group: "Praktikal" },
+  { key: "stuck_inactive_days", label: "Pelajar tersangkut: hari tanpa aktiviti", kind: "int", group: "Praktikal" },
+  { key: "energize_guidance_text", label: "Teks panduan keselamatan AHZ (direkod bersama kelulusan bekalan)", kind: "text", group: "Praktikal", hint: "Ditulis AHZ. Tanpa teks ini, kelulusan bekalan ditolak." },
+  { key: "energize_waiting_notice", label: "Notis menunggu pengesahan (default: Jangan masukkan bekalan)", kind: "text", group: "Praktikal" },
+  { key: "telegram_privacy_notice", label: "Notis privasi Telegram group", kind: "text", group: "Praktikal" },
+  { key: "practical_task_text", label: "Arahan tugasan praktikal", kind: "text", group: "Praktikal" },
+  { key: "subjective_prompt", label: "Soalan subjektif", kind: "text", group: "Bahagian 2" },
+  { key: "schematic_prompt", label: "Arahan skematik", kind: "text", group: "Bahagian 2" },
+  { key: "identity_check_enabled.theory", label: "Pengesahan identiti diperlukan: sijil teori", kind: "bool", group: "Sijil" },
+  { key: "identity_check_enabled.theory_practical", label: "Pengesahan identiti diperlukan: sijil teori & praktikal", kind: "bool", group: "Sijil" },
+  { key: "certificate.wording_approved", label: "Wording sijil diluluskan AHZ (hilangkan DRAF)", kind: "bool", group: "Sijil" },
+];
+export const cfgGet = (config: Record<string, unknown>, key: string): unknown => key.split(".").reduce<unknown>((o, k) => (o && typeof o === "object" ? (o as Record<string, unknown>)[k] : undefined), config);
