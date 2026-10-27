@@ -55,7 +55,7 @@ r = await get("/staff", cS); ok(r.s === 307 && r.loc.endsWith("/dashboard"), "pe
 r = await get("/staff", cR1); ok(r.s === 200 && r.t.includes("P2 s1"), "penilai nampak pelajar S dalam queue");
 r = await get("/staff", cA); ok(r.s === 200, "admin boleh akses queue");
 r = await get("/admin", cR1); ok(r.s === 307 && r.loc.endsWith("/staff"), "penilai /admin -> /staff");
-r = await get("/admin", cA); ok(r.s === 200 && r.t.includes("Tambah percubaan") && r.t.includes("Rekod penghantaran manual"), "admin nampak dua tindakan");
+r = await get("/admin/pelajar", cA); ok(r.s === 200 && r.t.includes("Tambah percubaan") && r.t.includes("Rekod penghantaran manual"), "admin nampak dua tindakan");
 // tuntut tugasan dan papar
 r = await get(`/staff/semak/${eS.id}`, cR1); ok(r.t.includes("Tuntut untuk semak") && !r.t.includes('name="decision"'), "belum dituntut: ada butang tuntut, tiada borang keputusan");
 await db.rpc("claim_review", { p_enrollment: eS.id, p_reviewer: R1.id });

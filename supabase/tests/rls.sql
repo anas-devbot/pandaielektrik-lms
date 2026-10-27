@@ -80,4 +80,23 @@ do $$ begin
   exception when raise_exception then if sqlerrm like 'GAGAL%' then raise; end if; raise notice 'lulus: admin_actions append-only'; end;
 end $$;
 
+-- audit Pintu 1: invarian global (gagal jika jadual/fungsi baharu terlepas dikunci)
+reset role;
+do $$ declare n integer; begin
+  select count(*) into n from pg_tables where schemaname='public' and not rowsecurity;
+  if n > 0 then raise exception 'GAGAL: % jadual public tanpa RLS', n; end if; raise notice 'lulus: semua jadual public ada RLS';
+  select count(*) into n from information_schema.role_table_grants where table_schema='public' and grantee in ('anon','authenticated') and privilege_type <> 'SELECT';
+  if n > 0 then raise exception 'GAGAL: anon/authenticated ada kuasa tulis pada % jadual', n; end if; raise notice 'lulus: anon/authenticated hanya SELECT pada jadual (tulis melalui server)';
+  select count(*) into n from information_schema.role_table_grants where table_schema='public' and grantee='anon' and table_name not in ('courses','course_sessions');
+  if n > 0 then raise exception 'GAGAL: anon boleh baca jadual selain landing'; end if; raise notice 'lulus: anon hanya boleh baca courses + course_sessions';
+  select count(*) into n from pg_proc p join pg_roles r on has_function_privilege(r.oid, p.oid, 'execute') where p.pronamespace='public'::regnamespace and r.rolname in ('anon','authenticated') and p.proname not in ('is_staff','deny_mutation');
+  if n > 0 then raise exception 'GAGAL: % fungsi public boleh dipanggil klien', n; end if; raise notice 'lulus: tiada fungsi public (selain is_staff) boleh dipanggil anon/authenticated';
+  select count(*) into n from pg_proc where pronamespace='public'::regnamespace and prosecdef and (proconfig is null or not exists (select 1 from unnest(proconfig) c where c like 'search_path=%'));
+  if n > 0 then raise exception 'GAGAL: % fungsi security definer tanpa search_path', n; end if; raise notice 'lulus: semua security definer tetapkan search_path';
+  if has_sequence_privilege('authenticated', 'public.certificate_seq', 'usage') or has_sequence_privilege('anon', 'public.certificate_seq', 'usage') then raise exception 'GAGAL: klien boleh nextval certificate_seq'; end if;
+  raise notice 'lulus: klien tak boleh nextval certificate_seq';
+  if has_column_privilege('authenticated', 'public.profiles', 'role', 'update') then raise exception 'GAGAL: pelajar boleh ubah profiles.role'; end if;
+  raise notice 'lulus: pelajar tak boleh ubah profiles.role';
+end $$;
+
 rollback;
