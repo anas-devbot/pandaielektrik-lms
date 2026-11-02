@@ -26,6 +26,7 @@ export default async function Page() {
       <Link className="text-sm underline" href="/dashboard">&larr; Dashboard</Link>
       <h1 className="mt-2 text-2xl font-semibold">Refund</h1>
       <p className="mt-1 text-sm">Refund tertakluk kepada <Link className="underline" href="/terma" target="_blank">terma dan syarat</Link>.</p>
+      <p className="mt-1 text-sm">Anda boleh bertanya admin AHZ dahulu sebelum memohon. Memohon di sini hanya mengeluarkan surat refund: akses anda <strong>tidak ditutup</strong> sehingga surat bertandatangan dihantar, admin meluluskan dan wang dipulangkan.</p>
 
       {enrollment.refunded_at ? (
         <p role="status" className="mt-4 rounded border border-green-600 p-3">Refund telah diproses pada {fmt(enrollment.refunded_at)}. Akses ditutup dan sijil (jika ada) dibatalkan.</p>

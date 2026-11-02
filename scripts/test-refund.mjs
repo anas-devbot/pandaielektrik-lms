@@ -44,9 +44,9 @@ const pdfText = (buf) => { const d = mkdtempSync(path.join(tmpdir(), "rf-")); co
 
 let r = await get("/refund", c1);
 ok(r.s === 200 && r.t.includes("Mohon refund") && !r.t.includes("✘"), "S1 (layak): semua semakan ✔ dan borang permohonan");
-r = await get("/dashboard", c1); ok(r.t.includes("/refund") && r.t.includes("mohon refund"), "dashboard S1: pautan refund dalam tempoh");
+r = await get("/dashboard", c1); ok(r.t.includes("/refund") && r.t.includes("Refund dan bantuan"), "dashboard S1: pautan refund dalam tempoh");
 r = await get("/refund", c3); ok(r.t.includes("Tempoh permohonan refund telah tamat") && !r.t.includes("Mohon refund</button>"), "S3 (5 hari): tempoh tamat, tiada borang");
-r = await get("/dashboard", c3); ok(!r.t.includes("mohon refund"), "dashboard S3: tiada pautan mohon refund");
+r = await get("/dashboard", c3); ok(!r.t.includes("Refund dan bantuan"), "dashboard S3: tiada pautan Refund dan bantuan");
 r = await get("/refund", c4); ok(r.t.includes("Tiada bayaran direkodkan"), "S4 (tanpa order): refund tidak terpakai");
 r = await get("/refund"); ok(r.s === 307, "tetamu /refund -> log masuk");
 r = await get("/admin/refund", c1); ok(r.s === 307, "pelajar /admin/refund ditolak");
