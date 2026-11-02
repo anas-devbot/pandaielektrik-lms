@@ -1,12 +1,15 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getCourse, rm } from "@/lib/course";
+import { salesOpen } from "@/lib/sales";
 
 export const dynamic = "force-dynamic"; // tarikh live dikemas kini admin tanpa deploy
 
 export default async function Home() {
   const course = await getCourse();
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const open = salesOpen(user?.email);
   const { data: sessions } = course
     ? await supabase.from("course_sessions").select("id, starts_at, ends_at, venue_or_link, capacity, status")
         .eq("course_id", course.id).in("status", ["open", "full"]).gte("starts_at", new Date().toISOString()).order("starts_at")
@@ -20,7 +23,9 @@ export default async function Home() {
         <>
           <p className="mt-4 text-2xl">{rm(course.price)} <span className="text-base">untuk seluruh program</span></p>
           <p className="text-sm">Bayaran tertakluk kepada <Link className="underline" href="/terma">terma dan syarat</Link>.</p>
-          <Link href="/beli" className="mt-4 inline-block rounded bg-black px-4 py-2 text-white">Daftar dan bayar</Link>
+          {open
+            ? <Link href="/beli" className="mt-4 inline-block rounded bg-black px-4 py-2 text-white">Daftar dan bayar</Link>
+            : <p className="mt-4 rounded border p-3">Pendaftaran belum dibuka. Sila kembali tidak lama lagi.</p>}
           <h2 className="mt-8 text-xl font-medium">Kursus live akan datang</h2>
           {sessions?.length ? (
             <ul className="mt-2 flex flex-col gap-2">

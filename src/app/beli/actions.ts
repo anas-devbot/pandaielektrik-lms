@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { adminClient } from "@/lib/supabase/admin";
 import { getCourse } from "@/lib/course";
+import { salesOpen } from "@/lib/sales";
 import { createPaymentIntent } from "@/lib/bayarcash";
 import { TERMS_VERSION } from "@/content/terms";
 import type { FormState } from "../daftar/actions";
@@ -12,6 +13,7 @@ export async function buatPesanan(_: FormState, form: FormData): Promise<FormSta
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/log-masuk?next=%2Fbeli");
+  if (!salesOpen(user.email)) return { error: "Pendaftaran belum dibuka." };
   if (form.get("terms") !== "on") return { error: "Anda mesti bersetuju dengan terma dan syarat sebelum bayar." };
 
   const course = await getCourse();

@@ -16,9 +16,8 @@ export async function middleware(req: NextRequest) {
   });
   const { data: { user } } = await supabase.auth.getUser(); // getUser (sahkan ke server auth), bukan getSession
   if (!user) {
-    const url = req.nextUrl.clone();
-    url.pathname = "/log-masuk";
-    url.search = `?next=${encodeURIComponent(req.nextUrl.pathname)}`;
+    // Asas dari NEXT_PUBLIC_SITE_URL: di belakang nginx, nextUrl.host ialah 127.0.0.1:3100 (standalone), bukan domain awam.
+    const url = new URL(`/log-masuk?next=${encodeURIComponent(req.nextUrl.pathname)}`, process.env.NEXT_PUBLIC_SITE_URL ?? req.url);
     return NextResponse.redirect(url);
   }
   return res;
