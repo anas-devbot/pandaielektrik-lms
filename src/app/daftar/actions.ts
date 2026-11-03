@@ -2,6 +2,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PRIVACY_VERSION } from "@/content/privacy";
+import { periksaKataLaluan } from "@/lib/password";
 
 export type FormState = { error?: string; email?: string; fullName?: string } | undefined;
 
@@ -12,7 +13,8 @@ export async function daftar(_: FormState, form: FormData): Promise<FormState> {
   const keep = { email, fullName };
   if (fullName.length < 2 || fullName.length > 120) return { ...keep, error: "Sila isi nama penuh." };
   if (!/^\S+@\S+\.\S+$/.test(email)) return { ...keep, error: "Emel tidak sah." };
-  if (password.length < 8) return { ...keep, error: "Kata laluan minimum 8 aksara." };
+  const salahKata = periksaKataLaluan(password, email);
+  if (salahKata) return { ...keep, error: salahKata };
   if (form.get("privacy") !== "on") return { ...keep, error: "Anda mesti bersetuju dengan notis privasi untuk mendaftar." };
 
   const supabase = await createClient();
