@@ -151,6 +151,19 @@ export default async function Page() {
           </ul>
         </section>
       ))}
+      {/* Bahan peringkat kursus (chapter_id kosong), contohnya ebook untuk rujukan offline. Muat turun melalui /api/materials yang sama. */}
+      {(materials ?? []).some((m) => !m.chapter_id) && (
+        <section className="mt-6">
+          <h2 className="text-lg font-medium">Bahan kursus</h2>
+          <ul className="mt-2 flex flex-col gap-2">
+            {(materials ?? []).filter((m) => !m.chapter_id).map((m) => (
+              <li key={m.id} className="rounded border p-3 text-sm">
+                {active ? <a className="underline" href={`/api/materials/${m.id}`}>PDF: {m.title} (muat turun)</a> : <span>PDF: {m.title} (akses tamat)</span>}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
       {!enrollment.refunded_at && refundSnap && (refundSnap.window_ok || (refundReqs ?? 0) > 0) && (
         <p className="mt-8 text-xs">Soalan tentang bayaran atau refund? <Link className="underline" href="/refund">{refundSnap.window_ok ? `Refund dan bantuan (sehingga ${fmt.format(new Date(refundSnap.deadline))})` : "Status permohonan refund"}</Link></p>
       )}
