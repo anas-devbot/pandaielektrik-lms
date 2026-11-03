@@ -1,19 +1,15 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { getCourse, rm } from "@/lib/course";
+import { getLanding, rm } from "@/lib/course";
 import { salesOpen } from "@/lib/sales";
 
-export const dynamic = "force-dynamic"; // tarikh live dikemas kini admin tanpa deploy
+export const dynamic = "force-dynamic"; // tarikh live dikemas kini admin tanpa deploy (cache dibatal melalui tag "landing")
 
 export default async function Home() {
-  const course = await getCourse();
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  // Data kursus dari cache, serentak dengan semakan sesi log masuk (satu round-trip, bukan tiga berturutan).
+  const [{ course, sessions }, { data: { user } }] = await Promise.all([getLanding(), supabase.auth.getUser()]);
   const open = salesOpen(user?.email);
-  const { data: sessions } = course
-    ? await supabase.from("course_sessions").select("id, starts_at, ends_at, venue_or_link, capacity, status")
-        .eq("course_id", course.id).in("status", ["open", "full"]).gte("starts_at", new Date().toISOString()).order("starts_at")
-    : { data: [] };
   const fmt = new Intl.DateTimeFormat("ms-MY", { dateStyle: "full", timeStyle: "short", timeZone: "Asia/Kuala_Lumpur" });
 
   return (

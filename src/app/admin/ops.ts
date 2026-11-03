@@ -1,5 +1,5 @@
 "use server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { requireRole } from "@/lib/auth";
 import { adminClient } from "@/lib/supabase/admin";
 import { CONFIG_FIELDS } from "@/lib/config-fields";
@@ -58,6 +58,7 @@ export async function jalankan(_: OpState, f: FormData): Promise<OpState> {
   } else return { error: "Tindakan tidak sah." };
 
   if (error) return { error: ERR[error.message] ?? `Gagal (${error.message}).` };
+  if (op === "config" || op === "session") revalidateTag("landing");   // landing baca kursus + sesi (cache)
   revalidatePath(path); revalidatePath("/admin");
   return { ok: okMsg };
 }
