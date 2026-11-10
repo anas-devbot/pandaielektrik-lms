@@ -63,11 +63,9 @@ export default async function Page() {
   const done = (lessons ?? []).filter((l) => byLesson.get(l.id)?.completed_at).length;
   const total = lessons?.length ?? 0;
   const ends = new Date(enrollment.access_ends_at);
-  // Pautan Meet: hanya untuk pelajar aktif, dibaca di server (lajur ini tidak awam).
-  // Chat Telegram TIDAK dipapar di sini: pelajar dapat pautan daripada admin/fasilitator dalam group WhatsApp DIY ELEKTRIK.
-  const { data: liveSessions } = active ? await db.from("course_sessions").select("id, starts_at, meet_link").eq("course_id", course.id).in("status", ["open", "full"]).gte("starts_at", new Date().toISOString()).order("starts_at") : { data: null };
+  // Tarikh sesi sahaja. Pautan Google Meet dan Telegram TIDAK dipapar di sini: dimaklumkan dalam group WhatsApp DIY ELEKTRIK.
+  const { data: liveSessions } = active ? await db.from("course_sessions").select("id, starts_at").eq("course_id", course.id).in("status", ["open", "full"]).gte("starts_at", new Date().toISOString()).order("starts_at") : { data: null };
   const chapterById = new Map((chapters ?? []).map((c) => [c.id, c]));
-  const MEET_RE = /^https:\/\/meet\.google\.com\//;
   const fmtLive = new Intl.DateTimeFormat("ms-MY", { dateStyle: "full", timeStyle: "short", timeZone: "Asia/Kuala_Lumpur" });
 
   return (
@@ -138,11 +136,11 @@ export default async function Page() {
           {(liveSessions ?? []).length === 0 ? <p className="mt-1 text-sm">Tiada sesi live akan datang buat masa ini.</p> : (
             <ul className="mt-1 flex flex-col gap-1 text-sm">
               {(liveSessions ?? []).map((s) => (
-                <li key={s.id}>{fmtLive.format(new Date(s.starts_at))}: {s.meet_link && MEET_RE.test(s.meet_link) ? <a className="underline" href={s.meet_link} target="_blank" rel="noopener noreferrer">Sertai Google Meet</a> : "Pautan menyusul"}</li>
+                <li key={s.id}>{fmtLive.format(new Date(s.starts_at))}</li>
               ))}
             </ul>
           )}
-          <p className="mt-2 text-sm">Chat dengan trainer dan fasilitator AHZ: dapatkan pautan group Telegram daripada admin atau fasilitator dalam group WhatsApp DIY ELEKTRIK.</p>
+          <p className="mt-2 text-sm">Pautan Google Meet untuk sesi live dan pautan group Telegram chat dengan trainer dan fasilitator AHZ dimaklumkan dalam group WhatsApp DIY ELEKTRIK.</p>
         </section>
       )}
 

@@ -50,11 +50,6 @@ export async function jalankan(_: OpState, f: FormData): Promise<OpState> {
     else { if (raw === "" || Number.isNaN(Number(raw))) return { error: "Masukkan nombor." }; value = Number(raw); }
     const { data: course } = await db.from("courses").select("id").order("created_at").limit(1).single();
     ({ error } = await db.rpc("update_course_config", { p_actor: me.id, p_course: course!.id, p_path: field.key.split("."), p_value: value, p_reason: reason }));
-  } else if (op === "course_links") {
-    // Pautan Meet (per sesi) dan Telegram (per kursus). Tidak dipapar awam; RPC merekod tanpa menyimpan URL dalam admin_actions.
-    path = "/admin/kursus";
-    const { data: course } = await db.from("courses").select("id").order("created_at").limit(1).single();
-    ({ error } = await db.rpc("set_course_links", { p_actor: me.id, p_course: course!.id, p_session: uuid(s(f, "session")), p_meet: s(f, "meet"), p_telegram: s(f, "telegram"), p_reason: reason }));
   } else if (op === "session") {
     path = "/admin/kursus";
     const { data: course } = await db.from("courses").select("id").order("created_at").limit(1).single();
