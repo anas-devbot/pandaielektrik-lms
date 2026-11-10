@@ -28,11 +28,18 @@ export default async function Page() {
         <section key={x.id} className="mt-2 rounded border p-3"><h3 className="text-sm font-medium">{new Intl.DateTimeFormat("ms-MY", { dateStyle: "full", timeStyle: "short", timeZone: MY }).format(new Date(x.starts_at))} · {x.status}</h3>
           <OpForm op="session" hidden={{ id: x.id }} submit="Kemas kini sesi" fields={[
             { name: "starts_at", label: "Mula", type: "datetime-local", required: true, defaultValue: toLocal(x.starts_at) }, { name: "ends_at", label: "Tamat (pilihan)", type: "datetime-local", defaultValue: toLocal(x.ends_at) },
-            { name: "venue", label: "Lokasi atau pautan", defaultValue: x.venue_or_link ?? "" }, { name: "capacity", label: "Kuota (kosong = tiada had)", type: "number", defaultValue: x.capacity ?? "" },
+            { name: "venue", label: "Lokasi (cth: Google Meet). Jangan letak pautan di sini", defaultValue: x.venue_or_link ?? "" },{ name: "capacity", label: "Kuota (kosong = tiada had)", type: "number", defaultValue: x.capacity ?? "" },
             { name: "status", label: "Status", type: "select", options: STATUS, defaultValue: x.status }]} /></section>))}
       <section className="mt-3 rounded border border-dashed p-3"><h3 className="text-sm font-medium">Tambah sesi</h3>
         <OpForm op="session" submit="Tambah sesi" fields={[{ name: "starts_at", label: "Mula", type: "datetime-local", required: true }, { name: "ends_at", label: "Tamat (pilihan)", type: "datetime-local" },
-          { name: "venue", label: "Lokasi atau pautan" }, { name: "capacity", label: "Kuota (kosong = tiada had)", type: "number" }, { name: "status", label: "Status", type: "select", options: STATUS, defaultValue: "open" }]} /></section>
+          { name: "venue", label: "Lokasi (cth: Google Meet). Jangan letak pautan di sini" }, { name: "capacity", label: "Kuota (kosong = tiada had)", type: "number" }, { name: "status", label: "Status", type: "select", options: STATUS, defaultValue: "open" }]} /></section>
+      <section className="mt-6 rounded border p-3"><h3 className="text-sm font-medium">Pautan Meet dan Telegram (tidak dipapar awam)</h3>
+        <p className="mt-1 text-xs">Pautan hanya dipapar kepada pelajar aktif. Medan &quot;Lokasi&quot; sesi dipapar di landing, jadi jangan letak pautan di situ. Setiap perubahan direkod tanpa menyimpan URL dalam log.</p>
+        <OpForm op="course_links" submit="Simpan pautan" fields={[
+          { name: "session", label: "Sesi (untuk pautan Meet)", type: "select", options: [{ v: "", l: "(tiada sesi dipilih)" }, ...(sessions ?? []).map((x) => ({ v: x.id, l: new Intl.DateTimeFormat("ms-MY", { dateStyle: "medium", timeStyle: "short", timeZone: MY }).format(new Date(x.starts_at)) }))] },
+          { name: "meet", label: "Pautan Google Meet (https://meet.google.com/...). Kosong = tidak diubah" },
+          { name: "telegram", label: "Pautan group Telegram chat (https://t.me/...). Kosong = tidak diubah" },
+          { name: "reason", label: "Sebab (wajib)", required: true }]} /></section>
 
       <h2 className="mt-8 text-lg font-medium">Polisi dan teks (tanpa deploy)</h2>
       <p className="text-xs">Setiap perubahan direkod (nilai lama dan baharu) dan wajib bersebab. Nilai bertanda ASSUMPTION dalam CLAUDE.md belum disahkan Saiful.</p>

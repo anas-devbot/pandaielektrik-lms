@@ -39,7 +39,7 @@ export default async function Page() {
   const db = adminClient(); // senarai tajuk sahaja; video_ref dan r2_key TIDAK dihantar ke halaman ini
   const [{ data: chapters }, { data: lessons }, { data: materials }] = await Promise.all([
     db.from("chapters").select("id, position, title").eq("course_id", course.id).order("position"),
-    db.from("lessons").select("id, chapter_id, position, title, duration_seconds").eq("course_id", course.id).order("position"),
+    db.from("lessons").select("id, chapter_id, position, title, duration_seconds, urutan_global").eq("course_id", course.id).order("urutan_global", { ascending: true, nullsFirst: false }),
     db.from("materials").select("id, chapter_id, title").eq("course_id", course.id).order("title"),
   ]);
   const supabase = await createClient();
@@ -63,6 +63,13 @@ export default async function Page() {
   const done = (lessons ?? []).filter((l) => byLesson.get(l.id)?.completed_at).length;
   const total = lessons?.length ?? 0;
   const ends = new Date(enrollment.access_ends_at);
+  // Pautan Meet dan Telegram: hanya untuk pelajar aktif, dibaca di server (lajur ini tidak awam).
+  const { data: liveSessions } = active ? await db.from("course_sessions").select("id, starts_at, meet_link").eq("course_id", course.id).in("status", ["open", "full"]).gte("starts_at", new Date().toISOString()).order("starts_at") : { data: null };
+  const { data: priv } = active ? await db.from("course_private").select("telegram_chat_link").eq("course_id", course.id).maybeSingle() : { data: null };
+  const chapterById = new Map((chapters ?? []).map((c) => [c.id, c]));
+  const MEET_RE = /^https:\/\/meet\.google\.com\//;
+  const TG_RE = /^https:\/\/t\.me\//;
+  const fmtLive = new Intl.DateTimeFormat("ms-MY", { dateStyle: "full", timeStyle: "short", timeZone: "Asia/Kuala_Lumpur" });
 
   return (
     <main className="mx-auto w-full max-w-2xl p-6">
@@ -126,20 +133,46 @@ export default async function Page() {
         </section>
       )}
 
+      {active && (
+        <section className="mt-6 rounded border p-3">
+          <h2 className="font-medium">Sesi live dan chat</h2>
+          {(liveSessions ?? []).length === 0 ? <p className="mt-1 text-sm">Tiada sesi live akan datang buat masa ini.</p> : (
+            <ul className="mt-1 flex flex-col gap-1 text-sm">
+              {(liveSessions ?? []).map((s) => (
+                <li key={s.id}>{fmtLive.format(new Date(s.starts_at))}: {s.meet_link && MEET_RE.test(s.meet_link) ? <a className="underline" href={s.meet_link} target="_blank" rel="noopener noreferrer">Sertai Google Meet</a> : "Pautan menyusul"}</li>
+              ))}
+            </ul>
+          )}
+          {priv?.telegram_chat_link && TG_RE.test(priv.telegram_chat_link) && (
+            <p className="mt-2 text-sm">Chat dengan trainer dan fasilitator AHZ (Telegram): <a className="underline" href={priv.telegram_chat_link} target="_blank" rel="noopener noreferrer">Sertai group</a></p>
+          )}
+        </section>
+      )}
+
+      <section className="mt-6">
+        <h2 className="text-lg font-medium">Video mengikut turutan</h2>
+        <p className="mt-1 text-sm">Disyorkan tonton mengikut nombor ini.</p>
+        <ol className="mt-2 flex flex-col gap-2">
+          {(lessons ?? []).map((l) => {
+            const r = byLesson.get(l.id);
+            const w = r ? Math.min(100, Math.round((r.watched_seconds_unique / l.duration_seconds) * 100)) : 0;
+            const ch = chapterById.get(l.chapter_id);
+            return (
+              <li key={l.id} className="rounded border p-3">
+                <span className="mr-2 text-sm">{l.urutan_global ?? "-"}.</span>
+                {active ? <Link className="underline" href={`/belajar/${l.id}`}>{l.title}</Link> : <span>{l.title}</span>}
+                <span className="ml-2 text-sm">{r?.completed_at ? "Selesai" : `${w}%`}</span>
+                <p className="mt-1 text-xs">Bab {ch?.position}: {ch?.title}</p>
+              </li>
+            );
+          })}
+        </ol>
+      </section>
+
       {(chapters ?? []).map((c) => (
         <section key={c.id} className="mt-6">
           <h2 className="text-lg font-medium">Bab {c.position}: {c.title}</h2>
           <ul className="mt-2 flex flex-col gap-2">
-            {(lessons ?? []).filter((l) => l.chapter_id === c.id).map((l) => {
-              const r = byLesson.get(l.id);
-              const w = r ? Math.min(100, Math.round((r.watched_seconds_unique / l.duration_seconds) * 100)) : 0;
-              return (
-                <li key={l.id} className="rounded border p-3">
-                  {active ? <Link className="underline" href={`/belajar/${l.id}`}>{l.title}</Link> : <span>{l.title}</span>}
-                  <span className="ml-2 text-sm">{r?.completed_at ? "Selesai" : `${w}%`}</span>
-                </li>
-              );
-            })}
             {active && practiceChapters.has(c.id) && (
               <li className="rounded border p-3 text-sm"><Link className="underline" href={`/kuiz/bab/${c.id}`}>Kuiz latihan bab ini</Link></li>
             )}
@@ -151,6 +184,19 @@ export default async function Page() {
           </ul>
         </section>
       ))}
+      {/* Bahan peringkat kursus (chapter_id kosong), contohnya ebook untuk rujukan offline. Muat turun melalui /api/materials yang sama. */}
+      {(materials ?? []).some((m) => !m.chapter_id) && (
+        <section className="mt-6">
+          <h2 className="text-lg font-medium">Bahan kursus</h2>
+          <ul className="mt-2 flex flex-col gap-2">
+            {(materials ?? []).filter((m) => !m.chapter_id).map((m) => (
+              <li key={m.id} className="rounded border p-3 text-sm">
+                {active ? <a className="underline" href={`/api/materials/${m.id}`}>PDF: {m.title} (muat turun)</a> : <span>PDF: {m.title} (akses tamat)</span>}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
       {!enrollment.refunded_at && refundSnap && (refundSnap.window_ok || (refundReqs ?? 0) > 0) && (
         <p className="mt-8 text-xs">Soalan tentang bayaran atau refund? <Link className="underline" href="/refund">{refundSnap.window_ok ? `Refund dan bantuan (sehingga ${fmt.format(new Date(refundSnap.deadline))})` : "Status permohonan refund"}</Link></p>
       )}
