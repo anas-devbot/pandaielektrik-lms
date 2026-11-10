@@ -10,9 +10,7 @@ const s = (f: FormData, k: string) => String(f.get(k) ?? "").trim();
 const uuid = (v: string) => /^[0-9a-f-]{36}$/i.test(v) ? v : null;
 const ERR: Record<string, string> = { ...PART2_ERR, bad_days: "Hari mesti 1 hingga 365.", key_not_allowed: "Kunci ini tidak boleh diubah.", bad_value: "Nilai tidak sah.", out_of_range: "Nilai di luar julat.",
   bad_status: "Status tidak sah.", bad_dates: "Tarikh tamat mesti selepas tarikh mula.", bad_capacity: "Kapasiti tidak sah.", starts_required: "Tarikh mula wajib.", not_found: "Tidak dijumpai.",
-  already_enrolled: "Pelajar sudah berenrollment.", reason_required: "Sebab wajib diisi.", actor_not_admin: "Hanya admin boleh menetapkan pautan.",
-  bad_meet_link: "Pautan Meet mesti bermula https://meet.google.com/", bad_telegram_link: "Pautan Telegram mesti bermula https://t.me/",
-  nothing_to_set: "Isi sekurang-kurangnya satu pautan.", session_required: "Pilih sesi untuk pautan Meet." };
+  already_enrolled: "Pelajar sudah berenrollment.", reason_required: "Sebab wajib diisi." };
 
 // SATU pintu masuk untuk tindakan admin dalam modul. Pelaku = sesi (admin). DB menyemak peranan, memadam ralat, dan merekod admin_actions.
 export async function jalankan(_: OpState, f: FormData): Promise<OpState> {
