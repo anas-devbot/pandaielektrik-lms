@@ -20,9 +20,9 @@ export default async function Page({ params }: { params: Promise<{ attemptId: st
   if (a.submitted) {
     return (
       <main className="mx-auto w-full max-w-2xl p-6">
-        <h1 className="text-2xl font-semibold">{a.type === "final" ? "Keputusan MCQ akhir" : "Keputusan latihan"}</h1>
+        <h1 className="text-2xl font-semibold">{a.type === "final" ? "Keputusan kuiz akhir" : "Keputusan latihan"}</h1>
         <p className="mt-2 text-xl">{a.score_pct}%{a.type === "final" && (a.passed ? " · Lulus" : " · Gagal")}</p>
-        {a.type === "final" && !a.passed && <p className="mt-1 text-sm">Anda boleh cuba lagi jika masih ada percubaan. Jawapan MCQ akhir tidak dipaparkan.</p>}
+        {a.type === "final" && !a.passed && <p className="mt-1 text-sm">Anda boleh cuba lagi jika masih ada percubaan. Jawapan kuiz akhir tidak dipaparkan.</p>}
         {a.type === "practice" && questions.map((q, i) => (
           <section key={q.id} className="mt-4 rounded border p-3">
             <p className="font-medium">{i + 1}. {q.body}</p>
@@ -37,7 +37,7 @@ export default async function Page({ params }: { params: Promise<{ attemptId: st
   }
   return (
     <main className="mx-auto w-full max-w-2xl p-6">
-      <h1 className="text-2xl font-semibold">{a.type === "final" ? "MCQ akhir" : "Kuiz latihan"} (percubaan {a.attempt_no})</h1>
+      <h1 className="text-2xl font-semibold">{a.type === "final" ? "Kuiz akhir" : "Kuiz latihan"} (percubaan {a.attempt_no})</h1>
       <form action={hantar} className="mt-4 flex flex-col gap-4">
         <input type="hidden" name="attempt" value={attemptId} />
         {questions.map((q, i) => (

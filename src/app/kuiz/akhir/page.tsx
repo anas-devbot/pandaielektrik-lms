@@ -18,12 +18,12 @@ export default async function Page() {
   return (
     <main className="mx-auto w-full max-w-2xl p-6">
       <Link className="text-sm underline" href="/dashboard">&larr; Dashboard</Link>
-      <h1 className="mt-2 text-2xl font-semibold">MCQ akhir</h1>
+      <h1 className="mt-2 text-2xl font-semibold">Kuiz akhir</h1>
       <p className="mt-2 text-sm">{cfg.mcq_count} soalan daripada semua bab. Markah lulus {cfg.pass_mark_mcq}%. Had percubaan: {cfg.max_mcq_attempts + extra} (digunakan {used}).</p>
       {!gate?.open ? (
-        <p role="status" className="mt-4 rounded border border-amber-500 p-3">MCQ akhir dibuka selepas setiap video dicapai ({gate?.videos_done ?? 0} / {gate?.videos_total ?? 0} video selesai).</p>
+        <p role="status" className="mt-4 rounded border border-amber-500 p-3">Kuiz akhir dibuka selepas setiap video dicapai ({gate?.videos_done ?? 0} / {gate?.videos_total ?? 0} video selesai).</p>
       ) : passed ? (
-        <p className="mt-4 rounded border border-green-600 p-3">Anda telah lulus MCQ akhir. Teruskan ke bahagian 2.</p>
+        <p className="mt-4 rounded border border-green-600 p-3">Anda telah lulus kuiz akhir. Teruskan ke bahagian 2.</p>
       ) : used >= cfg.max_mcq_attempts + extra ? (
         <p className="mt-4 rounded border border-red-500 p-3">Had percubaan telah habis. Hubungi admin.</p>
       ) : (

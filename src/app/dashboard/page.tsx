@@ -11,10 +11,10 @@ import { PilihTrekForm } from "@/app/praktikal/forms";
 export const dynamic = "force-dynamic";
 
 const STEP: Record<string, string> = {
-  enrolled: "Muat turun ebook, kemudian tonton semua video mengikut senarai. MCQ akhir dibuka selepas setiap video dicapai.",
-  learning: "Muat turun ebook, kemudian tonton semua video mengikut senarai. MCQ akhir dibuka selepas setiap video dicapai.",
-  final_mcq: "Jawab MCQ akhir.",
-  part2_review: "MCQ akhir lulus. Hantar subjektif dan skematik (bahagian 2).",
+  enrolled: "Muat turun ebook, kemudian tonton semua video mengikut senarai. Kuiz akhir dibuka selepas setiap video dicapai.",
+  learning: "Muat turun ebook, kemudian tonton semua video mengikut senarai. Kuiz akhir dibuka selepas setiap video dicapai.",
+  final_mcq: "Jawab kuiz akhir.",
+  part2_review: "Kuiz akhir lulus. Hantar subjektif dan skematik (bahagian 2).",
   theory_passed: "Bahagian 2 lulus. Teori lulus. Pilih trek di bawah.",
   practical: "Trek praktikal: ikut langkah di halaman praktikal. Menunggu pengesahan AHZ. Jangan masukkan bekalan.",
   completed: "Tahniah, program selesai.",
@@ -57,7 +57,7 @@ export default async function Page() {
   // Refund: pautan dipaparkan dalam tempoh refund (tanpa bayaran = rpc ralat = tiada pautan)
   const { data: refundSnap } = enrollment.refunded_at ? { data: null } : await db.rpc("refund_eligibility", { p_enrollment: enrollment.id });
   const { count: refundReqs } = await supabase.from("refund_requests").select("*", { count: "exact", head: true }).eq("enrollment_id", enrollment.id);
-  const { data: prog } = await supabase.from("lesson_progress").select("lesson_id, watched_seconds_unique, completed_at").eq("enrollment_id", enrollment.id);
+  const { data: prog } = await supabase.from("lesson_progress").select("lesson_id, watched_seconds_unique, completed_at, last_heartbeat_at").eq("enrollment_id", enrollment.id);
   const byLesson = new Map((prog ?? []).map((r) => [r.lesson_id, r]));
   const pct = Number((course.config as Record<string, unknown>).video_complete_pct ?? 0.9);
   const done = (lessons ?? []).filter((l) => byLesson.get(l.id)?.completed_at).length;
@@ -68,6 +68,15 @@ export default async function Page() {
   // Kuiz latihan dan PDF bab: tanpa nama bab dalam paparan (permintaan Bos)
   const practiceList = (chapters ?? []).filter((c) => practiceChapters.has(c.id));
   const chapterPdfs = (materials ?? []).filter((m) => m.chapter_id);
+  // Sambung tonton: video terakhir yang ditonton (belum selesai), atau video pertama yang belum selesai ikut turutan
+  const lastTouched = (prog ?? []).filter((r) => r.last_heartbeat_at && !r.completed_at).sort((a, b) => ((b.last_heartbeat_at ?? "") > (a.last_heartbeat_at ?? "") ? 1 : -1))[0];
+  const firstUnfinished = (lessons ?? []).find((l) => !byLesson.get(l.id)?.completed_at);
+  const resume = active && done < total ? ((lessons ?? []).find((l) => l.id === lastTouched?.lesson_id) ?? firstUnfinished) : null;
+  const pctDone = total ? Math.round((done / total) * 100) : 0;
+  const daysLeft = Math.max(0, Math.ceil((ends.getTime() - new Date().getTime()) / 86400000));
+  // Ebook: tarikh muat turun terakhir (material_access_log dibaca di server)
+  const ebook = (materials ?? []).find((m) => !m.chapter_id);
+  const { data: ebookLast } = ebook ? await db.from("material_access_log").select("accessed_at").eq("enrollment_id", enrollment.id).eq("material_id", ebook.id).order("accessed_at", { ascending: false }).limit(1).maybeSingle() : { data: null };
   const fmtLive = new Intl.DateTimeFormat("ms-MY", { dateStyle: "full", timeStyle: "short", timeZone: "Asia/Kuala_Lumpur" });
 
   return (
@@ -85,7 +94,19 @@ export default async function Page() {
       <section className="mt-4 rounded border p-3">
         <h2 className="font-medium">Anda di langkah ini</h2>
         <p className="mt-1 text-sm">{STEP[enrollment.stage] ?? STEP.enrolled}</p>
-        <p className="mt-1 text-sm">Video selesai: {done} / {total} (selesai = {Math.round(pct * 100)}% saat unik ditonton).</p>
+        <div className="mt-3">
+          <p className="text-sm">Video selesai: {done} / {total} ({pctDone}%)</p>
+          <div className="mt-1 h-2 w-full rounded bg-gray-200" role="progressbar" aria-valuenow={pctDone} aria-valuemin={0} aria-valuemax={100}>
+            <div className="h-2 rounded bg-black" style={{ width: `${pctDone}%` }} />
+          </div>
+          <p className="mt-1 text-xs">Selesai = {Math.round(pct * 100)}% saat unik ditonton.</p>
+        </div>
+        {active && <p className="mt-2 text-sm">Baki akses: {daysLeft} hari.</p>}
+        {resume && (
+          <Link className="mt-3 inline-block rounded bg-black px-3 py-2 text-sm text-white" href={`/belajar/${resume.id}`}>
+            Sambung tonton: <span className="uppercase tracking-wide">{resume.title}</span>
+          </Link>
+        )}
       </section>
 
       {onPractical && enrollment.practical_result !== "lulus" && (
@@ -125,9 +146,9 @@ export default async function Page() {
       )}
       {active && (
         <section className="mt-4 rounded border p-3">
-          <h2 className="font-medium">MCQ akhir</h2>
+          <h2 className="font-medium">Kuiz akhir</h2>
           {finals?.some((f) => f.passed) ? <p className="mt-1 text-sm">Lulus ({finals.find((f) => f.passed)?.score_pct}%).</p>
-            : gate?.open ? <Link className="mt-1 inline-block text-sm underline" href="/kuiz/akhir">Buka MCQ akhir</Link>
+            : gate?.open ? <Link className="mt-1 inline-block text-sm underline" href="/kuiz/akhir">Buka kuiz akhir</Link>
             : <p className="mt-1 text-sm">Dibuka selepas setiap video dicapai ({gate?.videos_done ?? 0} / {gate?.videos_total ?? 0}).</p>}
         </section>
       )}
@@ -151,6 +172,7 @@ export default async function Page() {
         <section className="mt-6">
           <h2 className="text-lg font-medium">Langkah 1: Ebook</h2>
           <p className="mt-1 text-sm">Muat turun ebook dahulu, kemudian tonton video mengikut turutan.</p>
+          {active && <p className="mt-1 text-xs">{ebookLast ? `Terakhir dimuat turun: ${fmt.format(new Date(ebookLast.accessed_at))}` : "Belum dimuat turun."}</p>}
           <ul className="mt-2 flex flex-col gap-2">
             {(materials ?? []).filter((m) => !m.chapter_id).map((m) => (
               <li key={m.id} className="rounded border p-3 text-sm">
