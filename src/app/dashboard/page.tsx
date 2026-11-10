@@ -11,8 +11,8 @@ import { PilihTrekForm } from "@/app/praktikal/forms";
 export const dynamic = "force-dynamic";
 
 const STEP: Record<string, string> = {
-  enrolled: "Tonton semua video dalam setiap bab. MCQ akhir dibuka selepas setiap video dicapai.",
-  learning: "Tonton semua video dalam setiap bab. MCQ akhir dibuka selepas setiap video dicapai.",
+  enrolled: "Muat turun ebook, kemudian tonton semua video mengikut senarai. MCQ akhir dibuka selepas setiap video dicapai.",
+  learning: "Muat turun ebook, kemudian tonton semua video mengikut senarai. MCQ akhir dibuka selepas setiap video dicapai.",
   final_mcq: "Jawab MCQ akhir.",
   part2_review: "MCQ akhir lulus. Hantar subjektif dan skematik (bahagian 2).",
   theory_passed: "Bahagian 2 lulus. Teori lulus. Pilih trek di bawah.",
