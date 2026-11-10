@@ -65,7 +65,9 @@ export default async function Page() {
   const ends = new Date(enrollment.access_ends_at);
   // Tarikh sesi sahaja. Pautan Google Meet dan Telegram TIDAK dipapar di sini: dimaklumkan dalam group WhatsApp DIY ELEKTRIK.
   const { data: liveSessions } = active ? await db.from("course_sessions").select("id, starts_at").eq("course_id", course.id).in("status", ["open", "full"]).gte("starts_at", new Date().toISOString()).order("starts_at") : { data: null };
-  const chapterById = new Map((chapters ?? []).map((c) => [c.id, c]));
+  // Kuiz latihan dan PDF bab: tanpa nama bab dalam paparan (permintaan Bos)
+  const practiceList = (chapters ?? []).filter((c) => practiceChapters.has(c.id));
+  const chapterPdfs = (materials ?? []).filter((m) => m.chapter_id);
   const fmtLive = new Intl.DateTimeFormat("ms-MY", { dateStyle: "full", timeStyle: "short", timeZone: "Asia/Kuala_Lumpur" });
 
   return (
@@ -166,34 +168,32 @@ export default async function Page() {
           {(lessons ?? []).map((l) => {
             const r = byLesson.get(l.id);
             const w = r ? Math.min(100, Math.round((r.watched_seconds_unique / l.duration_seconds) * 100)) : 0;
-            const ch = chapterById.get(l.chapter_id);
             return (
               <li key={l.id} className="rounded border p-3">
                 <span className="mr-2 text-sm">{l.urutan_global ?? "-"}.</span>
                 {active ? <Link className="underline" href={`/belajar/${l.id}`}>{l.title}</Link> : <span>{l.title}</span>}
                 <span className="ml-2 text-sm">{r?.completed_at ? "Selesai" : `${w}%`}</span>
-                <p className="mt-1 text-xs">Bab {ch?.position}: {ch?.title}</p>
               </li>
             );
           })}
         </ol>
       </section>
 
-      {(chapters ?? []).map((c) => (
-        <section key={c.id} className="mt-6">
-          <h2 className="text-lg font-medium">Bab {c.position}: {c.title}</h2>
+      {(practiceList.length > 0 || chapterPdfs.length > 0) && (
+        <section className="mt-6">
+          <h2 className="text-lg font-medium">Latihan dan bahan tambahan</h2>
           <ul className="mt-2 flex flex-col gap-2">
-            {active && practiceChapters.has(c.id) && (
-              <li className="rounded border p-3 text-sm"><Link className="underline" href={`/kuiz/bab/${c.id}`}>Kuiz latihan bab ini</Link></li>
-            )}
-            {(materials ?? []).filter((m) => m.chapter_id === c.id).map((m) => (
+            {active && practiceList.map((c, i) => (
+              <li key={c.id} className="rounded border p-3 text-sm"><Link className="underline" href={`/kuiz/bab/${c.id}`}>Kuiz latihan {i + 1}</Link></li>
+            ))}
+            {chapterPdfs.map((m) => (
               <li key={m.id} className="rounded border p-3 text-sm">
                 {active ? <a className="underline" href={`/api/materials/${m.id}`}>PDF: {m.title}</a> : <span>PDF: {m.title} (akses tamat)</span>}
               </li>
             ))}
           </ul>
         </section>
-      ))}
+      )}
       {!enrollment.refunded_at && refundSnap && (refundSnap.window_ok || (refundReqs ?? 0) > 0) && (
         <p className="mt-8 text-xs">Soalan tentang bayaran atau refund? <Link className="underline" href="/refund">{refundSnap.window_ok ? `Refund dan bantuan (sehingga ${fmt.format(new Date(refundSnap.deadline))})` : "Status permohonan refund"}</Link></p>
       )}
