@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  app:
+    name: Typecheck dan lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: TypeScript
+        run: npx tsc --noEmit -p .
+      - name: ESLint
+        run: npm run lint
+
+  db:
+    name: Ujian SQL (Supabase lokal)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Mulakan Supabase lokal (tanpa perkhidmatan tak perlu)
+        run: npm run db:start
+      - name: Terapkan semua migration dari kosong
+        run: npx supabase db reset
+      - name: Jalankan semua ujian SQL
+        run: |
+          set -euo pipefail
+          for f in supabase/tests/*.sql; do
+            case "$(basename "$f")" in cleanup-*) continue ;; esac
+            echo "== $f"
+            docker exec -i supabase_db_pandaielektrik psql -U postgres -v ON_ERROR_STOP=1 -q < "$f"
+          done
+      - name: Hentikan Supabase
+        if: always()
+        run: npm run db:stop
