@@ -144,8 +144,23 @@ export default async function Page() {
         </section>
       )}
 
+      {/* Bahan peringkat kursus (chapter_id kosong), contohnya ebook. Dipapar DAHULU, sebelum video (permintaan AHZ). */}
+      {(materials ?? []).some((m) => !m.chapter_id) && (
+        <section className="mt-6">
+          <h2 className="text-lg font-medium">Langkah 1: Ebook</h2>
+          <p className="mt-1 text-sm">Muat turun ebook dahulu, kemudian tonton video mengikut turutan.</p>
+          <ul className="mt-2 flex flex-col gap-2">
+            {(materials ?? []).filter((m) => !m.chapter_id).map((m) => (
+              <li key={m.id} className="rounded border p-3 text-sm">
+                {active ? <a className="underline" href={`/api/materials/${m.id}`}>PDF: {m.title} (muat turun)</a> : <span>PDF: {m.title} (akses tamat)</span>}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       <section className="mt-6">
-        <h2 className="text-lg font-medium">Video mengikut turutan</h2>
+        <h2 className="text-lg font-medium">Langkah 2: Video mengikut turutan</h2>
         <p className="mt-1 text-sm">Disyorkan tonton mengikut nombor ini.</p>
         <ol className="mt-2 flex flex-col gap-2">
           {(lessons ?? []).map((l) => {
@@ -179,19 +194,6 @@ export default async function Page() {
           </ul>
         </section>
       ))}
-      {/* Bahan peringkat kursus (chapter_id kosong), contohnya ebook untuk rujukan offline. Muat turun melalui /api/materials yang sama. */}
-      {(materials ?? []).some((m) => !m.chapter_id) && (
-        <section className="mt-6">
-          <h2 className="text-lg font-medium">Bahan kursus</h2>
-          <ul className="mt-2 flex flex-col gap-2">
-            {(materials ?? []).filter((m) => !m.chapter_id).map((m) => (
-              <li key={m.id} className="rounded border p-3 text-sm">
-                {active ? <a className="underline" href={`/api/materials/${m.id}`}>PDF: {m.title} (muat turun)</a> : <span>PDF: {m.title} (akses tamat)</span>}
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
       {!enrollment.refunded_at && refundSnap && (refundSnap.window_ok || (refundReqs ?? 0) > 0) && (
         <p className="mt-8 text-xs">Soalan tentang bayaran atau refund? <Link className="underline" href="/refund">{refundSnap.window_ok ? `Refund dan bantuan (sehingga ${fmt.format(new Date(refundSnap.deadline))})` : "Status permohonan refund"}</Link></p>
       )}
