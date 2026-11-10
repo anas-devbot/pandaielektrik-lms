@@ -169,10 +169,12 @@ export default async function Page() {
             const r = byLesson.get(l.id);
             const w = r ? Math.min(100, Math.round((r.watched_seconds_unique / l.duration_seconds) * 100)) : 0;
             return (
-              <li key={l.id} className="rounded border p-3">
-                <span className="mr-2 text-sm">{l.urutan_global ?? "-"}.</span>
-                {active ? <Link className="underline" href={`/belajar/${l.id}`}>{l.title}</Link> : <span>{l.title}</span>}
-                <span className="ml-2 text-sm">{r?.completed_at ? "Selesai" : `${w}%`}</span>
+              <li key={l.id} className="flex items-baseline gap-3 rounded border p-3">
+                <span className="w-8 shrink-0 text-sm font-medium tabular-nums">{l.urutan_global ?? "-"}.</span>
+                <span className="min-w-0 flex-1 break-words text-sm font-medium uppercase tracking-wide">
+                  {active ? <Link className="underline" href={`/belajar/${l.id}`}>{l.title}</Link> : <span>{l.title}</span>}
+                </span>
+                <span className="shrink-0 text-sm tabular-nums">{r?.completed_at ? "Selesai" : `${w}%`}</span>
               </li>
             );
           })}
