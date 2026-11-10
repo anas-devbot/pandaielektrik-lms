@@ -63,12 +63,11 @@ export default async function Page() {
   const done = (lessons ?? []).filter((l) => byLesson.get(l.id)?.completed_at).length;
   const total = lessons?.length ?? 0;
   const ends = new Date(enrollment.access_ends_at);
-  // Pautan Meet dan Telegram: hanya untuk pelajar aktif, dibaca di server (lajur ini tidak awam).
+  // Pautan Meet: hanya untuk pelajar aktif, dibaca di server (lajur ini tidak awam).
+  // Chat Telegram TIDAK dipapar di sini: pelajar dapat pautan daripada admin/fasilitator dalam group WhatsApp DIY ELEKTRIK.
   const { data: liveSessions } = active ? await db.from("course_sessions").select("id, starts_at, meet_link").eq("course_id", course.id).in("status", ["open", "full"]).gte("starts_at", new Date().toISOString()).order("starts_at") : { data: null };
-  const { data: priv } = active ? await db.from("course_private").select("telegram_chat_link").eq("course_id", course.id).maybeSingle() : { data: null };
   const chapterById = new Map((chapters ?? []).map((c) => [c.id, c]));
   const MEET_RE = /^https:\/\/meet\.google\.com\//;
-  const TG_RE = /^https:\/\/t\.me\//;
   const fmtLive = new Intl.DateTimeFormat("ms-MY", { dateStyle: "full", timeStyle: "short", timeZone: "Asia/Kuala_Lumpur" });
 
   return (
@@ -143,9 +142,7 @@ export default async function Page() {
               ))}
             </ul>
           )}
-          {priv?.telegram_chat_link && TG_RE.test(priv.telegram_chat_link) && (
-            <p className="mt-2 text-sm">Chat dengan trainer dan fasilitator AHZ (Telegram): <a className="underline" href={priv.telegram_chat_link} target="_blank" rel="noopener noreferrer">Sertai group</a></p>
-          )}
+          <p className="mt-2 text-sm">Chat dengan trainer dan fasilitator AHZ: dapatkan pautan group Telegram daripada admin atau fasilitator dalam group WhatsApp DIY ELEKTRIK.</p>
         </section>
       )}
 
