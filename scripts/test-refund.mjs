@@ -16,7 +16,7 @@ const tag = Math.random().toString(36).slice(2, 6).toUpperCase();
 
 const mk = async (n, role) => {
   if (role) await db.from("staff_invites").insert({ email: `rf-${n}@test.local`, role });
-  return (await db.auth.admin.createUser({ email: `rf-${n}@test.local`, password: PW, email_confirm: true, user_metadata: { privacy_accepted: true, full_name: `Ujian Refund ${n}` } })).data.user;
+  return (await db.auth.admin.createUser({ email: `rf-${n}@test.local`, password: PW, email_confirm: true, user_metadata: { privacy_accepted: true, phone: "0123456789", full_name: `Ujian Refund ${n}` } })).data.user;
 };
 const [S1, S2, S3, S4, ADM] = [await mk("s1"), await mk("s2"), await mk("s3"), await mk("s4"), await mk("adm", "admin")];
 const { data: course } = await db.from("courses").select("id, price, currency").order("created_at").limit(1).single();

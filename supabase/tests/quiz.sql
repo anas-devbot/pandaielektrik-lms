@@ -15,7 +15,7 @@ end $$;
 
 -- data: 2 pengguna, kursus (9 soalan per percubaan), 3 bab x 10 soalan akhir, 3 soalan latihan bab 1
 insert into auth.users (id, instance_id, aud, role, email, raw_user_meta_data)
-select ('aaaaaaaa-0000-0000-0000-0000000000' || n)::uuid, '00000000-0000-0000-0000-000000000000','authenticated','authenticated','q-'||n||'@t.local','{"privacy_accepted":true}'
+select ('aaaaaaaa-0000-0000-0000-0000000000' || n)::uuid, '00000000-0000-0000-0000-000000000000','authenticated','authenticated','q-'||n||'@t.local','{"privacy_accepted":true,"full_name":"Ujian Pelajar","phone":"0123456789"}'
 from (values ('a1'),('a2'),('a3')) v(n);
 insert into courses (id, slug, title, price, config) values
   ('cccccccc-0000-0000-0000-0000000000c1','qt','QT',14900,'{"video_complete_pct":0.9,"mcq_count":9,"pass_mark_mcq":70,"max_mcq_attempts":3}'),

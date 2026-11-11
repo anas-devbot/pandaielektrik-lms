@@ -15,7 +15,7 @@ end $$;
 
 insert into staff_invites values ('c-adm@t.local','admin'),('c-apr@t.local','approver'),('c-rev@t.local','reviewer');
 insert into auth.users (id, instance_id, aud, role, email, raw_user_meta_data)
-select ('aaaaaaaa-0000-0000-0000-0000000000' || n)::uuid, '00000000-0000-0000-0000-000000000000','authenticated','authenticated', e, '{"privacy_accepted":true,"full_name":"Ali Bin Abu"}'
+select ('aaaaaaaa-0000-0000-0000-0000000000' || n)::uuid, '00000000-0000-0000-0000-000000000000','authenticated','authenticated', e, '{"privacy_accepted":true,"full_name":"Ali Bin Abu","phone":"0123456789"}'
 from (values ('a1','c-s1@t.local'),('a2','c-s2@t.local'),('a3','c-s3@t.local'),('a4','c-s4@t.local'),('b1','c-adm@t.local'),('b2','c-apr@t.local'),('b3','c-rev@t.local')) v(n,e);
 insert into courses (id, slug, title, price, config) values
   ('cccccccc-0000-0000-0000-0000000000c1','ct','Kursus Ujian Sijil',14900,'{"identity_check_enabled":{"theory":false,"theory_practical":false}}'),

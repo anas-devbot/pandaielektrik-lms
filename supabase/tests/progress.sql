@@ -14,7 +14,7 @@ begin
 end $$;
 
 insert into auth.users (id, instance_id, aud, role, email, raw_user_meta_data) values
-  ('aaaaaaaa-0000-0000-0000-0000000000a1','00000000-0000-0000-0000-000000000000','authenticated','authenticated','v-a@t.local','{"privacy_accepted":true}');
+  ('aaaaaaaa-0000-0000-0000-0000000000a1','00000000-0000-0000-0000-000000000000','authenticated','authenticated','v-a@t.local','{"privacy_accepted":true,"full_name":"Ujian Pelajar","phone":"0123456789"}');
 insert into courses (id, slug, title, price, config) values
   ('cccccccc-0000-0000-0000-0000000000c1','vt','VT',14900,'{"video_complete_pct":0.9}'),
   ('cccccccc-0000-0000-0000-0000000000c2','vt-nocfg','VT2',14900,'{}');

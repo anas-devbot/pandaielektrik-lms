@@ -30,7 +30,7 @@ try {
   ok(!!bad.error && !bad.data.session, "signUp terus tanpa privasi ditolak oleh DB");
   // daftar sah + cubaan eskalasi peranan melalui metadata
   const good = await anon.auth.signUp({ email: `t-student-${tag}@test.local`, password: pw,
-    options: { data: { full_name: "Uji pelajar", privacy_accepted: true, privacy_version: "uji", role: "admin" } } });
+    options: { data: { full_name: "Uji pelajar", phone: "0123456789", privacy_accepted: true, privacy_version: "uji", role: "admin" } } });
   ok(!good.error, "signUp sah berjaya");
   users.student = { id: good.data.user?.id, email: `t-student-${tag}@test.local` };
   const { data: prof } = await admin.from("profiles").select("role, privacy_accepted_at").eq("id", users.student.id).single();

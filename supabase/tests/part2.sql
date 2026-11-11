@@ -16,7 +16,7 @@ end $$;
 -- staf melalui jemputan; pelajar melalui borang (privasi)
 insert into staff_invites values ('p2-r1@t.local','reviewer'),('p2-r2@t.local','reviewer'),('p2-adm@t.local','admin');
 insert into auth.users (id, instance_id, aud, role, email, raw_user_meta_data)
-select ('aaaaaaaa-0000-0000-0000-0000000000' || n)::uuid, '00000000-0000-0000-0000-000000000000','authenticated','authenticated', e, '{"privacy_accepted":true}'
+select ('aaaaaaaa-0000-0000-0000-0000000000' || n)::uuid, '00000000-0000-0000-0000-000000000000','authenticated','authenticated', e, '{"privacy_accepted":true,"full_name":"Ujian Pelajar","phone":"0123456789"}'
 from (values ('a1','p2-s1@t.local'),('a2','p2-s2@t.local'),('b1','p2-r1@t.local'),('b2','p2-r2@t.local'),('b3','p2-adm@t.local'),('a3','p2-s3@t.local')) v(n,e);
 insert into courses (id, slug, title, price, config) values
   ('cccccccc-0000-0000-0000-0000000000c1','p2','P2',14900,'{"claim_expiry_days":3,"access_months":6,"mcq_count":2,"pass_mark_mcq":70,"max_mcq_attempts":1,"video_complete_pct":0.9}');

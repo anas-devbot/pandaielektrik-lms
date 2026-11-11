@@ -20,7 +20,7 @@ const mock = createServer((req, res) => { let b = ""; req.on("data", (c) => (b +
   mails.push({ auth: req.headers.authorization, idem: req.headers["idempotency-key"], ...JSON.parse(b) }); res.writeHead(200, { "content-type": "application/json" }); res.end(JSON.stringify({ id: "m_" + mails.length })); }); }).listen(4010, "127.0.0.1");
 
 const tag = randomBytes(2).toString("hex");
-const mk = async (n) => (await db.auth.admin.createUser({ email: `em-${tag}-${n}@test.local`, password: randomBytes(10).toString("hex"), email_confirm: true, user_metadata: { privacy_accepted: true, full_name: `Ujian Emel ${n}` } })).data.user;
+const mk = async (n) => (await db.auth.admin.createUser({ email: `em-${tag}-${n}@test.local`, password: randomBytes(10).toString("hex"), email_confirm: true, user_metadata: { privacy_accepted: true, phone: "0123456789", full_name: `Ujian Emel ${n}` } })).data.user;
 const { data: course } = await db.from("courses").select("id, price").order("created_at").limit(1).single();
 const day = 864e5;
 const enr = async (u, endsIn, createdAgo) => (await db.from("enrollments").insert({ user_id: u.id, course_id: course.id, access_ends_at: new Date(Date.now() + endsIn * day).toISOString(), created_at: new Date(Date.now() - createdAgo * day).toISOString() }).select("id").single()).data;

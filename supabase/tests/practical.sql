@@ -15,7 +15,7 @@ end $$;
 
 insert into staff_invites values ('p9-rev1@t.local','reviewer'),('p9-rev2@t.local','reviewer'),('p9-apr@t.local','approver'),('p9-adm@t.local','admin');
 insert into auth.users (id, instance_id, aud, role, email, raw_user_meta_data)
-select ('aaaaaaaa-0000-0000-0000-0000000000' || n)::uuid, '00000000-0000-0000-0000-000000000000','authenticated','authenticated', e, '{"privacy_accepted":true,"full_name":"Pelajar Uji"}'
+select ('aaaaaaaa-0000-0000-0000-0000000000' || n)::uuid, '00000000-0000-0000-0000-000000000000','authenticated','authenticated', e, '{"privacy_accepted":true,"full_name":"Pelajar Uji","phone":"0123456789"}'
 from (values ('a1','p9-s1@t.local'),('a2','p9-s2@t.local'),('a3','p9-s3@t.local'),('b1','p9-rev1@t.local'),('b2','p9-rev2@t.local'),('b3','p9-apr@t.local'),('b4','p9-adm@t.local')) v(n,e);
 insert into courses (id, slug, title, price, config) values
   ('cccccccc-0000-0000-0000-0000000000c1','p9','P9',14900,'{"claim_expiry_days":3,"energize_guidance_text":"PANDUAN KESELAMATAN AHZ (ujian)"}'),

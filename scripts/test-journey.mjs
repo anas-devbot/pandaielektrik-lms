@@ -32,7 +32,7 @@ await mkq(c1, "final", 6); await mkq(c2, "final", 6); await mkq(c1, "practice", 
 
 const mk = async (n, role) => {
   if (role) await db.from("staff_invites").insert({ email: `jn-${tag}-${n}@test.local`, role });
-  return (await db.auth.admin.createUser({ email: `jn-${tag}-${n}@test.local`, password: PW, email_confirm: true, user_metadata: { privacy_accepted: true, full_name: `Jurnal ${n}` } })).data.user;
+  return (await db.auth.admin.createUser({ email: `jn-${tag}-${n}@test.local`, password: PW, email_confirm: true, user_metadata: { privacy_accepted: true, phone: "0123456789", full_name: `Jurnal ${n}` } })).data.user;
 };
 const [T, P, X, REV, APR] = [await mk("teori"), await mk("prak"), await mk("lain"), await mk("rev", "reviewer"), await mk("apr", "approver")];
 

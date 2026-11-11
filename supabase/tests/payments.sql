@@ -14,11 +14,11 @@ begin
 end $$;
 
 insert into auth.users (id, instance_id, aud, role, email, raw_user_meta_data) values
-  ('aaaaaaaa-0000-0000-0000-00000000000a','00000000-0000-0000-0000-000000000000','authenticated','authenticated','p-a@t.local','{"privacy_accepted":true}'),
-  ('aaaaaaaa-0000-0000-0000-00000000000b','00000000-0000-0000-0000-000000000000','authenticated','authenticated','p-b@t.local','{"privacy_accepted":true}');
+  ('aaaaaaaa-0000-0000-0000-00000000000a','00000000-0000-0000-0000-000000000000','authenticated','authenticated','p-a@t.local','{"privacy_accepted":true,"full_name":"Ujian Pelajar","phone":"0123456789"}'),
+  ('aaaaaaaa-0000-0000-0000-00000000000b','00000000-0000-0000-0000-000000000000','authenticated','authenticated','p-b@t.local','{"privacy_accepted":true,"full_name":"Ujian Pelajar","phone":"0123456789"}');
 insert into staff_invites values ('p-admin@t.local','admin');
 insert into auth.users (id, instance_id, aud, role, email, raw_user_meta_data) values
-  ('aaaaaaaa-0000-0000-0000-00000000000c','00000000-0000-0000-0000-000000000000','authenticated','authenticated','p-admin@t.local','{}');
+  ('aaaaaaaa-0000-0000-0000-00000000000c','00000000-0000-0000-0000-000000000000','authenticated','authenticated','p-admin@t.local','{"full_name":"Ujian Pengguna","phone":"0123456789"}');
 insert into courses (id, slug, title, price, config) values
   ('cccccccc-0000-0000-0000-000000000001','pt','PT',14900,'{"access_months":6}'),
   ('cccccccc-0000-0000-0000-000000000002','pt-nocfg','PT2',14900,'{}');
@@ -67,7 +67,7 @@ select pg_temp.fails('grant tanpa sebab ditolak', $q$select grant_manual('aaaaaa
 select pg_temp.fails('actor bukan admin ditolak', $q$select grant_manual('aaaaaaaa-0000-0000-0000-00000000000b','cccccccc-0000-0000-0000-000000000001','aaaaaaaa-0000-0000-0000-00000000000a','x')$q$, 'actor_not_admin');
 select pg_temp.fails('sudah enrolled ditolak', $q$select grant_manual('aaaaaaaa-0000-0000-0000-00000000000a','cccccccc-0000-0000-0000-000000000001','aaaaaaaa-0000-0000-0000-00000000000c','x')$q$, 'already_enrolled');
 insert into auth.users (id, instance_id, aud, role, email, raw_user_meta_data) values
-  ('aaaaaaaa-0000-0000-0000-00000000000d','00000000-0000-0000-0000-000000000000','authenticated','authenticated','p-d@t.local','{"privacy_accepted":true}');
+  ('aaaaaaaa-0000-0000-0000-00000000000d','00000000-0000-0000-0000-000000000000','authenticated','authenticated','p-d@t.local','{"privacy_accepted":true,"full_name":"Ujian Pelajar","phone":"0123456789"}');
 select grant_manual('aaaaaaaa-0000-0000-0000-00000000000d','cccccccc-0000-0000-0000-000000000001','aaaaaaaa-0000-0000-0000-00000000000c','pelajar alumni');
 select pg_temp.eq('grant mencipta enrollment tanpa order', (select (order_id is null)::text from enrollments where user_id='aaaaaaaa-0000-0000-0000-00000000000d'), 'true');
 select pg_temp.eq('grant direkod dalam admin_actions', (select count(*)::text from admin_actions where action='manual_grant' and reason='pelajar alumni' and actor_id='aaaaaaaa-0000-0000-0000-00000000000c'), '1');

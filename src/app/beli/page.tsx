@@ -16,6 +16,7 @@ export default async function Page() {
       <h1 className="text-2xl font-semibold">{course.title}</h1>
       <p className="mt-2 text-xl">{rm(course.price)} <span className="text-sm">seluruh program</span></p>
       <p className="mt-1 text-sm">Akaun: {p.email}</p>
+      <p className="mt-1 text-sm">Nama pada sijil: <strong>{p.fullName}</strong>. Pastikan betul sebelum bayar. Jika salah, hubungi admin sebelum bayar.</p>
       <BeliForm sla={sla} />
     </main>
   );

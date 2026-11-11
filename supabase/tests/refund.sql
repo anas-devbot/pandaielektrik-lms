@@ -15,11 +15,11 @@ end $$;
 
 insert into staff_invites values ('rf-adm@t.local','admin'),('rf-rev@t.local','reviewer');
 insert into auth.users (id, instance_id, aud, role, email, raw_user_meta_data)
-select ('aaaaaaaa-0000-0000-0000-0000000000' || lpad(n::text, 2, '0'))::uuid, '00000000-0000-0000-0000-000000000000','authenticated','authenticated', 'rf-' || n || '@t.local', '{"privacy_accepted":true,"full_name":"Pelajar Refund"}'
+select ('aaaaaaaa-0000-0000-0000-0000000000' || lpad(n::text, 2, '0'))::uuid, '00000000-0000-0000-0000-000000000000','authenticated','authenticated', 'rf-' || n || '@t.local', '{"privacy_accepted":true,"full_name":"Pelajar Refund","phone":"0123456789"}'
 from generate_series(1, 14) n;
 insert into auth.users (id, instance_id, aud, role, email, raw_user_meta_data) values
-  ('aaaaaaaa-0000-0000-0000-0000000000f1','00000000-0000-0000-0000-000000000000','authenticated','authenticated','rf-adm@t.local','{}'),
-  ('aaaaaaaa-0000-0000-0000-0000000000f2','00000000-0000-0000-0000-000000000000','authenticated','authenticated','rf-rev@t.local','{}');
+  ('aaaaaaaa-0000-0000-0000-0000000000f1','00000000-0000-0000-0000-000000000000','authenticated','authenticated','rf-adm@t.local','{"full_name":"Ujian Pengguna","phone":"0123456789"}'),
+  ('aaaaaaaa-0000-0000-0000-0000000000f2','00000000-0000-0000-0000-000000000000','authenticated','authenticated','rf-rev@t.local','{"full_name":"Ujian Pengguna","phone":"0123456789"}');
 insert into courses (id, slug, title, price, config) values
   ('cccccccc-0000-0000-0000-0000000000c1','rf','Kursus Refund',14900,'{"refund_window_days":3,"refund_progress_max_pct":10,"access_months":6,"video_complete_pct":0.9}'),
   ('cccccccc-0000-0000-0000-0000000000c2','rf-nocfg','Tanpa config',14900,'{}'),
