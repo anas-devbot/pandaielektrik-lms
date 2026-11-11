@@ -214,6 +214,9 @@ export default async function Page() {
       {!enrollment.refunded_at && refundSnap && (refundSnap.window_ok || (refundReqs ?? 0) > 0) && (
         <p className="mt-8 text-xs">Soalan tentang bayaran atau refund? <Link className="underline" href="/refund">{refundSnap.window_ok ? `Refund dan bantuan (sehingga ${fmt.format(new Date(refundSnap.deadline))})` : "Status permohonan refund"}</Link></p>
       )}
+      {!enrollment.refunded_at && !(refundSnap && (refundSnap.window_ok || (refundReqs ?? 0) > 0)) && (
+        <p className="mt-8 text-xs">Soalan tentang bayaran? Tanya admin atau fasilitator dalam group WhatsApp DIY ELEKTRIK.</p>
+      )}
       <form action={logKeluar} className="mt-8"><button className="underline">Log keluar</button></form>
     </main>
   );
