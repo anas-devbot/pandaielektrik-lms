@@ -27,7 +27,7 @@ export default async function Page() {
       ) : used >= cfg.max_mcq_attempts + extra ? (
         <p className="mt-4 rounded border border-red-500 p-3">Had percubaan telah habis. Hubungi admin.</p>
       ) : (
-        <StartForm type="final" label={open ? "Sambung percubaan" : "Mula percubaan"} />
+        <StartForm label={open ? "Sambung percubaan" : "Mula percubaan"} />
       )}
       {(attempts ?? []).some((a) => a.submitted_at) && (
         <section className="mt-6"><h2 className="font-medium">Keputusan terdahulu</h2>

@@ -3,12 +3,10 @@ import { redirect } from "next/navigation";
 import { quizContext, rpc, QUIZ_ERR } from "@/lib/quiz";
 import type { FormState } from "../daftar/actions";
 
-export async function mula(_: FormState, form: FormData): Promise<FormState> {
+export async function mula(): Promise<FormState> {
   const { enrollment } = await quizContext();
-  const type = form.get("type") === "practice" ? "practice" : "final";
-  const chapter = type === "practice" ? String(form.get("chapter") ?? "") : null;
-  if (chapter !== null && !/^[0-9a-f-]{36}$/i.test(chapter)) return { error: "Bab tidak sah." };
-  const { data, error } = await rpc().rpc("start_quiz", { p_enrollment: enrollment.id, p_type: type, p_chapter: chapter });
+  // Hanya kuiz akhir: 40 soalan dipilih daripada bank setiap percubaan.
+  const { data, error } = await rpc().rpc("start_quiz", { p_enrollment: enrollment.id, p_type: "final", p_chapter: null });
   if (error) return { error: QUIZ_ERR[error.message] ?? "Tidak dapat memulakan kuiz. Cuba lagi." };
   redirect(`/kuiz/${data}`);
 }

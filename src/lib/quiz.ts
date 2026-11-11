@@ -21,7 +21,6 @@ export const QUIZ_ERR: Record<string, string> = {
   gate_closed: "Kuiz akhir dibuka selepas setiap video dicapai.",
   attempts_exhausted: "Had percubaan kuiz akhir telah habis. Hubungi admin.",
   already_passed: "Anda sudah lulus kuiz akhir.",
-  no_questions: "Soalan latihan untuk bab ini belum tersedia.",
   bank_too_small: "Bank soalan belum mencukupi. Hubungi admin.",
   access_closed: "Akses telah tamat.",
   config_mcq_tiada: "Tetapan kuiz akhir belum lengkap. Hubungi admin.",
