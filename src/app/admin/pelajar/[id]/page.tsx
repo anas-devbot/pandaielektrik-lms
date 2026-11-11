@@ -72,6 +72,10 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           <OpForm op="revoke_cert" hidden={{ certificate: c.id, back: id }} fields={[{ name: "reason", label: "Sebab (wajib)", required: true }]} submit="Batalkan sijil" danger /></section>)}
       </>)}
 
+      <section className="mt-6 rounded border p-3"><h3 className="font-medium">Tukar nombor telefon</h3>
+        <p className="text-xs">Untuk pelajar yang tukar nombor atau belum ada telefon. Nombor tidak disimpan dalam log tindakan.</p>
+        <OpForm op="edit_phone" hidden={{ enrollment: id, user: e.user_id }} fields={[{ name: "phone", label: "Nombor telefon (cth. 0123456789)", required: true, defaultValue: prof?.phone ?? "" }, { name: "reason", label: "Sebab (wajib)", required: true }]} submit="Kemas kini telefon" /></section>
+
       <h2 className="mt-6 font-medium">Log tindakan</h2>
       <ul className="mt-1 text-sm">{(log ?? []).map((l) => <li key={l.id}>{fmt(l.created_at)} · {l.action} · {who.get(l.actor_id) ?? "?"} · {l.reason}</li>)}</ul>
       {(log?.length ?? 0) === 0 && <p className="text-sm">Tiada tindakan.</p>}
