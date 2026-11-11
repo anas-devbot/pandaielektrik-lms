@@ -23,16 +23,16 @@ select pg_temp.fails('privacy_accepted=false ditolak',
   $q$select pg_temp.mk('11111111-0000-0000-0000-000000000002','{}','{"privacy_accepted":false}')$q$, 'privacy_not_accepted');
 
 -- 2. daftar sah -> student, privasi direkod
-select pg_temp.mk('22222222-0000-0000-0000-000000000001','{}','{"full_name":"Ali","privacy_accepted":true,"privacy_version":"v1"}');
+select pg_temp.mk('22222222-0000-0000-0000-000000000001','{}','{"full_name":"Ali","privacy_accepted":true,"privacy_version":"v1","phone":"0123456789"}');
 select pg_temp.eq('peranan lalai student', (select role from profiles where id='22222222-0000-0000-0000-000000000001'), 'student');
 select pg_temp.eq('nama disimpan', (select full_name from profiles where id='22222222-0000-0000-0000-000000000001'), 'Ali');
 select pg_temp.eq('masa persetujuan direkod', (select (privacy_accepted_at is not null)::text from profiles where id='22222222-0000-0000-0000-000000000001'), 'true');
 select pg_temp.eq('versi notis direkod', (select privacy_version from profiles where id='22222222-0000-0000-0000-000000000001'), 'v1');
 
 -- 3. eskalasi peranan melalui metadata tidak berkesan
-select pg_temp.mk('33333333-0000-0000-0000-000000000001','{}','{"full_name":"Jahat","privacy_accepted":true,"role":"admin"}');
+select pg_temp.mk('33333333-0000-0000-0000-000000000001','{}','{"full_name":"Jahat","privacy_accepted":true,"role":"admin","phone":"0123456789"}');
 select pg_temp.eq('role dalam user_metadata diabaikan', (select role from profiles where id='33333333-0000-0000-0000-000000000001'), 'student');
-select pg_temp.mk('33333333-0000-0000-0000-000000000002','{"role":"admin","created_by_admin":"true"}','{"privacy_accepted":true}');
+select pg_temp.mk('33333333-0000-0000-0000-000000000002','{"role":"admin","created_by_admin":"true"}','{"privacy_accepted":true,"full_name":"Jahat Dua","phone":"0123456789"}');
 select pg_temp.eq('role dalam app_metadata diabaikan (guna staff_invites)', (select role from profiles where id='33333333-0000-0000-0000-000000000002'), 'student');
 
 -- 4. staf: jemputan dalam staff_invites, tanpa borang privasi

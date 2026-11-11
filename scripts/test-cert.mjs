@@ -17,7 +17,7 @@ let fail = 0; const ok = (c, m) => { console.log(`${c ? "lulus" : "GAGAL"}: ${m}
 
 const mk = async (n, role) => {
   if (role) await db.from("staff_invites").insert({ email: `ct-${n}@test.local`, role });
-  return (await db.auth.admin.createUser({ email: `ct-${n}@test.local`, password: PW, email_confirm: true, user_metadata: { privacy_accepted: true, full_name: `Ujian Sijil ${n}` } })).data.user;
+  return (await db.auth.admin.createUser({ email: `ct-${n}@test.local`, password: PW, email_confirm: true, user_metadata: { privacy_accepted: true, phone: "0123456789", full_name: `Ujian Sijil ${n}` } })).data.user;
 };
 const [S, S2, ADM] = [await mk("s1"), await mk("s2"), await mk("adm", "admin")];
 const { data: course } = await db.from("courses").select("id, config").order("created_at").limit(1).single();

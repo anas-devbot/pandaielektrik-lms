@@ -15,7 +15,7 @@ const GUIDE = "PANDUAN-KESELAMATAN-AHZ-UJI-" + Math.random().toString(36).slice(
 
 const mk = async (n, role) => {
   if (role) await db.from("staff_invites").insert({ email: `pk-${n}@test.local`, role });
-  return (await db.auth.admin.createUser({ email: `pk-${n}@test.local`, password: PW, email_confirm: true, user_metadata: { privacy_accepted: true, full_name: `Ujian Praktikal ${n}` } })).data.user;
+  return (await db.auth.admin.createUser({ email: `pk-${n}@test.local`, password: PW, email_confirm: true, user_metadata: { privacy_accepted: true, phone: "0123456789", full_name: `Ujian Praktikal ${n}` } })).data.user;
 };
 const [S, S2, S3, R1, APR, ADM] = [await mk("s1"), await mk("s2"), await mk("s3"), await mk("r1", "reviewer"), await mk("apr", "approver"), await mk("adm", "admin")];
 const { data: course } = await db.from("courses").select("id, config").order("created_at").limit(1).single();

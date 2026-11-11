@@ -25,7 +25,7 @@ const post = (body, json = false) => fetch(BASE + "/api/bayarcash/callback", { m
 const tag = randomBytes(3).toString("hex");
 const { data: course } = await db.from("courses").select("id, price").limit(1).single();
 const { data: u, error: ue } = await db.auth.admin.createUser({ email: `cb-${tag}@test.local`, password: randomBytes(10).toString("hex"),
-  email_confirm: true, user_metadata: { privacy_accepted: true, full_name: "CB" } });
+  email_confirm: true, user_metadata: { privacy_accepted: true, phone: "0123456789", full_name: "CB" } });
 if (ue) throw ue;
 const mkOrder = async (n, amount = course.price) => (await db.from("orders").insert({ user_id: u.user.id, course_id: course.id,
   order_number: `T${tag}${n}`.toUpperCase(), amount, terms_accepted_at: new Date().toISOString() }).select("id, order_number").single()).data;

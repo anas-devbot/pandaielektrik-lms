@@ -12,7 +12,7 @@ const db = createClient(URL_, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { p
 let fail = 0; const ok = (c, m) => { console.log(`${c ? "lulus" : "GAGAL"}: ${m}`); if (!c) fail++; };
 const tag = randomBytes(3).toString("hex"), pw = randomBytes(12).toString("hex");
 
-const mk = async (n) => (await db.auth.admin.createUser({ email: `qz-${n}-${tag}@test.local`, password: pw, email_confirm: true, user_metadata: { privacy_accepted: true, full_name: `QZ ${n}` } })).data.user;
+const mk = async (n) => (await db.auth.admin.createUser({ email: `qz-${n}-${tag}@test.local`, password: pw, email_confirm: true, user_metadata: { privacy_accepted: true, phone: "0123456789", full_name: `QZ ${n}` } })).data.user;
 const [A, B, C] = [await mk("a"), await mk("b"), await mk("c")];
 const { data: course } = await db.from("courses").select("id, config").order("created_at").limit(1).single();
 await db.from("courses").update({ config: { ...course.config, mcq_count: 6 } }).eq("id", course.id);

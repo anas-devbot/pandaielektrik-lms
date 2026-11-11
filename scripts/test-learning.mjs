@@ -15,7 +15,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const tag = randomBytes(3).toString("hex"), pw = randomBytes(12).toString("hex");
 const mk = async (n) => (await db.auth.admin.createUser({ email: `lr-${n}-${tag}@test.local`, password: pw, email_confirm: true,
-  user_metadata: { privacy_accepted: true, full_name: `LR ${n}` } })).data.user;
+  user_metadata: { privacy_accepted: true, phone: "0123456789", full_name: `LR ${n}` } })).data.user;
 const [A, B, C] = [await mk("a"), await mk("b"), await mk("c")];
 const { data: course } = await db.from("courses").select("id").limit(1).single();
 const { data: ch } = await db.from("chapters").insert({ course_id: course.id, position: 900 + Math.floor(Math.random() * 90), title: `LRBAB-${tag}` }).select("id").single();
