@@ -5,6 +5,7 @@ delete from admin_actions where actor_id in (select id from auth.users where ema
 commit;
 begin;
 delete from submissions where enrollment_id in (select e.id from enrollments e join auth.users u on u.id=e.user_id where u.email like 'ad-%@test.local');
+delete from reminders where enrollment_id in (select e.id from enrollments e join auth.users u on u.id=e.user_id where u.email like 'ad-%@test.local');
 delete from enrollments where user_id in (select id from auth.users where email like 'ad-%@test.local');
 delete from staff_invites where email like 'ad-%@test.local';
 delete from auth.users where email like 'ad-%@test.local';

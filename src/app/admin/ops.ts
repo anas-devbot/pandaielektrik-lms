@@ -10,7 +10,7 @@ const s = (f: FormData, k: string) => String(f.get(k) ?? "").trim();
 const uuid = (v: string) => /^[0-9a-f-]{36}$/i.test(v) ? v : null;
 const ERR: Record<string, string> = { ...PART2_ERR, bad_days: "Hari mesti 1 hingga 365.", key_not_allowed: "Kunci ini tidak boleh diubah.", bad_value: "Nilai tidak sah.", out_of_range: "Nilai di luar julat.",
   bad_status: "Status tidak sah.", bad_dates: "Tarikh tamat mesti selepas tarikh mula.", bad_capacity: "Kapasiti tidak sah.", starts_required: "Tarikh mula wajib.", not_found: "Tidak dijumpai.",
-  already_enrolled: "Pelajar sudah berenrollment.", reason_required: "Sebab wajib diisi." };
+  already_enrolled: "Pelajar sudah berenrollment.", reason_required: "Sebab wajib diisi.", bad_phone: "Nombor telefon mesti bermula 01 dengan 10 atau 11 digit." };
 
 // SATU pintu masuk untuk tindakan admin dalam modul. Pelaku = sesi (admin). DB menyemak peranan, memadam ralat, dan merekod admin_actions.
 export async function jalankan(_: OpState, f: FormData): Promise<OpState> {
@@ -31,6 +31,11 @@ export async function jalankan(_: OpState, f: FormData): Promise<OpState> {
   } else if (op === "telegram_link") {
     const e = uuid(s(f, "enrollment")); if (!e) return { error: "Pendaftaran tidak sah." }; path = `/admin/pelajar/${e}`;
     ({ error } = await db.rpc("set_telegram_link", { p_actor: me.id, p_enrollment: e, p_link: s(f, "link") }));
+  } else if (op === "edit_phone") {
+    const e = uuid(s(f, "enrollment")); const u = uuid(s(f, "user"));
+    if (!e || !u) return { error: "Pelajar tidak sah." }; path = `/admin/pelajar/${e}`;
+    ({ error } = await db.rpc("admin_set_phone", { p_actor: me.id, p_user: u, p_phone: s(f, "phone").replace(/[\s-]/g, ""), p_reason: reason }));
+    if (!error) okMsg = "Nombor telefon dikemas kini. Direkod dalam admin_actions (tanpa nombor).";
   } else if (op === "revoke_cert") {
     const c = uuid(s(f, "certificate")); if (!c) return { error: "Sijil tidak sah." }; path = `/admin/pelajar/${s(f, "back")}`;
     ({ error } = await db.rpc("revoke_certificate", { p_actor: me.id, p_certificate: c, p_reason: reason }));
