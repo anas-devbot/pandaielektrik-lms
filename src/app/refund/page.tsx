@@ -40,7 +40,7 @@ export default async function Page() {
               <Item ok={snap.window_ok}>Dalam tempoh {snap.window_days} hari dari bayaran (sehingga {fmt(snap.deadline)}).</Item>
               <Item ok={snap.progress_ok}>Progres video {snap.progress_pct}% (mesti kurang daripada {snap.progress_max_pct}%).</Item>
               <Item ok={snap.no_submissions}>Tiada penghantaran (subjektif, skematik, borang, video).</Item>
-              <Item ok={snap.no_final_attempt}>Tiada percubaan kuiz akhir.</Item>
+              <Item ok={snap.no_final_attempt}>Tiada percubaan ujian akhir.</Item>
               {snap.pdf_max !== null && <Item ok={snap.pdf_ok}>Akses PDF {snap.pdf_downloads} kali (had {snap.pdf_max}).</Item>}
             </ul>
           </section>

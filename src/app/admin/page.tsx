@@ -7,11 +7,11 @@ export const dynamic = "force-dynamic";
 const nowMs = () => Date.now();
 const age = (iso: string) => Math.floor((nowMs() - new Date(iso).getTime()) / 864e5);
 const fmt = (iso: string) => new Intl.DateTimeFormat("ms-MY", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kuala_Lumpur" }).format(new Date(iso));
-const L = { tiada_aktiviti: "Tiada aktiviti", mcq_had_habis: "MCQ habis had percubaan", akses_30: "Akses tamat dalam 30 hari", akses_7: "Akses tamat dalam 7 hari" } as const;
+const L = { tiada_aktiviti: "Tiada aktiviti", mcq_had_habis: "Ujian habis had percubaan", akses_30: "Akses tamat dalam 30 hari", akses_7: "Akses tamat dalam 7 hari" } as const;
 // Templat mesej WhatsApp (DRAF, boleh diganti AHZ). Disalin dan dihantar manual: tiada API WhatsApp (CLAUDE.md #14).
 const TPL: Record<keyof typeof L, string> = {
   tiada_aktiviti: "Salam {nama}, kami perasan anda belum aktif dalam kursus ini sejak {hari} hari. Ada apa-apa yang boleh kami bantu? Akses anda sehingga {tarikh}.",
-  mcq_had_habis: "Salam {nama}, anda telah menggunakan had percubaan kuiz akhir. Sila hubungi kami untuk bantuan lanjut.",
+  mcq_had_habis: "Salam {nama}, anda telah menggunakan had percubaan ujian akhir. Sila hubungi kami untuk bantuan lanjut.",
   akses_30: "Salam {nama}, akses kursus anda akan tamat pada {tarikh} ({hari} hari lagi). Sila siapkan pembelajaran anda sebelum itu.",
   akses_7: "Salam {nama}, akses kursus anda akan tamat pada {tarikh} ({hari} hari lagi). Hubungi kami jika anda perlukan bantuan.",
 };

@@ -11,10 +11,10 @@ import { PilihTrekForm } from "@/app/praktikal/forms";
 export const dynamic = "force-dynamic";
 
 const STEP: Record<string, string> = {
-  enrolled: "Muat turun ebook, kemudian tonton semua video mengikut senarai. Kuiz akhir dibuka selepas setiap video dicapai.",
-  learning: "Muat turun ebook, kemudian tonton semua video mengikut senarai. Kuiz akhir dibuka selepas setiap video dicapai.",
-  final_mcq: "Jawab kuiz akhir.",
-  part2_review: "Kuiz akhir lulus. Hantar subjektif dan skematik (bahagian 2).",
+  enrolled: "Muat turun ebook, kemudian tonton semua video mengikut senarai. Ujian akhir dibuka selepas setiap video dicapai.",
+  learning: "Muat turun ebook, kemudian tonton semua video mengikut senarai. Ujian akhir dibuka selepas setiap video dicapai.",
+  final_mcq: "Jawab ujian akhir.",
+  part2_review: "Ujian akhir lulus. Hantar subjektif dan skematik (bahagian 2).",
   theory_passed: "Bahagian 2 lulus. Teori lulus. Pilih trek di bawah.",
   practical: "Trek praktikal: ikut langkah di halaman praktikal. Menunggu pengesahan AHZ. Jangan masukkan bekalan.",
   completed: "Tahniah, program selesai.",
@@ -142,9 +142,9 @@ export default async function Page() {
       )}
       {active && (
         <section className="mt-4 rounded border p-3">
-          <h2 className="font-medium">Kuiz akhir</h2>
+          <h2 className="font-medium">Ujian akhir</h2>
           {finals?.some((f) => f.passed) ? <p className="mt-1 text-sm">Lulus ({finals.find((f) => f.passed)?.score_pct}%).</p>
-            : gate?.open ? <Link className="mt-1 inline-block text-sm underline" href="/kuiz/akhir">Buka kuiz akhir</Link>
+            : gate?.open ? <Link className="mt-1 inline-block text-sm underline" href="/kuiz/akhir">Buka ujian akhir</Link>
             : <p className="mt-1 text-sm">Dibuka selepas setiap video dicapai ({gate?.videos_done ?? 0} / {gate?.videos_total ?? 0}).</p>}
         </section>
       )}
