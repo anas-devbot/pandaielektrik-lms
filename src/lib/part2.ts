@@ -5,7 +5,7 @@ import { normalizeSchematic } from "@/lib/image";
 import { putObject, deleteObject } from "@/lib/storage";
 
 export const PART2_ERR: Record<string, string> = {
-  part2_closed: "Bahagian 2 dibuka selepas MCQ akhir lulus.",
+  part2_closed: "Bahagian 2 dibuka selepas kuiz akhir lulus.",
   not_resubmittable: "Item ini sedang disemak atau sudah lulus.",
   access_closed: "Akses telah tamat.",
   bad_text: "Jawapan subjektif tidak boleh kosong.",
