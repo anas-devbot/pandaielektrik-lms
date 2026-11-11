@@ -4,7 +4,7 @@ import { daftar } from "./actions";
 import { PASSWORD_MIN, cadangKataLaluan } from "@/lib/password";
 import { JANTINA, JULAT_UMUR, NEGERI } from "@/lib/profil";
 
-export default function DaftarForm({ points }: { points: string[] }) {
+export default function DaftarForm({ notice }: { notice: { title: string; org: string; intro: string; sections: readonly { heading: string; paragraphs: readonly string[] }[]; closing: readonly string[] } }) {
   const [state, action, pending] = useActionState(daftar, undefined);
   const pwRef = useRef<HTMLInputElement>(null);
   const [tunjuk, setTunjuk] = useState(false);
@@ -43,9 +43,17 @@ export default function DaftarForm({ points }: { points: string[] }) {
           {JULAT_UMUR.map((j) => <option key={j.nilai} value={j.nilai}>{j.label}</option>)}
         </select>
       </fieldset>
-      <section className="rounded border bg-zinc-50 p-3 text-sm text-black">
-        <h2 className="font-medium">Notis privasi</h2>
-        <ul className="mt-1 list-disc pl-5">{points.map((p) => <li key={p}>{p}</li>)}</ul>
+      <section className="max-h-96 overflow-y-auto rounded border bg-zinc-50 p-3 text-sm text-black">
+        <h2 className="font-medium">{notice.title}</h2>
+        <p className="mt-1 font-medium">{notice.org}</p>
+        <p className="mt-2">{notice.intro}</p>
+        {notice.sections.map((s) => (
+          <div key={s.heading} className="mt-3">
+            <h3 className="font-medium">{s.heading}</h3>
+            {s.paragraphs.map((t) => <p key={t} className="mt-1">{t}</p>)}
+          </div>
+        ))}
+        {notice.closing.map((t) => <p key={t} className="mt-3">{t}</p>)}
       </section>
       <label className="flex items-start gap-2 text-sm">
         <input name="privacy" type="checkbox" required className="mt-1" />
