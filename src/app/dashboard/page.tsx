@@ -37,14 +37,11 @@ export default async function Page() {
   }
 
   const db = adminClient(); // senarai tajuk sahaja; video_ref dan r2_key TIDAK dihantar ke halaman ini
-  const [{ data: chapters }, { data: lessons }, { data: materials }] = await Promise.all([
-    db.from("chapters").select("id, position, title").eq("course_id", course.id).order("position"),
+  const [{ data: lessons }, { data: materials }] = await Promise.all([
     db.from("lessons").select("id, chapter_id, position, title, duration_seconds, urutan_global").eq("course_id", course.id).order("urutan_global", { ascending: true, nullsFirst: false }),
     db.from("materials").select("id, chapter_id, title").eq("course_id", course.id).order("title"),
   ]);
   const supabase = await createClient();
-  const { data: practice } = await db.from("quiz_questions").select("chapter_id").eq("course_id", course.id).eq("type", "practice");
-  const practiceChapters = new Set((practice ?? []).map((q) => q.chapter_id));
   const { data: gate } = await db.rpc("final_gate", { p_enrollment: enrollment.id });
   const { data: finals } = await supabase.from("quiz_attempts").select("score_pct, passed, submitted_at").eq("enrollment_id", enrollment.id).eq("type", "final").not("submitted_at", "is", null);
   const { data: certs } = await supabase.from("certificates").select("id, type, cert_id, verify_token, revoked_at, issued_at").eq("enrollment_id", enrollment.id).order("issued_at", { ascending: false });
@@ -65,8 +62,7 @@ export default async function Page() {
   const ends = new Date(enrollment.access_ends_at);
   // Tarikh sesi sahaja. Pautan Google Meet dan Telegram TIDAK dipapar di sini: dimaklumkan dalam group WhatsApp DIY ELEKTRIK.
   const { data: liveSessions } = active ? await db.from("course_sessions").select("id, starts_at").eq("course_id", course.id).in("status", ["open", "full"]).gte("starts_at", new Date().toISOString()).order("starts_at") : { data: null };
-  // Kuiz latihan dan PDF bab: tanpa nama bab dalam paparan (permintaan Bos)
-  const practiceList = (chapters ?? []).filter((c) => practiceChapters.has(c.id));
+  // PDF peringkat bab (jika ada) dipapar tanpa nama bab. Kuiz latihan per bab tidak digunakan.
   const chapterPdfs = (materials ?? []).filter((m) => m.chapter_id);
   // Sambung tonton: video terakhir yang ditonton (belum selesai), atau video pertama yang belum selesai ikut turutan
   const lastTouched = (prog ?? []).filter((r) => r.last_heartbeat_at && !r.completed_at).sort((a, b) => ((b.last_heartbeat_at ?? "") > (a.last_heartbeat_at ?? "") ? 1 : -1))[0];
@@ -203,13 +199,10 @@ export default async function Page() {
         </ol>
       </section>
 
-      {(practiceList.length > 0 || chapterPdfs.length > 0) && (
+      {chapterPdfs.length > 0 && (
         <section className="mt-6">
-          <h2 className="text-lg font-medium">Latihan dan bahan tambahan</h2>
+          <h2 className="text-lg font-medium">Bahan tambahan</h2>
           <ul className="mt-2 flex flex-col gap-2">
-            {active && practiceList.map((c, i) => (
-              <li key={c.id} className="rounded border p-3 text-sm"><Link className="underline" href={`/kuiz/bab/${c.id}`}>Kuiz latihan {i + 1}</Link></li>
-            ))}
             {chapterPdfs.map((m) => (
               <li key={m.id} className="rounded border p-3 text-sm">
                 {active ? <a className="underline" href={`/api/materials/${m.id}`}>PDF: {m.title}</a> : <span>PDF: {m.title} (akses tamat)</span>}
