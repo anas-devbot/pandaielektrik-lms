@@ -29,7 +29,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ q
       <section className="mt-2 rounded border p-3"><h3 className="font-medium">Beri akses manual (tanpa bayaran)</h3>
         <p className="text-sm">Mencipta enrollment tanpa order, dengan sebab wajib.</p>
         <OpForm op="grant_manual" fields={[{ name: "email", label: "Emel pelajar", type: "email", required: true }, { name: "reason", label: "Sebab (wajib)", required: true }]} submit="Beri akses" /></section>
-      <section className="mt-4 rounded border p-3"><h3 className="font-medium">Tambah percubaan MCQ akhir</h3><TambahPercubaan /></section>
+      <section className="mt-4 rounded border p-3"><h3 className="font-medium">Tambah percubaan ujian akhir</h3><TambahPercubaan /></section>
       <section className="mt-4 rounded border p-3"><h3 className="font-medium">Rekod penghantaran manual (sesi bantuan fasilitator)</h3><RekodManual /></section>
       <section className="mt-4 rounded border p-3"><h3 className="font-medium">Pautan jemputan Telegram</h3><PautanTelegram /></section>
     </main>

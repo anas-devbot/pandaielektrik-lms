@@ -30,7 +30,7 @@ export default async function Page() {
           <section key={r.id} className="mt-4 rounded border p-3">
             <h2 className="font-medium">{en?.profiles?.full_name ?? "?"} · {o?.order_number ?? "-"} · RM{o ? (o.amount / 100).toFixed(2) : "-"}</h2>
             <p className="text-sm"><b>{LABEL[r.status] ?? r.status}</b> · dimohon {fmt(r.created_at)}</p>
-            {s && <p className="text-xs">Semakan: tempoh {String(s.window_ok)} · progres {String(s.progress_pct)}% (had &lt;{String(s.progress_max_pct)}%) · penghantaran {String(s.submissions)} · MCQ akhir {String(s.final_attempts)} · PDF {String(s.pdf_downloads)}{s.pdf_max !== null ? `/${String(s.pdf_max)}` : ""} → {s.eligible ? "LAYAK" : "TIDAK LAYAK"}</p>}
+            {s && <p className="text-xs">Semakan: tempoh {String(s.window_ok)} · progres {String(s.progress_pct)}% (had &lt;{String(s.progress_max_pct)}%) · penghantaran {String(s.submissions)} · Ujian akhir {String(s.final_attempts)} · PDF {String(s.pdf_downloads)}{s.pdf_max !== null ? `/${String(s.pdf_max)}` : ""} → {s.eligible ? "LAYAK" : "TIDAK LAYAK"}</p>}
             {r.reason && <p className="text-sm">Sebab pelajar: {r.reason}</p>}
             {r.override_note && <p className="text-sm">Nota override: {r.override_note}</p>}
             {r.decision_note && <p className="text-sm">Nota keputusan: {r.decision_note}</p>}

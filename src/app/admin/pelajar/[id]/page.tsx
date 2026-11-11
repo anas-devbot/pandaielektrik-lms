@@ -44,15 +44,15 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         <dt>Akses hingga</dt><dd>{fmt(e.access_ends_at)}{e.refunded_at ? " (REFUNDED)" : ""}</dd>
         <dt>Bayaran</dt><dd>{order ? `${order.order_number} · RM${(order.amount / 100).toFixed(2)} · ${order.status}${order.paid_at ? ` · ${fmt(order.paid_at)}` : ""}` : "tiada order (akses manual)"}</dd>
         <dt>Progres video</dt><dd>{done}/{lessons?.length ?? 0} video selesai · {total ? Math.round((100 * watched) / total) : 0}% saat unik</dd>
-        <dt>Percubaan MCQ tambahan</dt><dd>{e.mcq_extra_attempts}</dd>
+        <dt>Percubaan Ujian tambahan</dt><dd>{e.mcq_extra_attempts}</dd>
         <dt>Identiti disahkan</dt><dd>{e.identity_verified_at ? `${fmt(e.identity_verified_at)} (${e.identity_method})` : "belum"}</dd>
         <dt>Kebenaran bekalan</dt><dd>{e.energize_approved_at ? fmt(e.energize_approved_at) : "tiada"} · keputusan praktikal: {e.practical_result ?? "-"}</dd>
         <dt>Telegram</dt><dd>{e.telegram_invite_link ?? "-"}</dd>
       </dl>
 
-      <section className="mt-4"><h2 className="font-medium">Percubaan MCQ, penghantaran, sijil, refund</h2>
+      <section className="mt-4"><h2 className="font-medium">Percubaan Ujian, penghantaran, sijil, refund</h2>
         <ul className="mt-1 text-sm">
-          {(attempts ?? []).map((a, i) => <li key={`a${i}`}>MCQ {a.type} #{a.attempt_no}: {a.submitted_at ? `${a.score_pct}% ${a.passed === null ? "" : a.passed ? "lulus" : "gagal"}` : "belum dihantar"}</li>)}
+          {(attempts ?? []).map((a, i) => <li key={`a${i}`}>Ujian {a.type} #{a.attempt_no}: {a.submitted_at ? `${a.score_pct}% ${a.passed === null ? "" : a.passed ? "lulus" : "gagal"}` : "belum dihantar"}</li>)}
           {(subs ?? []).map((s, i) => <li key={`s${i}`}>{s.type} #{s.attempt_no}: {s.status}{s.source === "manual_fasi" ? " (manual)" : ""}</li>)}
           {(certs ?? []).map((c) => <li key={c.id}>Sijil {c.type} {c.cert_id}: {c.revoked_at ? "dibatalkan" : "sah"}</li>)}
           {(refunds ?? []).map((r) => <li key={r.id}>Refund: {r.status} ({fmt(r.created_at)}) · <Link className="underline" href="/admin/refund">urus</Link></li>)}
@@ -62,7 +62,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         <h2 className="mt-6 text-lg font-medium">Tindakan (semua direkod dalam admin_actions)</h2>
         <section className="mt-2 rounded border p-3"><h3 className="font-medium">Lanjut tempoh akses</h3>
           <OpForm op="extend_access" hidden={{ enrollment: id }} fields={[{ name: "days", label: "Hari tambahan (1 hingga 365)", type: "number", required: true, defaultValue: 30 }, { name: "reason", label: "Sebab (wajib)", required: true }]} submit="Lanjutkan" /></section>
-        <section className="mt-3 rounded border p-3"><h3 className="font-medium">Tambah percubaan MCQ akhir</h3>
+        <section className="mt-3 rounded border p-3"><h3 className="font-medium">Tambah percubaan ujian akhir</h3>
           <OpForm op="extra_attempts" hidden={{ enrollment: id }} fields={[{ name: "count", label: "Bilangan", type: "number", required: true, defaultValue: 1 }, { name: "reason", label: "Sebab (wajib)", required: true }]} submit="Tambah" /></section>
         <section className="mt-3 rounded border p-3"><h3 className="font-medium">Sahkan identiti</h3><p className="text-xs">Hanya diperlukan jika flag identiti dihidupkan untuk jenis sijil.</p>
           <OpForm op="verify_identity" hidden={{ enrollment: id }} fields={[{ name: "method", label: "Kaedah (cth. semak kad pengenalan di sesi)", required: true }, { name: "reason", label: "Sebab (wajib)", required: true }]} submit="Sahkan" /></section>

@@ -18,10 +18,10 @@ export async function quizContext() {
 export const rpc = adminClient;
 
 export const QUIZ_ERR: Record<string, string> = {
-  gate_closed: "Kuiz akhir dibuka selepas setiap video dicapai.",
-  attempts_exhausted: "Had percubaan kuiz akhir telah habis. Hubungi admin.",
-  already_passed: "Anda sudah lulus kuiz akhir.",
+  gate_closed: "Ujian akhir dibuka selepas setiap video dicapai.",
+  attempts_exhausted: "Had percubaan ujian akhir telah habis. Hubungi admin.",
+  already_passed: "Anda sudah lulus ujian akhir.",
   bank_too_small: "Bank soalan belum mencukupi. Hubungi admin.",
   access_closed: "Akses telah tamat.",
-  config_mcq_tiada: "Tetapan kuiz akhir belum lengkap. Hubungi admin.",
+  config_mcq_tiada: "Tetapan ujian akhir belum lengkap. Hubungi admin.",
 };

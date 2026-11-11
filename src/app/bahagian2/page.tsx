@@ -43,7 +43,7 @@ export default async function Page() {
       <Link className="text-sm underline" href="/dashboard">&larr; Dashboard</Link>
       <h1 className="mt-2 text-2xl font-semibold">Bahagian 2: subjektif dan skematik</h1>
       {!open && enrollment.stage !== "theory_passed" && enrollment.stage !== "practical" && enrollment.stage !== "completed"
-        ? <p role="status" className="mt-3 rounded border border-amber-500 p-3">Bahagian 2 dibuka selepas kuiz akhir lulus.</p>
+        ? <p role="status" className="mt-3 rounded border border-amber-500 p-3">Bahagian 2 dibuka selepas ujian akhir lulus.</p>
         : <>
             <p className="mt-2 text-sm">Kedua-dua item wajib. Penilai memberi keputusan lulus atau tolak dengan komen. Jika ditolak, anda boleh hantar semula. Skematik boleh dilukis orang lain.</p>
             {/* Soalan sebenar daripada AHZ dalam config (subjective_prompt / schematic_prompt): belum disediakan */}

@@ -20,16 +20,16 @@ export default async function Page({ params }: { params: Promise<{ attemptId: st
   if (a.submitted) {
     return (
       <main className="mx-auto w-full max-w-2xl p-6">
-        <h1 className="text-2xl font-semibold">Keputusan kuiz akhir</h1>
+        <h1 className="text-2xl font-semibold">Keputusan ujian akhir</h1>
         <p className="mt-2 text-xl">{a.score_pct}%{a.passed ? " · Lulus" : " · Gagal"}</p>
-        {!a.passed && <p className="mt-1 text-sm">Anda boleh cuba lagi jika masih ada percubaan. Jawapan kuiz akhir tidak dipaparkan.</p>}
+        {!a.passed && <p className="mt-1 text-sm">Anda boleh cuba lagi jika masih ada percubaan. Jawapan ujian akhir tidak dipaparkan.</p>}
         <Link className="mt-6 inline-block underline" href="/kuiz/akhir">Kembali</Link>
       </main>
     );
   }
   return (
     <main className="mx-auto w-full max-w-2xl p-6">
-      <h1 className="text-2xl font-semibold">Kuiz akhir (percubaan {a.attempt_no})</h1>
+      <h1 className="text-2xl font-semibold">Ujian akhir (percubaan {a.attempt_no})</h1>
       <form action={hantar} className="mt-4 flex flex-col gap-4">
         <input type="hidden" name="attempt" value={attemptId} />
         {questions.map((q, i) => (

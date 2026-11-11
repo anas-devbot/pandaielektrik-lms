@@ -5,7 +5,7 @@ import type { FormState } from "../daftar/actions";
 
 export async function mula(): Promise<FormState> {
   const { enrollment } = await quizContext();
-  // Hanya kuiz akhir: 40 soalan dipilih daripada bank setiap percubaan.
+  // Hanya ujian akhir: 40 soalan dipilih daripada bank setiap percubaan.
   const { data, error } = await rpc().rpc("start_quiz", { p_enrollment: enrollment.id, p_type: "final", p_chapter: null });
   if (error) return { error: QUIZ_ERR[error.message] ?? "Tidak dapat memulakan kuiz. Cuba lagi." };
   redirect(`/kuiz/${data}`);
