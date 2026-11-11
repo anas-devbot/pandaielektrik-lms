@@ -3,6 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   // Untuk `node server.js` dalam unit systemd (docs/DEPLOY-PLAN.md).
   output: "standalone",
+  // Sembunyikan header x-powered-by (tak perlu dedah rangka kerja).
+  poweredByHeader: false,
   // Muat naik skematik melalui Server Action. ASSUMPTION: courses.config.schematic_max_mb = 10 (belum disahkan Saiful);
   // jika dinaikkan melebihi ~11 MB, naikkan had ini dan client_max_body_size nginx sekali.
   // Header asas (audit Pintu 1). CSP sengaja belum ditambah: perlu uji dengan YouTube IFrame API + skrip inline Next dahulu.
