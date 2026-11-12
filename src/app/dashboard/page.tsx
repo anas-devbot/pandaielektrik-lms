@@ -9,6 +9,9 @@ import { logKeluar } from "@/app/log-masuk/actions";
 import SijilForm from "@/app/sijil/form";
 import { PilihTrekForm } from "@/app/praktikal/forms";
 import { buttonClass } from "@/components/button";
+import { Hero } from "./hero";
+import { ActionCard } from "./cards";
+import { LessonRail, type RailItem } from "./lesson-rail";
 
 export const dynamic = "force-dynamic";
 
@@ -77,154 +80,116 @@ export default async function Page() {
   const { data: ebookLast } = ebook ? await db.from("material_access_log").select("accessed_at").eq("enrollment_id", enrollment.id).eq("material_id", ebook.id).order("accessed_at", { ascending: false }).limit(1).maybeSingle() : { data: null };
   const fmtLive = new Intl.DateTimeFormat("ms-MY", { dateStyle: "full", timeStyle: "short", timeZone: "Asia/Kuala_Lumpur" });
 
+  const examPassed = !!finals?.some((f) => f.passed);
+  const examStatus = examPassed ? "Lulus" : gate?.open ? "Dibuka" : "Terkunci";
+  const railItems: RailItem[] = (lessons ?? []).map((l) => {
+    const r = byLesson.get(l.id);
+    const isDone = !!r?.completed_at;
+    const w = r && l.duration_seconds > 0 ? Math.min(100, Math.round((r.watched_seconds_unique / l.duration_seconds) * 100)) : 0;
+    return { id: l.id, no: l.urutan_global ?? null, title: l.title, durationSeconds: l.duration_seconds ?? 0, percent: isDone ? 100 : w, done: isDone, current: resume?.id === l.id };
+  });
+  const ebooks = (materials ?? []).filter((m) => !m.chapter_id);
+
   return (
-    <main className="mx-auto w-full max-w-2xl p-6">
-      <header className="-mx-6 mb-6 flex items-center gap-3 border-b border-border px-6 pb-3">
+    <main className="mx-auto w-full max-w-4xl p-4 sm:p-6">
+      <header className="-mx-4 mb-4 flex items-center gap-3 border-b border-border px-4 pb-3 sm:-mx-6 sm:px-6">
         <Image src="/icon.png" alt="" width={32} height={32} className="size-8 rounded-full" />
         <span className="font-serif text-lg font-semibold">Pandai Elektrik</span>
         <form action={logKeluar} className="ml-auto"><button className="text-sm underline underline-offset-4">Log keluar</button></form>
       </header>
-      <h1 className="text-2xl font-semibold">{course.title}</h1>
-      <p className="mt-1 text-sm">{p.fullName}</p>
-      {enrollment.refunded_at ? (
-        <p role="status" className="mt-3 rounded-md border border-error p-3 text-error">Akses ditutup (refund).</p>
-      ) : active ? (
-        <p className="mt-3 text-sm">Akses sehingga {fmt.format(ends)}.</p>
-      ) : (
-        <p role="status" className="mt-3 rounded-md border border-warning p-3">Akses video dan bahan tamat pada {fmt.format(ends)}. Sijil dan rekod anda kekal sah.</p>
-      )}
 
-      <section className="mt-4 rounded-md border border-border bg-surface p-3">
-        <h2 className="font-medium">Anda di langkah ini</h2>
-        <p className="mt-1 text-sm">{STEP[enrollment.stage] ?? STEP.enrolled}</p>
-        <div className="mt-3">
-          <p className="text-sm">Video selesai: {done} / {total} ({pctDone}%)</p>
-          <div className="mt-1 h-2 w-full rounded-full bg-border" role="progressbar" aria-valuenow={pctDone} aria-valuemin={0} aria-valuemax={100}>
-            <div className="h-2 rounded-full bg-ink" style={{ width: `${pctDone}%` }} />
-          </div>
-          <p className="mt-1 text-xs">Selesai = {Math.round(pct * 100)}% saat unik ditonton.</p>
-        </div>
-        {active && <p className="mt-2 text-sm">Baki akses: {daysLeft} hari.</p>}
-        {resume && (
-          <Link className={buttonClass("primary", "mt-3 sm:w-auto")} href={`/belajar/${resume.id}`}>
-            Sambung tonton: <span>{resume.title}</span>
-          </Link>
-        )}
-      </section>
-
-      {onPractical && enrollment.practical_result !== "lulus" && (
-        <section className="mt-4 rounded-md border border-border bg-surface p-3">
-          <h2 className="font-medium">Trek praktikal</h2>
-          <Link className="mt-1 inline-block text-sm underline" href="/praktikal">Buka halaman praktikal</Link>
-        </section>
-      )}
-      {choosingTrack && (
-        <section className="mt-4 rounded-md border border-border bg-surface p-3">
-          <h2 className="font-medium">Pilih trek</h2>
-          <p className="mt-1 text-sm">Anda boleh memilih trek teori sahaja (sijil di bawah) atau trek teori dan praktikal. Pilihan tidak boleh ditukar.</p>
-          <PilihTrekForm />
-        </section>
-      )}
-      {(validCert || canIssue) && (
-        <section className="mt-4 rounded-md border border-border bg-surface p-3">
-          <h2 className="font-medium">Sijil</h2>
-          {validCert ? (
-            <p className="mt-1 text-sm">
-              {validCert.type === "theory_practical" ? "Sijil teori dan praktikal" : "Sijil teori"}. ID {validCert.cert_id}. <a className="underline" href={`/api/sijil/${validCert.id}`}>Muat turun PDF</a> ·{" "}
-              <a className="underline" href={`/semak/${validCert.verify_token}`}>Halaman semakan awam</a>
-            </p>
-          ) : (
-            <>
-              <p className="mt-1 text-sm">{practicalReady ? "Praktikal lulus. Anda boleh mengeluarkan Sijil Teori dan Praktikal anda." : "Bahagian 2 lulus. Anda boleh mengeluarkan sijil teori anda."}</p>
-              <SijilForm defaultName={p.fullName} />
-            </>
+      <div className="md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] md:gap-8">
+        <div>
+          <Hero
+            title={course.title} name={p.fullName} pctDone={pctDone} done={done} total={total}
+            accessText={enrollment.refunded_at ? null : active ? `Akses sehingga ${fmt.format(ends)}.` : null}
+            resume={resume ? { id: resume.id, title: resume.title } : null} active={active}
+            stage={enrollment.stage} stepText={STEP[enrollment.stage] ?? STEP.enrolled}
+            daysLeft={active ? daysLeft : null} examStatus={examStatus}
+          />
+          {enrollment.refunded_at ? (
+            <p role="status" className="mt-3 rounded-lg border border-error p-3 text-error">Akses ditutup (refund).</p>
+          ) : !active && (
+            <p role="status" className="mt-3 rounded-lg border border-warning bg-surface p-3">Akses video dan bahan tamat pada {fmt.format(ends)}. Sijil dan rekod anda kekal sah.</p>
           )}
-        </section>
-      )}
-      {active && ["part2_review", "theory_passed"].includes(enrollment.stage) && (
-        <section className="mt-4 rounded-md border border-border bg-surface p-3">
-          <h2 className="font-medium">Bahagian 2</h2>
-          <Link className="mt-1 inline-block text-sm underline" href="/bahagian2">Subjektif dan skematik</Link>
-        </section>
-      )}
-      {active && (
-        <section className="mt-4 rounded-md border border-border bg-surface p-3">
-          <h2 className="font-medium">Ujian akhir</h2>
-          {finals?.some((f) => f.passed) ? <p className="mt-1 text-sm">Lulus ({finals.find((f) => f.passed)?.score_pct}%).</p>
-            : gate?.open ? <Link className="mt-1 inline-block text-sm underline" href="/kuiz/akhir">Buka ujian akhir</Link>
-            : <p className="mt-1 text-sm">Dibuka selepas setiap video dicapai ({gate?.videos_done ?? 0} / {gate?.videos_total ?? 0}).</p>}
-        </section>
-      )}
 
-      {active && (
-        <section className="mt-6 rounded-md border border-border bg-surface p-3">
-          <h2 className="font-medium">Sesi live dan chat</h2>
-          {(liveSessions ?? []).length === 0 ? <p className="mt-1 text-sm">Tiada sesi live akan datang buat masa ini.</p> : (
-            <ul className="mt-1 flex flex-col gap-1 text-sm">
-              {(liveSessions ?? []).map((s) => (
-                <li key={s.id}>{fmtLive.format(new Date(s.starts_at))}</li>
+          {onPractical && enrollment.practical_result !== "lulus" && (
+            <ActionCard icon="tool" title="Trek praktikal" action={<Link className="underline underline-offset-4" href="/praktikal">Buka halaman praktikal</Link>} />
+          )}
+          {choosingTrack && (
+            <section className="mt-3 rounded-lg border border-border bg-surface p-3">
+              <h2 className="text-[15px] font-semibold">Pilih trek</h2>
+              <p className="mt-1 text-sm">Anda boleh memilih trek teori sahaja (sijil di bawah) atau trek teori dan praktikal. Pilihan tidak boleh ditukar.</p>
+              <PilihTrekForm />
+            </section>
+          )}
+          {(validCert || canIssue) && (
+            <section className="mt-3 rounded-lg border border-border bg-surface p-3">
+              <h2 className="text-[15px] font-semibold">Sijil</h2>
+              {validCert ? (
+                <p className="mt-1 text-sm">
+                  {validCert.type === "theory_practical" ? "Sijil teori dan praktikal" : "Sijil teori"}. ID {validCert.cert_id}. <a className="underline" href={`/api/sijil/${validCert.id}`}>Muat turun PDF</a> ·{" "}
+                  <a className="underline" href={`/semak/${validCert.verify_token}`}>Halaman semakan awam</a>
+                </p>
+              ) : (
+                <>
+                  <p className="mt-1 text-sm">{practicalReady ? "Praktikal lulus. Anda boleh mengeluarkan Sijil Teori dan Praktikal anda." : "Bahagian 2 lulus. Anda boleh mengeluarkan sijil teori anda."}</p>
+                  <SijilForm defaultName={p.fullName} />
+                </>
+              )}
+            </section>
+          )}
+          {active && ["part2_review", "theory_passed"].includes(enrollment.stage) && (
+            <ActionCard icon="pen" title="Bahagian 2" action={<Link className="underline underline-offset-4" href="/bahagian2">Subjektif dan skematik</Link>} />
+          )}
+          {active && (
+            examPassed ? <ActionCard icon="check" title="Ujian akhir">Lulus ({finals?.find((f) => f.passed)?.score_pct}%).</ActionCard>
+            : gate?.open ? <ActionCard icon="check" title="Ujian akhir" action={<Link className="underline underline-offset-4" href="/kuiz/akhir">Buka ujian akhir</Link>} />
+            : <ActionCard icon="lock" title="Ujian akhir">Dibuka selepas setiap video dicapai ({gate?.videos_done ?? 0} / {gate?.videos_total ?? 0}).</ActionCard>
+          )}
+          {active && (
+            <ActionCard icon="cal" title="Sesi live dan chat">
+              {(liveSessions ?? []).length === 0 ? "Tiada sesi live akan datang buat masa ini." : (
+                <ul className="flex flex-col gap-0.5">
+                  {(liveSessions ?? []).map((s) => <li key={s.id}>{fmtLive.format(new Date(s.starts_at))}</li>)}
+                </ul>
+              )}
+              <p className="mt-1">Pautan Google Meet untuk sesi live dan pautan group Telegram chat dengan trainer dan fasilitator AHZ dimaklumkan dalam group WhatsApp DIY ELEKTRIK.</p>
+            </ActionCard>
+          )}
+
+          {/* Bahan peringkat kursus (chapter_id kosong), contohnya ebook. Dipapar DAHULU, sebelum video (permintaan AHZ). */}
+          {ebooks.length > 0 && (
+            <section className="mt-6">
+              <h2 className="font-serif text-lg font-semibold">Langkah 1: Ebook</h2>
+              <p className="mt-1 text-sm text-muted">Muat turun ebook dahulu, kemudian tonton video mengikut turutan.</p>
+              {active && <p className="mt-1 text-xs text-muted">{ebookLast ? `Terakhir dimuat turun: ${fmt.format(new Date(ebookLast.accessed_at))}` : "Belum dimuat turun."}</p>}
+              {ebooks.map((m) => (
+                <ActionCard key={m.id} icon="book" title={`PDF: ${m.title}`} action={active ? <a className="underline underline-offset-4" href={`/api/materials/${m.id}`}>Muat turun</a> : <span className="font-normal text-muted">Akses tamat</span>} />
               ))}
-            </ul>
+            </section>
           )}
-          <p className="mt-2 text-sm">Pautan Google Meet untuk sesi live dan pautan group Telegram chat dengan trainer dan fasilitator AHZ dimaklumkan dalam group WhatsApp DIY ELEKTRIK.</p>
-        </section>
-      )}
+        </div>
 
-      {/* Bahan peringkat kursus (chapter_id kosong), contohnya ebook. Dipapar DAHULU, sebelum video (permintaan AHZ). */}
-      {(materials ?? []).some((m) => !m.chapter_id) && (
-        <section className="mt-6">
-          <h2 className="text-lg font-medium">Langkah 1: Ebook</h2>
-          <p className="mt-1 text-sm">Muat turun ebook dahulu, kemudian tonton video mengikut turutan.</p>
-          {active && <p className="mt-1 text-xs">{ebookLast ? `Terakhir dimuat turun: ${fmt.format(new Date(ebookLast.accessed_at))}` : "Belum dimuat turun."}</p>}
-          <ul className="mt-2 flex flex-col gap-2">
-            {(materials ?? []).filter((m) => !m.chapter_id).map((m) => (
-              <li key={m.id} className="rounded-md border border-border bg-surface p-3 text-sm">
-                {active ? <a className="underline" href={`/api/materials/${m.id}`}>PDF: {m.title} (muat turun)</a> : <span>PDF: {m.title} (akses tamat)</span>}
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+        <div>
+          <section className="mt-6 md:mt-[4.25rem]">
+            <h2 className="font-serif text-lg font-semibold">Langkah 2: Video mengikut turutan</h2>
+            <p className="mt-1 text-sm text-muted">Disyorkan tonton mengikut nombor ini.</p>
+            <p className="mb-2 text-xs text-muted">Selesai = {Math.round(pct * 100)}% saat unik ditonton.</p>
+            <LessonRail items={railItems} active={active} />
+          </section>
 
-      <section className="mt-6">
-        <h2 className="text-lg font-medium">Langkah 2: Video mengikut turutan</h2>
-        <p className="mt-1 text-sm">Disyorkan tonton mengikut nombor ini.</p>
-        <ol className="mt-2 flex flex-col gap-2">
-          {(lessons ?? []).map((l) => {
-            const r = byLesson.get(l.id);
-            const w = r ? Math.min(100, Math.round((r.watched_seconds_unique / l.duration_seconds) * 100)) : 0;
-            const done = !!r?.completed_at;
-            const tahap = done ? 100 : w;
-            return (
-              <li key={l.id} className="flex items-start gap-3 rounded-md border border-border bg-surface p-3">
-                <span className="w-8 shrink-0 pt-0.5 text-sm font-medium tabular-nums">{l.urutan_global ?? "-"}.</span>
-                <div className="min-w-0 flex-1">
-                  <span className="block break-words text-sm font-medium">
-                    {active ? <Link className="underline underline-offset-4" href={`/belajar/${l.id}`}>{l.title}</Link> : <span>{l.title}</span>}
-                  </span>
-                  <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-border" role="progressbar" aria-label={`Kemajuan ${l.title}`} aria-valuenow={tahap} aria-valuemin={0} aria-valuemax={100}>
-                    <div className="h-1.5 rounded-full bg-ink" style={{ width: `${tahap}%` }} />
-                  </div>
-                </div>
-                <span className="shrink-0 pt-0.5 text-sm tabular-nums">{done ? "Selesai" : `${tahap}%`}</span>
-              </li>
-            );
-          })}
-        </ol>
-      </section>
+          {chapterPdfs.length > 0 && (
+            <section className="mt-6">
+              <h2 className="font-serif text-lg font-semibold">Bahan tambahan</h2>
+              {chapterPdfs.map((m) => (
+                <ActionCard key={m.id} icon="book" title={`PDF: ${m.title}`} action={active ? <a className="underline underline-offset-4" href={`/api/materials/${m.id}`}>Muat turun</a> : <span className="font-normal text-muted">Akses tamat</span>} />
+              ))}
+            </section>
+          )}
+        </div>
+      </div>
 
-      {chapterPdfs.length > 0 && (
-        <section className="mt-6">
-          <h2 className="text-lg font-medium">Bahan tambahan</h2>
-          <ul className="mt-2 flex flex-col gap-2">
-            {chapterPdfs.map((m) => (
-              <li key={m.id} className="rounded-md border border-border bg-surface p-3 text-sm">
-                {active ? <a className="underline" href={`/api/materials/${m.id}`}>PDF: {m.title}</a> : <span>PDF: {m.title} (akses tamat)</span>}
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
       {!enrollment.refunded_at && refundSnap && (refundSnap.window_ok || (refundReqs ?? 0) > 0) && (
         <p className="mt-8 text-xs">Soalan tentang bayaran atau refund? <Link className="underline" href="/refund">{refundSnap.window_ok ? `Refund dan bantuan (sehingga ${fmt.format(new Date(refundSnap.deadline))})` : "Status permohonan refund"}</Link></p>
       )}
