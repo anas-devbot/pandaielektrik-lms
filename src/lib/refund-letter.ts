@@ -2,10 +2,10 @@ import "server-only";
 import { PDFDocument, StandardFonts, rgb, degrees } from "pdf-lib";
 import { safe, wrap, type CertConfig } from "@/lib/certificate";
 
-// Surat permohonan refund: DRAF asas, MESTI disemak AHZ (CLAUDE.md bahagian 8). Tidak memutuskan jumlah pemulangan. Butiran akaun bank ditulis tangan oleh pelajar (TIDAK disimpan dalam sistem).
+// Surat permohonan refund: DRAF asas, MESTI disemak AHZ (CLAUDE.md bahagian 8). Potongan kos pemprosesan ialah keputusan Bos (13 Nov 2026), dibaca dari courses.config.refund_deduction_sen (RM5 = 500); tiada potongan = ayat jumlah ditentukan AHZ. Butiran akaun bank ditulis tangan oleh pelajar (TIDAK disimpan dalam sistem).
 // Tiada No. KP. Wording tambahan daripada courses.config.refund_letter; DRAF watermark selagi refund_letter.approved bukan true.
 export type LetterData = { requestId: string; holderName: string; email: string; orderNumber: string; paidAt: string; amountSen: number; currency: string;
-  courseTitle: string; requestedAt: string; reason: string | null };
+  courseTitle: string; requestedAt: string; reason: string | null; deductionSen?: number | null };
 export type LetterConfig = { approved?: boolean; statement?: string };
 
 const W = 595.28, H = 841.89, INK = rgb(0.07, 0.07, 0.07);
@@ -26,7 +26,10 @@ export async function buildRefundLetter(d: LetterData, cfg: LetterConfig, cert: 
   ];
   for (const [k, v] of rows) { page.drawText(safe(b, k), { x: 70, y, size: 11.5, font: b, color: INK }); page.drawText(safe(f, v), { x: 215, y, size: 11.5, font: f, color: INK }); y -= 20; }
   y -= 8; if (d.reason) { line("Sebab (jika ada):", 11.5, b); line(d.reason); y -= 6; }
-  line(cfg.statement ?? `Saya memohon refund bagi pendaftaran di atas. Saya faham permohonan ini tertakluk kepada terma dan syarat yang saya setujui semasa pembayaran. Jumlah yang dipulangkan (jika ada) ditentukan oleh ${issuer} mengikut terma tersebut.`);
+  const ded = d.deductionSen && d.deductionSen > 0 ? Math.min(d.deductionSen, d.amountSen) : 0;
+  const rmt = (sen: number) => `${d.currency} ${(sen / 100).toFixed(2)}`;
+  line(cfg.statement ?? `Saya memohon refund bagi pendaftaran di atas. Saya faham permohonan ini tertakluk kepada terma dan syarat yang saya setujui semasa pembayaran.${ded ? "" : ` Jumlah yang dipulangkan (jika ada) ditentukan oleh ${issuer} mengikut terma tersebut.`}`);
+  if (ded) { y -= 4; line(`Saya faham jika refund diluluskan, jumlah yang dipulangkan ialah jumlah dibayar tolak ${rmt(ded)} untuk kos pemprosesan bayaran, iaitu ${rmt(d.amountSen - ded)}.`); }
   y -= 6;
   line("Saya faham bahawa jika refund diluluskan, akses saya kepada kursus akan ditutup dan sijil yang telah dikeluarkan (jika ada) akan dibatalkan.");
   y -= 8; line("Butiran akaun bank untuk pemulangan (diisi tulis tangan):", 11.5, b);

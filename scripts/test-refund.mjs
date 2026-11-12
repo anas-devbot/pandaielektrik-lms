@@ -61,6 +61,7 @@ ok(txt.includes("SURAT PERMOHONAN REFUND") && txt.includes("Ujian Refund s1".rep
 ok(txt.includes("DRAF") && /Tidak sesuai/.test(txt), "surat: DRAF watermark + sebab pelajar");
 ok(!/no\.? ?k[ap]|kad pengenalan/i.test(txt) && txt.includes("akses saya kepada kursus akan ditutup"), "surat: tiada No. KP, ada pengakuan akses ditutup/sijil dibatalkan");
 ok(!/dipulangkan sepenuhnya|yuran Bayarcash/i.test(txt), "surat: tidak memutuskan kadar pemulangan");
+ok(/tolak MYR 5\.00 untuk kos pemprosesan bayaran/.test(txt.replace(/\s+/g, " ")) && txt.includes("MYR 144.00"), "surat: potongan RM5 dari config dan jumlah dipulangkan (149 - 5 = 144)");
 ok(/Butiran akaun bank/.test(txt) && /No\. akaun/.test(txt), "surat: ruang akaun bank tulis tangan (tidak disimpan dalam sistem)");
 r = await get(`/api/refund/${q1.id}/surat`, c2); ok(r.s === 404, "surat: pelajar lain 404");
 r = await get(`/api/refund/${q1.id}/surat`, cA); ok(r.s === 200, "surat: admin 200");

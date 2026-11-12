@@ -24,7 +24,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
   ]);
   const cfg = course?.config as Record<string, unknown>;
   const pdf = await buildRefundLetter({ requestId: r.id, holderName: prof!.full_name, email: au.user?.email ?? "", orderNumber: o!.order_number, paidAt: o!.paid_at!,
-    amountSen: o!.amount, currency: o!.currency, courseTitle: course!.title, requestedAt: r.created_at, reason: r.reason },
+    amountSen: o!.amount, currency: o!.currency, courseTitle: course!.title, requestedAt: r.created_at, reason: r.reason, deductionSen: typeof cfg.refund_deduction_sen === "number" ? cfg.refund_deduction_sen : null },
     (cfg.refund_letter ?? {}) as LetterConfig, (cfg.certificate ?? {}) as CertConfig);
   return new Response(new Uint8Array(pdf), { headers: { "content-type": "application/pdf", "content-disposition": `attachment; filename="surat-refund-${r.id.slice(0, 8)}.pdf"`, "cache-control": "private, no-store", "x-content-type-options": "nosniff" } });
 }
