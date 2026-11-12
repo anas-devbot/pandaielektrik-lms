@@ -98,22 +98,6 @@ export function Faq({ block, preview }: { block: Block<{ q: string; a: string }[
   return block.approved ? list : <DraftBox preview={preview}>{list}</DraftBox>;
 }
 
-// Ilustrasi sendiri (BUKAN fail daripada CONTOH SIJIL/). Contoh sebenar menunggu kebenaran AHZ.
-export function CertSample({ block, preview }: { block: Block<{ caption: string }>; preview: boolean }) {
-  const el = (
-    <figure>
-      <div aria-hidden className="mx-auto flex aspect-[1.414] max-w-md flex-col items-center justify-center gap-1 rounded-sm border-4 border-double border-gold bg-surface p-6 text-center">
-        <p className="font-serif text-lg font-semibold">Sijil Penyertaan</p>
-        <p className="text-xs text-muted">dengan ini disahkan bahawa</p>
-        <p className="font-serif text-xl">Nama Peserta</p>
-        <div className="mt-2 grid size-14 place-items-center border border-ink text-[10px]">QR</div>
-      </div>
-      <figcaption className="mt-2 text-center text-sm text-muted">{block.value.caption}</figcaption>
-    </figure>
-  );
-  return block.approved ? el : <DraftBox preview={preview}>{el}</DraftBox>;
-}
-
 export function RefundNote({ block, preview }: { block: Block<string>; preview: boolean }) {
   const el = (
     <p className="rounded-lg border border-border bg-surface p-4 text-sm">
