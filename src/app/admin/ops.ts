@@ -21,7 +21,7 @@ export async function jalankan(_: OpState, f: FormData): Promise<OpState> {
   if (op === "extend_access") {
     const e = uuid(s(f, "enrollment")); if (!e) return { error: "Pendaftaran tidak sah." }; path = `/admin/pelajar/${e}`;
     const { data, error: er } = await db.rpc("extend_access", { p_actor: me.id, p_enrollment: e, p_days: Number(s(f, "days")), p_reason: reason }); error = er;
-    if (!er) okMsg = `Akses kini sehingga ${new Date(data as string).toLocaleDateString("ms-MY")}. Direkod.`;
+    if (!er) okMsg = `Akses kini sehingga ${new Intl.DateTimeFormat("ms-MY", { timeZone: "Asia/Kuala_Lumpur" }).format(new Date(data as string))}. Direkod.`;
   } else if (op === "extra_attempts") {
     const e = uuid(s(f, "enrollment")); if (!e) return { error: "Pendaftaran tidak sah." }; path = `/admin/pelajar/${e}`;
     ({ error } = await db.rpc("grant_extra_attempts", { p_actor: me.id, p_enrollment: e, p_count: Number(s(f, "count")), p_reason: reason }));
