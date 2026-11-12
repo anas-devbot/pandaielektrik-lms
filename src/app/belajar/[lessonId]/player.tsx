@@ -59,16 +59,23 @@ export default function Player(props: { lessonId: string; provider: string; vide
   }, [props.provider, props.videoRef, props.lessonId]);
 
   if (props.provider !== "youtube") return <p className="mt-4">Penyedia video &quot;{props.provider}&quot; belum disokong.</p>;
-  const pct = Math.min(100, Math.round((watched / props.duration) * 100));
+  const pct = props.duration > 0 ? Math.min(100, Math.round((watched / props.duration) * 100)) : 0;
   return (
     <div className="mt-4">
-      <div className="relative aspect-video w-full bg-black">
+      <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-black">
         <div ref={host} className="absolute inset-0 [&>iframe]:h-full [&>iframe]:w-full" />
         <span aria-hidden className="pointer-events-none absolute select-none text-xs text-white/40 transition-all duration-1000"
           style={{ top: `${wm.top}%`, left: `${wm.left}%` }}>{props.watermark}</span>
       </div>
-      {closed ? <p role="status" className="mt-2 text-sm text-error">Akses telah tamat. Kemajuan tidak lagi direkod.</p>
-        : <p role="status" className="mt-2 text-sm">Kemajuan: {pct}% saat unik ditonton{done ? " · Selesai" : ""}</p>}
+      {closed ? <p role="status" className="mt-3 text-sm text-error">Akses telah tamat. Kemajuan tidak lagi direkod.</p>
+        : (
+          <div role="status" className="mt-3 rounded-lg border border-border bg-surface p-3">
+            <p className="text-sm"><b className="font-semibold">Kemajuan: {pct}% saat unik ditonton</b>{done ? " · Selesai" : ""}</p>
+            <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-border" aria-hidden>
+              <div className={`h-1.5 rounded-full ${done ? "bg-ink" : "bg-gold"}`} style={{ width: `${pct}%` }} />
+            </div>
+          </div>
+        )}
     </div>
   );
 }
