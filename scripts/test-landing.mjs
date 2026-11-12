@@ -21,7 +21,7 @@ ok(text.includes("apa kursus ini bukan") && text.includes("lesen") && text.inclu
 for (const s of LANDING.journey) ok(text.includes(s.title.toLowerCase()), `laluan langkah ${s.n}: ${s.title}`);
 for (const w of ["gaji", "pendapatan", "layak", "jaminan kerja", "slot terhad", "temu duga", "google form"]) ok(!text.includes(w), `tiada teks terlarang: ${w}`);
 ok(!text.includes("draf: menunggu ahz") && !text.includes("[menunggu"), "awam tidak nampak penanda tempat DRAF");
-for (const h of ["pengajar", "soalan lazim", "contoh sijil", "refund dan jaminan"]) ok(!text.includes(h), `bahagian DRAF disembunyikan: ${h}`);
+for (const h of ["pengajar", "soalan lazim", "contoh sijil", "bayaran balik"]) ok(!text.includes(h), `bahagian DRAF disembunyikan: ${h}`);
 ok(!html.includes('href="/beli"'), "jualan ditutup: tiada pautan /beli untuk awam");
 ok(text.includes("pendaftaran belum dibuka"), "mesej pendaftaran belum dibuka");
 ok(!/<img[^>]+src="[^"]*r2\./i.test(html), "tiada URL R2 didedahkan");

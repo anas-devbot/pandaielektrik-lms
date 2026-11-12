@@ -34,7 +34,7 @@ export default async function Home() {
         <div className="mx-auto flex w-full max-w-2xl items-center gap-3 px-4 py-3">
           <Image src="/icon.png" alt="" width={32} height={32} className="size-8 rounded-full" />
           <span className="font-serif text-lg font-semibold">Pandai Elektrik</span>
-          <Link href={user ? "/dashboard" : "/log-masuk"} className="ml-auto text-sm font-semibold underline underline-offset-4">{user ? "Dashboard" : "Log masuk"}</Link>
+          <Link href={user ? "/dashboard" : "/log-masuk"} className="ml-auto text-sm font-semibold underline underline-offset-4">{user ? "Akaun saya" : "Log masuk"}</Link>
         </div>
       </header>
 
@@ -48,37 +48,40 @@ export default async function Home() {
               <h1 id="hero" className="mt-1 font-serif text-4xl font-semibold leading-[1.15]">{LANDING.hero.headline}</h1>
               <p className="mt-3 max-w-prose text-lg text-muted">{LANDING.hero.sub}</p>
               {main.summary && <p className="mt-3 max-w-prose">{main.summary}</p>}
-              <p className="mt-5 font-serif text-3xl font-semibold">{rm(main.price)} <span className="font-sans text-base font-normal text-muted">untuk seluruh program</span></p>
+              <p className="mt-5 font-serif text-3xl font-semibold"><span className="font-sans text-base font-normal text-muted">Hanya</span> {rm(main.price)} <span className="font-sans text-base font-normal text-muted">untuk seluruh program</span></p>
               <p className="mt-1 text-sm">Bayaran tertakluk kepada <Link className="font-semibold text-gold-text underline underline-offset-4" href="/terma">terma dan syarat</Link>.</p>
               {open
                 ? <Link href="/beli" className={buttonClass("primary", "mt-4 sm:w-auto")}>{ctaLabel}</Link>
                 : <p className="mt-4 rounded-md border border-border bg-surface p-3">Pendaftaran belum dibuka. Sila kembali tidak lama lagi.</p>}
               {main.cta_url && (
-                <a href={main.cta_url} target="_blank" rel="noopener noreferrer" className={buttonClass("secondary", "mt-3 sm:w-auto")}>Sertai group WhatsApp</a>
+                <>
+                  <p className="mt-5 max-w-prose text-sm text-muted">Sertai kumpulan WhatsApp Pandai Elektrik untuk dapatkan maklumat terkini tentang kursus dan kelas langsung.</p>
+                  <a href={main.cta_url} target="_blank" rel="noopener noreferrer" className={buttonClass("secondary", "mt-2 sm:w-auto")}>Sertai kumpulan WhatsApp</a>
+                </>
               )}
             </section>
 
             {stats && <StatStrip stats={stats} />}
 
-            <Section title="Lihat di dalam LMS">
+            <Section title="Paparan program">
               <div className="flex items-start justify-center gap-4">
-                <PhoneFrame src="/landing/dashboard.webp" alt="Dashboard pelajar: kemajuan video, langkah semasa dan butang sambung tonton" width={375} height={812} caption="Dashboard anda" />
-                <PhoneFrame src="/landing/video.webp" alt="Paparan video dengan butang Dashboard dan Video seterusnya" width={375} height={812} caption="Paparan video" />
+                <PhoneFrame src="/landing/dashboard.webp" alt="Halaman utama pelajar: kemajuan video, langkah semasa dan butang sambung tonton" width={375} height={812} caption="Halaman utama anda" />
+                <PhoneFrame src="/landing/video.webp" alt="Paparan video dengan butang kembali ke halaman utama dan video seterusnya" width={375} height={812} caption="Paparan video" />
               </div>
             </Section>
-            <Section title="Apa yang anda akan pelajari"><Checklist items={LANDING.learn} /></Section>
+            <Section title="Apa yang anda akan belajar"><Checklist items={LANDING.learn} /></Section>
             <Section title="Apa yang anda dapat"><Checklist items={LANDING.received} /></Section>
-            <Section title="Laluan program, dari daftar hingga sijil"><Journey steps={LANDING.journey} branches={LANDING.journeyBranches} /></Section>
+            <Section title="Dari daftar sampai dapat sijil"><Journey steps={LANDING.journey} branches={LANDING.journeyBranches} /></Section>
             {show(LANDING.certificate) && <Section title="Contoh sijil"><CertSample block={LANDING.certificate} preview={preview} /></Section>}
             {show(LANDING.instructor) && <Section title="Pengajar"><Instructor block={LANDING.instructor} preview={preview} /></Section>}
             <Section title="Apa kursus ini bukan"><NotFor items={LANDING.notFor} /></Section>
-            {show(LANDING.refundNote) && <Section title="Refund dan jaminan"><RefundNote block={LANDING.refundNote} preview={preview} /></Section>}
+            {show(LANDING.refundNote) && <Section title="Bayaran balik (refund)"><RefundNote block={LANDING.refundNote} preview={preview} /></Section>}
             {show(LANDING.faq) && <Section title="Soalan lazim"><Faq block={LANDING.faq} preview={preview} /></Section>}
           </>
         )}
 
         {courses.length > 0 && (
-          <Section title="Kursus dan sesi live">
+          <Section title="Kursus lain dan kelas langsung">
             <div className="flex flex-col gap-6">
               {courses.map((c) => (
                 <section key={c.id} className="rounded-lg border border-border bg-surface p-4">
@@ -91,11 +94,11 @@ export default async function Home() {
                   {c.slug !== SLUG_DAFTAR && c.summary && <p className="mt-2">{c.summary}</p>}
                   {c.slug !== SLUG_DAFTAR && <p className="mt-3 font-serif text-2xl font-semibold">{rm(c.price)}</p>}
                   {c.slug !== SLUG_DAFTAR && c.cta_url && (
-                    <a href={c.cta_url} target="_blank" rel="noopener noreferrer" className={buttonClass("primary", "mt-3 sm:w-auto")}>Sertai group WhatsApp</a>
+                    <a href={c.cta_url} target="_blank" rel="noopener noreferrer" className={buttonClass("primary", "mt-3 sm:w-auto")}>Sertai kumpulan WhatsApp</a>
                   )}
                   {c.sessions.length > 0 && (
                     <>
-                      <h4 className="mt-5 font-semibold">Kursus live akan datang</h4>
+                      <h4 className="mt-5 font-semibold">Kelas langsung akan datang</h4>
                       <ul className="mt-2 flex flex-col gap-2">
                         {c.sessions.map((s) => (
                           <li key={s.id} className="rounded-md border border-border p-3">
