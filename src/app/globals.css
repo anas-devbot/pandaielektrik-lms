@@ -79,3 +79,21 @@ h1, h2, h3 {
 input, select, textarea {
   font-size: 16px;
 }
+
+/* Input fail dan kawalan pilihan ikut tema, bukan gaya pelayar */
+input[type="file"]::file-selector-button {
+  margin-right: 12px;
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid var(--ink);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink);
+  font: 600 15px var(--font-sans), system-ui, sans-serif;
+  cursor: pointer;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--ink);
+}
