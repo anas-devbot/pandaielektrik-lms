@@ -71,6 +71,8 @@ do $$ begin
   begin perform 1 from enrollments; raise exception 'GAGAL: anon boleh baca enrollments';
   exception when insufficient_privilege then raise notice 'lulus: anon tak boleh baca enrollments'; end;
 end $$;
+reset role; update courses set published = true where slug='t';   -- kursus dipaparkan (migration 20261113000005)
+set local role anon;
 select pg_temp.expect('anon nampak kursus (landing)', (select count(*) from courses where slug='t'), 1);
 
 -- service_role: append-only dikuat

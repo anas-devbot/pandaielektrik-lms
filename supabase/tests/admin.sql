@@ -122,6 +122,8 @@ select pg_temp.eq('sesi dikemas kini', (select status from course_sessions where
 select pg_temp.fails('sesi: kursus salah = tidak dijumpai', format($q$select upsert_session(%L,%L,'cccccccc-0000-0000-0000-0000000000c2',now(),null,'x',1,'open')$q$, :adm, (select id from ss where k='a')), 'not_found');
 select pg_temp.eq('sesi: dua tindakan direkod', (select count(*)::text from admin_actions where action='session_saved'), '2');
 select id as sid from ss where k='a' \gset
+-- kursus mesti dipaparkan dahulu (polisi awam baharu, migration 20261113000005)
+update courses set published = true where id = :c1;
 set local role anon;
 select count(*)::text as c_open from course_sessions where id = :'sid' \gset
 reset role;
