@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { requireRole } from "@/lib/auth";
 import { getCourse } from "@/lib/course";
@@ -78,6 +79,11 @@ export default async function Page() {
 
   return (
     <main className="mx-auto w-full max-w-2xl p-6">
+      <header className="-mx-6 mb-6 flex items-center gap-3 border-b border-border px-6 pb-3">
+        <Image src="/icon.png" alt="" width={32} height={32} className="size-8 rounded-full" />
+        <span className="font-serif text-lg font-semibold">Pandai Elektrik</span>
+        <form action={logKeluar} className="ml-auto"><button className="text-sm underline underline-offset-4">Log keluar</button></form>
+      </header>
       <h1 className="text-2xl font-semibold">{course.title}</h1>
       <p className="mt-1 text-sm">{p.fullName}</p>
       {enrollment.refunded_at ? (
@@ -101,7 +107,7 @@ export default async function Page() {
         {active && <p className="mt-2 text-sm">Baki akses: {daysLeft} hari.</p>}
         {resume && (
           <Link className={buttonClass("primary", "mt-3 sm:w-auto")} href={`/belajar/${resume.id}`}>
-            Sambung tonton: <span className="uppercase tracking-wide">{resume.title}</span>
+            Sambung tonton: <span>{resume.title}</span>
           </Link>
         )}
       </section>
@@ -187,13 +193,20 @@ export default async function Page() {
           {(lessons ?? []).map((l) => {
             const r = byLesson.get(l.id);
             const w = r ? Math.min(100, Math.round((r.watched_seconds_unique / l.duration_seconds) * 100)) : 0;
+            const done = !!r?.completed_at;
+            const tahap = done ? 100 : w;
             return (
-              <li key={l.id} className="flex items-baseline gap-3 rounded-md border border-border bg-surface p-3">
-                <span className="w-8 shrink-0 text-sm font-medium tabular-nums">{l.urutan_global ?? "-"}.</span>
-                <span className="min-w-0 flex-1 break-words text-sm font-medium uppercase tracking-wide">
-                  {active ? <Link className="underline" href={`/belajar/${l.id}`}>{l.title}</Link> : <span>{l.title}</span>}
-                </span>
-                <span className="shrink-0 text-sm tabular-nums">{r?.completed_at ? "Selesai" : `${w}%`}</span>
+              <li key={l.id} className="flex items-start gap-3 rounded-md border border-border bg-surface p-3">
+                <span className="w-8 shrink-0 pt-0.5 text-sm font-medium tabular-nums">{l.urutan_global ?? "-"}.</span>
+                <div className="min-w-0 flex-1">
+                  <span className="block break-words text-sm font-medium">
+                    {active ? <Link className="underline underline-offset-4" href={`/belajar/${l.id}`}>{l.title}</Link> : <span>{l.title}</span>}
+                  </span>
+                  <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-border" role="progressbar" aria-label={`Kemajuan ${l.title}`} aria-valuenow={tahap} aria-valuemin={0} aria-valuemax={100}>
+                    <div className="h-1.5 rounded-full bg-ink" style={{ width: `${tahap}%` }} />
+                  </div>
+                </div>
+                <span className="shrink-0 pt-0.5 text-sm tabular-nums">{done ? "Selesai" : `${tahap}%`}</span>
               </li>
             );
           })}
@@ -218,7 +231,6 @@ export default async function Page() {
       {!enrollment.refunded_at && !(refundSnap && (refundSnap.window_ok || (refundReqs ?? 0) > 0)) && (
         <p className="mt-8 text-xs">Soalan tentang bayaran? Tanya admin atau fasilitator dalam group WhatsApp DIY ELEKTRIK.</p>
       )}
-      <form action={logKeluar} className="mt-8"><button className="underline">Log keluar</button></form>
     </main>
   );
 }
