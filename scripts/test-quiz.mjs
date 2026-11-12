@@ -28,8 +28,10 @@ const far = new Date(Date.now() + 90 * 864e5).toISOString(), past = new Date(Dat
 const eA = (await db.from("enrollments").insert({ user_id: A.id, course_id: course.id, access_ends_at: far }).select("id").single()).data;
 const eB = (await db.from("enrollments").insert({ user_id: B.id, course_id: course.id, access_ends_at: far }).select("id").single()).data;
 await db.from("enrollments").insert({ user_id: C.id, course_id: course.id, access_ends_at: past });
-// A: video selesai (gate terbuka). B: video belum (gate tertutup).
-await db.from("lesson_progress").insert({ enrollment_id: eA.id, lesson_id: l1.id, watched_seconds_unique: 100, completed_at: new Date().toISOString() });
+// A: SEMUA video kursus selesai (gate terbuka, PRD: setiap video >= 90%). B: video belum (gate tertutup).
+// Kursus lokal boleh ada video lain dari ujian terdahulu, jadi tandakan semua, bukan l1 sahaja.
+const { data: allLessons } = await db.from("lessons").select("id").eq("course_id", course.id);
+await db.from("lesson_progress").insert(allLessons.map((l) => ({ enrollment_id: eA.id, lesson_id: l.id, watched_seconds_unique: 100, completed_at: new Date().toISOString() })));
 
 async function cookieFor(email) {
   const jar = new Map();
@@ -57,9 +59,9 @@ const { data: right } = await db.from("quiz_options").select("id").in("question_
 ok(r.t.includes(right[0].id) , "A: id pilihan hadir (perlu untuk menjawab) tetapi tiada penanda mana yang betul");
 r = await get(`/kuiz/${att}`, cB); ok(r.s === 404, "B tak boleh buka percubaan A (404)");
 r = await get(`/kuiz/${att}`, cC); ok(r.s === 307, "C (akses tamat) tak boleh buka percubaan");
-r = await get(`/kuiz/bab/${c1.id}`, cA); ok(r.s === 200 && r.t.includes("Mula latihan"), "latihan bab 1 ada butang mula");
-r = await get(`/kuiz/bab/${c2.id}`, cA); ok(r.s === 200 && r.t.includes("belum tersedia"), "latihan bab tanpa soalan: 'belum tersedia'");
-r = await get("/dashboard", cA); ok(r.t.includes("Buka MCQ akhir") && r.t.includes(`/kuiz/bab/${c1.id}`), "dashboard A: pautan MCQ akhir dan kuiz latihan bab");
+// Kuiz latihan per bab DIBUANG (commit 76f5102): route /kuiz/bab tidak wujud lagi.
+r = await get(`/kuiz/bab/${c1.id}`, cA); ok(r.s === 404, "route kuiz latihan bab dibuang: 404");
+r = await get("/dashboard", cA); ok(r.t.includes("Buka ujian akhir") && !r.t.includes("/kuiz/bab/"), "dashboard A: pautan ujian akhir sahaja, tiada kuiz latihan bab");
 r = await get("/dashboard", cB); ok(r.t.includes("Dibuka selepas setiap video dicapai"), "dashboard B: MCQ akhir belum dibuka");
 
 // klien terus ke DB: kunci tak boleh dibaca atau dipanggil

@@ -21,7 +21,14 @@ ok(text.includes("apa kursus ini bukan") && text.includes("lesen") && text.inclu
 for (const s of LANDING.journey) ok(text.includes(s.title.toLowerCase()), `laluan langkah ${s.n}: ${s.title}`);
 for (const w of ["gaji", "pendapatan", "layak", "jaminan kerja", "slot terhad", "temu duga", "google form"]) ok(!text.includes(w), `tiada teks terlarang: ${w}`);
 ok(!text.includes("draf: menunggu ahz") && !text.includes("[menunggu"), "awam tidak nampak penanda tempat DRAF");
-for (const h of ["pengajar", "soalan lazim", "contoh sijil", "bayaran balik"]) ok(!text.includes(h), `bahagian DRAF disembunyikan: ${h}`);
+for (const h of ["pengajar", "contoh sijil"]) ok(!text.includes(h), `bahagian DRAF disembunyikan: ${h}`);
+// Bayaran balik dan soalan lazim (disahkan Bos 13 Nov): nilai dari config, potongan RM5.
+const cfg = (await db.from("courses").select("config").eq("slug", "kursus-elektrik").single()).data.config;
+ok(text.includes("bayaran balik") && text.includes("soalan lazim"), "bahagian bayaran balik dan soalan lazim dipaparkan");
+ok(text.includes(`dalam ${cfg.refund_window_days} hari dari tarikh bayaran`), "tetingkap refund dari config");
+ok(text.includes(`tolak rm ${cfg.refund_deduction_sen / 100} untuk kos`) || text.includes(`tolak rm${cfg.refund_deduction_sen / 100} untuk kos`), "potongan kos dari config (RM5)");
+ok(text.includes(`${cfg.sla_business_days} hari bekerja`), "semakan dari config (5 hari bekerja)");
+ok(!text.includes("{") || !/\{\w+\}/.test(text), "tiada token templat tertinggal");
 ok(!html.includes('href="/beli"'), "jualan ditutup: tiada pautan /beli untuk awam");
 ok(text.includes("pendaftaran belum dibuka"), "mesej pendaftaran belum dibuka");
 ok(!/<img[^>]+src="[^"]*r2\./i.test(html), "tiada URL R2 didedahkan");

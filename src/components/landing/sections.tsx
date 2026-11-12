@@ -84,10 +84,10 @@ export function Instructor({ block, preview }: { block: Block<{ name: string; ro
   return block.approved ? card : <DraftBox preview={preview}>{card}</DraftBox>;
 }
 
-export function Faq({ block, preview }: { block: Block<{ q: string; a: string }[]>; preview: boolean }) {
-  const list = (
+export function Faq({ items }: { items: { q: string; a: string }[] }) {
+  return (
     <div className="divide-y divide-border rounded-lg border border-border bg-surface">
-      {block.value.map((f) => (
+      {items.map((f) => (
         <details key={f.q} className="group px-4">
           <summary className="flex min-h-12 cursor-pointer items-center justify-between gap-3 text-[15px] font-semibold focus-visible:outline-2 focus-visible:outline-info">{f.q}<span aria-hidden className="shrink-0 group-open:rotate-45">+</span></summary>
           <p className="pb-3 text-sm text-muted">{f.a}</p>
@@ -95,16 +95,15 @@ export function Faq({ block, preview }: { block: Block<{ q: string; a: string }[
       ))}
     </div>
   );
-  return block.approved ? list : <DraftBox preview={preview}>{list}</DraftBox>;
 }
 
-export function RefundNote({ block, preview }: { block: Block<string>; preview: boolean }) {
-  const el = (
-    <p className="rounded-lg border border-border bg-surface p-4 text-sm">
-      {block.value} <Link href="/terma" className="font-semibold text-gold-text underline underline-offset-4">Baca terma dan syarat</Link>
-    </p>
+export function RefundNote({ paragraphs }: { paragraphs: string[] }) {
+  return (
+    <div className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-4 text-sm">
+      {paragraphs.map((t) => <p key={t}>{t}</p>)}
+      <p><Link href="/terma" className="font-semibold text-gold-text underline underline-offset-4">Baca terma dan syarat</Link></p>
+    </div>
   );
-  return block.approved ? el : <DraftBox preview={preview}>{el}</DraftBox>;
 }
 
 // Bar bawah melekat pada telefon sahaja. Harga dan pautan terma berhampiran butang.
