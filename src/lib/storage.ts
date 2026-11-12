@@ -1,7 +1,7 @@
 import "server-only";
 import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { r2Put, r2Delete, signedGetUrl } from "@/lib/r2";
+import { r2Put, r2Delete, r2Get, signedGetUrl } from "@/lib/r2";
 
 // Fail penghantaran: R2 PRIVATE (CLAUDE.md #7). STORAGE_DRIVER=local hanya untuk dev/ujian tanpa R2 dan DITOLAK di produksi.
 const isLocal = () => {
@@ -23,6 +23,11 @@ export async function putObject(key: string, body: Buffer, contentType: string) 
 export async function deleteObject(key: string) {
   if (isLocal()) { await unlink(localPath(key)).catch(() => {}); return; }
   await r2Delete(key);
+}
+/** Baca bait objek di server (poster kursus). Local = fail dev; R2 = GetObject privat di server. */
+export async function readObject(key: string): Promise<Buffer> {
+  if (isLocal()) return readFile(localPath(key));
+  return r2Get(key);
 }
 /** Muat turun PDF (sijil): local = bait terus (dev); R2 = redirect ke signed URL jangka pendek (attachment). */
 export async function downloadObject(key: string, filename: string): Promise<{ bytes: Buffer } | { redirect: string }> {

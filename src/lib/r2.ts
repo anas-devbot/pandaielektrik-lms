@@ -31,3 +31,11 @@ export async function r2Delete(key: string) {
   const { s3, Bucket } = client();
   await s3.send(new DeleteObjectCommand({ Bucket, Key: key }));
 }
+// Baca objek di server (contoh: poster kursus). Bucket kekal privat; tiada URL R2 didedahkan.
+export async function r2Get(key: string): Promise<Buffer> {
+  const { s3, Bucket } = client();
+  const res = await s3.send(new GetObjectCommand({ Bucket, Key: key }));
+  const bytes = await res.Body?.transformToByteArray();
+  if (!bytes) throw new Error("objek kosong");
+  return Buffer.from(bytes);
+}

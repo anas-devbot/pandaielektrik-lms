@@ -2,6 +2,7 @@ import { requireRole } from "@/lib/auth";
 import { adminClient } from "@/lib/supabase/admin";
 import { CONFIG_FIELDS, cfgGet } from "@/lib/config-fields";
 import { OpForm } from "../op-form";
+import { KatalogForm } from "./katalog-form";
 
 export const dynamic = "force-dynamic";
 const MY = "Asia/Kuala_Lumpur";
@@ -13,6 +14,7 @@ export default async function Page() {
   const db = adminClient();
   const { data: course } = await db.from("courses").select("id, title, price, currency, config").order("created_at").limit(1).single();
   const { data: sessions } = await db.from("course_sessions").select("*").eq("course_id", course!.id).order("starts_at");
+  const { data: catalog } = await db.from("courses").select("id, slug, title, summary, price, cta, cta_url, published, poster_key").order("created_at");
   const cfg = course!.config as Record<string, unknown>;
   const groups = [...new Set(CONFIG_FIELDS.map((f) => f.group))];
   const disp = (v: unknown) => v === undefined || v === null ? "(belum ditetapkan)" : typeof v === "string" ? (v.length > 80 ? `${v.slice(0, 80)}…` : v || "(kosong)") : String(v);
@@ -20,9 +22,22 @@ export default async function Page() {
   return (
     <main className="py-4">
       <h1 className="text-2xl font-semibold">Kursus &amp; sesi live</h1>
-      <p className="text-sm">{course!.title} · RM{(course!.price / 100).toFixed(2)} (harga ditetapkan di DB; tidak diubah daripada sini)</p>
 
-      <h2 className="mt-6 text-lg font-medium">Sesi kursus live</h2>
+      <h2 className="mt-6 text-lg font-medium">Katalog kursus (landing)</h2>
+      <p className="text-xs text-muted">Kursus yang dipaparkan muncul di landing. Kursus draf hanya kelihatan kepada admin.</p>
+      {(catalog ?? []).map((c) => (
+        <details key={c.id} className="mt-2 rounded-md border border-border bg-surface p-3">
+          <summary className="cursor-pointer font-medium">{c.title} <span className="text-sm text-muted">· {c.published ? "dipaparkan" : "draf"}</span></summary>
+          <KatalogForm course={c} />
+        </details>
+      ))}
+      <details className="mt-3 rounded-md border border-border border-dashed bg-surface p-3">
+        <summary className="cursor-pointer font-medium">Tambah kursus baharu</summary>
+        <KatalogForm />
+      </details>
+
+      <p className="mt-6 text-sm">{course!.title} · RM{(course!.price / 100).toFixed(2)} (harga ditetapkan di DB; tidak diubah daripada sini)</p>
+      <h2 className="mt-6 text-lg font-medium">Sesi kursus live (kursus DIY)</h2>
       <p className="text-xs">Tarikh dipaparkan di landing tanpa deploy. Masa dianggap waktu Malaysia (UTC+8). Status &quot;Draf&quot; tidak dipaparkan.</p>
       {(sessions ?? []).map((x) => (
         <section key={x.id} className="mt-2 rounded-md border border-border bg-surface p-3"><h3 className="text-sm font-medium">{new Intl.DateTimeFormat("ms-MY", { dateStyle: "full", timeStyle: "short", timeZone: MY }).format(new Date(x.starts_at))} · {x.status}</h3>

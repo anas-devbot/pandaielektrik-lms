@@ -12,17 +12,21 @@ export async function getCourse() {
   return data;
 }
 
-// Data awam landing (kursus + sesi akan datang). Tiada cookie, jadi boleh di-cache: anon key sahaja, RLS awam (public read).
-// Dibatalkan bila admin ubah kursus/sesi (tag "landing", lihat admin/ops.ts). ponytail: TTL 60s sebagai jaring kalau tag terlepas.
-// Had: penapis "akan datang" dikira semasa cache diisi, jadi sesi yang baru tamat boleh kekal ≤60s.
+// Data awam landing: SENARAI kursus dipaparkan (katalog, migration 20261113000005) + sesi akan datang setiap kursus.
+// Tiada cookie, jadi boleh di-cache: anon key sahaja, RLS awam (hanya published). Dibatalkan bila admin ubah katalog/sesi (tag "landing").
+// ponytail: TTL 60s sebagai jaring kalau tag terlepas. Penapis "akan datang" dikira semasa cache diisi.
 export const getLanding = unstable_cache(
   async () => {
     const db = createPublicClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, { auth: { persistSession: false } });
-    const { data: course } = await db.from("courses").select("id, slug, title, price, currency, config").order("created_at").limit(1).maybeSingle();
-    if (!course) return { course: null, sessions: [] };
-    const { data: sessions } = await db.from("course_sessions").select("id, starts_at, ends_at, venue_or_link, capacity, status")
-      .eq("course_id", course.id).in("status", ["open", "full"]).gte("starts_at", new Date().toISOString()).order("starts_at");
-    return { course, sessions: sessions ?? [] };
+    const { data: courses } = await db.from("courses")
+      .select("id, slug, title, price, currency, summary, cta, cta_url, poster_key")
+      .eq("published", true).order("created_at");
+    if (!courses?.length) return { courses: [] };
+    const { data: sessions } = await db.from("course_sessions").select("id, course_id, starts_at, ends_at, venue_or_link, capacity, status")
+      .in("course_id", courses.map((c) => c.id)).in("status", ["open", "full"]).gte("starts_at", new Date().toISOString()).order("starts_at");
+    return {
+      courses: courses.map((c) => ({ ...c, sessions: (sessions ?? []).filter((s) => s.course_id === c.id) })),
+    };
   },
   ["landing"],
   { tags: ["landing"], revalidate: 60 },
