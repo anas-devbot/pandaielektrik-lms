@@ -25,6 +25,7 @@ export default async function Home() {
   const main = courses.find((c) => c.slug === SLUG_DAFTAR) ?? null;
   const stats = main ? await getLandingStats(main.id) : null;
   const ctaLabel = "Daftar dan bayar";
+  const show = (b: { approved: boolean }) => b.approved || preview; // blok DRAF: tajuk dan isi disembunyikan daripada awam
 
   return (
     <>
@@ -61,11 +62,11 @@ export default async function Home() {
             <Section title="Apa yang anda akan pelajari"><Checklist items={LANDING.learn} /></Section>
             <Section title="Apa yang anda dapat"><Checklist items={LANDING.received} /></Section>
             <Section title="Laluan program, dari daftar hingga sijil"><Journey steps={LANDING.journey} branches={LANDING.journeyBranches} /></Section>
-            <Section title="Contoh sijil"><CertSample block={LANDING.certificate} preview={preview} /></Section>
-            <Section title="Pengajar"><Instructor block={LANDING.instructor} preview={preview} /></Section>
+            {show(LANDING.certificate) && <Section title="Contoh sijil"><CertSample block={LANDING.certificate} preview={preview} /></Section>}
+            {show(LANDING.instructor) && <Section title="Pengajar"><Instructor block={LANDING.instructor} preview={preview} /></Section>}
             <Section title="Apa kursus ini bukan"><NotFor items={LANDING.notFor} /></Section>
-            <Section title="Refund dan jaminan"><RefundNote block={LANDING.refundNote} preview={preview} /></Section>
-            <Section title="Soalan lazim"><Faq block={LANDING.faq} preview={preview} /></Section>
+            {show(LANDING.refundNote) && <Section title="Refund dan jaminan"><RefundNote block={LANDING.refundNote} preview={preview} /></Section>}
+            {show(LANDING.faq) && <Section title="Soalan lazim"><Faq block={LANDING.faq} preview={preview} /></Section>}
           </>
         )}
 
