@@ -1,8 +1,9 @@
+import { AuthShell } from "@/components/auth";
+
 export default function Page() {
   return (
-    <main className="mx-auto w-full max-w-md p-6">
-      <h1 className="text-2xl font-semibold">Semak emel anda</h1>
-      <p className="mt-2">Kami telah menghantar pautan pengesahan. Klik pautan itu, kemudian log masuk.</p>
-    </main>
+    <AuthShell title="Semak emel anda" lead="Kami telah menghantar pautan pengesahan. Klik pautan itu, kemudian log masuk.">
+      <p className="text-sm text-muted">Tidak nampak emel? Semak juga folder spam.</p>
+    </AuthShell>
   );
 }
