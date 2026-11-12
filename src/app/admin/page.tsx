@@ -34,7 +34,7 @@ export default async function Page() {
   const waitResult = (pracE.data ?? []).filter((x) => !!x.energize_approved_at);
   const nm = (x: unknown) => ((x as { enrollments?: { profiles?: { full_name: string } | null } | null; profiles?: { full_name: string } | null }).enrollments?.profiles ?? (x as { profiles?: { full_name: string } | null }).profiles)?.full_name ?? "?";
   const stuckRows = (stuck.data ?? []) as { enrollment_id: string; full_name: string; email: string; phone: string | null; reason: keyof typeof L; detail: Record<string, number>; last_activity: string; access_ends_at: string }[];
-  const msg = (r: (typeof stuckRows)[number]) => TPL[r.reason].replace("{nama}", r.full_name).replace("{hari}", String(r.detail.days ?? r.detail.days_left ?? "")).replace("{tarikh}", new Date(r.access_ends_at).toLocaleDateString("ms-MY"));
+  const msg = (r: (typeof stuckRows)[number]) => TPL[r.reason].replace("{nama}", r.full_name).replace("{hari}", String(r.detail.days ?? r.detail.days_left ?? "")).replace("{tarikh}", new Intl.DateTimeFormat("ms-MY", { timeZone: "Asia/Kuala_Lumpur" }).format(new Date(r.access_ends_at)));
   const Row = ({ href, children }: { href: string; children: React.ReactNode }) => <li className="rounded border p-2 text-sm"><Link className="underline" href={href}>{children}</Link></li>;
 
   return (
