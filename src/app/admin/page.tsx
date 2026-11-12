@@ -2,6 +2,8 @@ import Link from "next/link";
 import { requireRole } from "@/lib/auth";
 import { adminClient } from "@/lib/supabase/admin";
 import { CopyMsg } from "./op-form";
+import { SetNavCounts } from "./nav";
+import { Tile, Box, Person, initials } from "./ui";
 
 export const dynamic = "force-dynamic";
 const nowMs = () => Date.now();
@@ -35,42 +37,71 @@ export default async function Page() {
   const nm = (x: unknown) => ((x as { enrollments?: { profiles?: { full_name: string } | null } | null; profiles?: { full_name: string } | null }).enrollments?.profiles ?? (x as { profiles?: { full_name: string } | null }).profiles)?.full_name ?? "?";
   const stuckRows = (stuck.data ?? []) as { enrollment_id: string; full_name: string; email: string; phone: string | null; reason: keyof typeof L; detail: Record<string, number>; last_activity: string; access_ends_at: string }[];
   const msg = (r: (typeof stuckRows)[number]) => TPL[r.reason].replace("{nama}", r.full_name).replace("{hari}", String(r.detail.days ?? r.detail.days_left ?? "")).replace("{tarikh}", new Intl.DateTimeFormat("ms-MY", { timeZone: "Asia/Kuala_Lumpur" }).format(new Date(r.access_ends_at)));
-  const Row = ({ href, children }: { href: string; children: React.ReactNode }) => <li className="rounded-md border border-border bg-surface p-2 text-sm"><Link className="underline" href={href}>{children}</Link></li>;
-
+  const nSubj = subj.data?.length ?? 0, nEvents = events.data?.length ?? 0, nRefund = refunds.data?.length ?? 0;
+  const nPrac = (prac.data?.length ?? 0) + waitResult.length;
+  const total = nSubj + nEvents + nRefund + nPrac + waitApproval.length;
   return (
-    <main className="py-4">
-      <h1 className="text-2xl font-semibold">Menunggu tindakan</h1>
+    <main>
+      <SetNavCounts counts={{ "/admin": total, "/admin/queue": nSubj + (prac.data?.length ?? 0), "/admin/bekalan": waitApproval.length, "/admin/refund": nRefund }} />
+      <h1 className="font-serif text-2xl font-semibold">Menunggu tindakan</h1>
+      <p className="mt-0.5 text-sm text-muted">{total === 0 ? "Tiada perkara menunggu anda." : `${total} perkara menunggu anda.`}</p>
 
-      <section className="mt-4"><h2 className="font-medium">Semakan subjektif dan skematik ({subj.data?.length ?? 0})</h2>
-        <ul className="mt-1 flex flex-col gap-1">{(subj.data ?? []).slice(0, 10).map((x) => <Row key={x.id} href={`/staff/semak/${x.enrollment_id}`}>{nm(x)} · {x.type === "subjective" ? "subjektif" : "skematik"} · menunggu {age(x.created_at)} hari{x.claimed_by ? " · dituntut" : ""}</Row>)}</ul>
-        {(subj.data?.length ?? 0) === 0 && <p className="text-sm">Tiada.</p>}</section>
+      <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-5">
+        <Tile n={nEvents} label="Bayaran perlu semakan" tone="alert" />
+        <Tile n={waitApproval.length} label="Kebenaran bekalan" tone="gold" />
+        <Tile n={nSubj} label="Semakan subjektif / skematik" />
+        <Tile n={nRefund} label="Refund" />
+        <Tile n={nPrac} label="Praktikal menunggu" />
+      </div>
 
-      <section className="mt-4"><h2 className="font-medium">Praktikal</h2>
-        <ul className="mt-1 flex flex-col gap-1">
-          {(prac.data ?? []).map((x) => <Row key={x.id} href={`/staff/praktikal/${x.enrollment_id}`}>{nm(x)} · {x.type === "form" ? "borang" : "video"} menunggu semakan ({age(x.created_at)} hari)</Row>)}
-          {waitApproval.map((x) => <Row key={x.id} href={`/staff/praktikal/${x.id}`}>{nm(x)} · <b>menunggu kelulusan bekalan (approver)</b></Row>)}
-          {waitResult.map((x) => <Row key={x.id} href={`/staff/praktikal/${x.id}`}>{nm(x)} · menunggu keputusan praktikal</Row>)}
-        </ul>
-        {(prac.data?.length ?? 0) + waitApproval.length + waitResult.length === 0 && <p className="text-sm">Tiada.</p>}</section>
+      <div className="mt-2 lg:grid lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:gap-5">
+        <div>
+          <Box title="Bayaran perlu semakan" n={nEvents} warn>
+            <p className="px-3.5 pt-2 text-xs text-muted">Callback sah tetapi tidak membuka akses: bayaran berganda pada order yang sudah dibayar (pelanggan dicaj dua kali: perlu refund manual), amaun tidak sepadan, atau order tidak dikenali.</p>
+            {(events.data ?? []).map((e) => (
+              <div key={e.id} className="flex flex-wrap items-center gap-x-3 gap-y-0.5 border-b border-border px-3.5 py-2.5 text-sm last:border-b-0">
+                <span className="rounded-full border border-warning px-2 py-0.5 text-xs font-semibold text-warning">{e.outcome}</span>
+                <span className="font-semibold">order {e.order_number}</span>
+                <span className="text-xs text-muted">{e.amount !== null ? `RM${(e.amount / 100).toFixed(2)}` : "-"} · {e.transaction_id} · {fmt(e.received_at)}</span>
+              </div>
+            ))}
+          </Box>
 
-      <section className="mt-4"><h2 className="font-medium">Refund ({refunds.data?.length ?? 0})</h2>
-        {(refunds.data?.length ?? 0) > 0 ? <p className="text-sm"><Link className="underline" href="/admin/refund">{(refunds.data ?? []).filter((r) => r.status === "auto_failed").length} gagal semakan automatik · {(refunds.data ?? []).filter((r) => r.status === "letter_uploaded").length} menunggu keputusan · {(refunds.data ?? []).filter((r) => r.status === "approved").length} menunggu transfer bank</Link></p> : <p className="text-sm">Tiada.</p>}</section>
+          <Box title="Praktikal" n={nPrac}>
+            {(prac.data ?? []).map((x) => <Person key={x.id} name={nm(x)} sub={`${x.type === "form" ? "borang" : "video"} menunggu semakan`} right={`${age(x.created_at)} hari`} href={`/staff/praktikal/${x.enrollment_id}`} action="Semak" />)}
+            {waitApproval.map((x) => <Person key={x.id} name={nm(x)} sub={<b>menunggu kelulusan bekalan (approver)</b>} href={`/staff/praktikal/${x.id}`} />)}
+            {waitResult.map((x) => <Person key={x.id} name={nm(x)} sub="menunggu keputusan praktikal" href={`/staff/praktikal/${x.id}`} />)}
+          </Box>
 
-      <section className="mt-4"><h2 className="font-medium">Bayaran perlu semakan ({events.data?.length ?? 0})</h2>
-        <p className="text-xs">Callback sah tetapi tidak membuka akses: bayaran berganda pada order yang sudah dibayar (pelanggan dicaj dua kali: perlu refund manual), amaun tidak sepadan, atau order tidak dikenali.</p>
-        <ul className="mt-1 flex flex-col gap-1">{(events.data ?? []).map((e) => <li key={e.id} className="rounded-md border bg-surface border-warning p-2 text-sm">{e.outcome} · order {e.order_number} · {e.amount !== null ? `RM${(e.amount / 100).toFixed(2)}` : "-"} · {e.transaction_id} · {fmt(e.received_at)}</li>)}</ul>
-        {(events.data?.length ?? 0) === 0 && <p className="text-sm">Tiada.</p>}</section>
+          <Box title="Semakan subjektif dan skematik" n={nSubj}>
+            {(subj.data ?? []).slice(0, 10).map((x) => <Person key={x.id} name={nm(x)} sub={<>{x.type === "subjective" ? "subjektif" : "skematik"}{x.claimed_by ? <span className="ml-2 rounded-full border border-gold px-2 py-0.5 text-gold-text">dituntut</span> : null}</>} right={`menunggu ${age(x.created_at)} hari`} href={`/staff/semak/${x.enrollment_id}`} action="Semak" />)}
+          </Box>
 
-      <section className="mt-4"><h2 className="font-medium">Pelajar tersangkut ({stuckRows.length})</h2>
-        <p className="text-xs">Mesej disalin dan dihantar secara manual (tiada API WhatsApp). Templat ialah DRAF.</p>
-        {(Object.keys(L) as (keyof typeof L)[]).map((reason) => { const rows = stuckRows.filter((r) => r.reason === reason); return rows.length === 0 ? null : (
-          <div key={reason} className="mt-2"><h3 className="text-sm font-medium">{L[reason]} ({rows.length})</h3>
-            <ul className="mt-1 flex flex-col gap-1">{rows.map((r) => (
-              <li key={r.enrollment_id + reason} className="rounded-md border border-border bg-surface p-2 text-sm">
-                <Link className="underline" href={`/admin/pelajar/${r.enrollment_id}`}>{r.full_name}</Link> · {r.email}{r.phone ? ` · ${r.phone}` : ""} ·{" "}
-                {reason === "tiada_aktiviti" ? `${r.detail.days} hari tanpa aktiviti` : reason === "mcq_had_habis" ? `${r.detail.attempts}/${r.detail.limit} percubaan` : `${r.detail.days_left} hari baki akses`} · <CopyMsg text={msg(r)} />
-              </li>))}</ul></div>); })}
-        {stuckRows.length === 0 && <p className="text-sm">Tiada.</p>}</section>
+          <Box title="Refund" n={nRefund}>
+            <p className="px-3.5 py-3 text-sm"><Link className="font-semibold text-gold-text underline underline-offset-4" href="/admin/refund">{(refunds.data ?? []).filter((r) => r.status === "auto_failed").length} gagal semakan automatik · {(refunds.data ?? []).filter((r) => r.status === "letter_uploaded").length} menunggu keputusan · {(refunds.data ?? []).filter((r) => r.status === "approved").length} menunggu transfer bank</Link></p>
+          </Box>
+        </div>
+
+        <div>
+          <Box title="Pelajar tersangkut" n={stuckRows.length}>
+            <p className="px-3.5 pt-2 text-xs text-muted">Mesej disalin dan dihantar secara manual (tiada API WhatsApp). Templat ialah DRAF.</p>
+            {(Object.keys(L) as (keyof typeof L)[]).map((reason) => { const rows = stuckRows.filter((r) => r.reason === reason); return rows.length === 0 ? null : (
+              <div key={reason}>
+                <h3 className="mt-2 border-y border-border bg-paper px-3.5 py-1.5 text-xs font-bold text-muted">{L[reason]} ({rows.length})</h3>
+                {rows.map((r) => (
+                  <div key={r.enrollment_id + reason} className="flex items-center gap-3 border-b border-border px-3.5 py-2.5 text-sm last:border-b-0">
+                    <span aria-hidden className="grid size-8 shrink-0 place-items-center rounded-full bg-paper text-xs font-bold">{initials(r.full_name)}</span>
+                    <div className="min-w-0 flex-1 leading-tight">
+                      <Link className="font-semibold underline underline-offset-4" href={`/admin/pelajar/${r.enrollment_id}`}>{r.full_name}</Link>
+                      <p className="break-words text-xs text-muted">{r.email}{r.phone ? ` · ${r.phone}` : ""} · {reason === "tiada_aktiviti" ? `${r.detail.days} hari tanpa aktiviti` : reason === "mcq_had_habis" ? `${r.detail.attempts}/${r.detail.limit} percubaan` : `${r.detail.days_left} hari baki akses`}</p>
+                    </div>
+                    <span className="shrink-0 font-semibold text-gold-text"><CopyMsg text={msg(r)} /></span>
+                  </div>
+                ))}
+              </div>); })}
+          </Box>
+        </div>
+      </div>
     </main>
   );
 }
