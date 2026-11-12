@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { requireRole } from "@/lib/auth";
 import { adminClient } from "@/lib/supabase/admin";
 import { semak, tuntut } from "../../actions";
+import { buttonClass } from "@/components/button";
 
 export const dynamic = "force-dynamic";
 const nowMs = () => Date.now();
@@ -33,14 +34,14 @@ export default async function Page({ params, searchParams }: { params: Promise<{
       <Link className="text-sm underline" href="/staff">&larr; Queue</Link>
       <h1 className="mt-2 text-2xl font-semibold">{name}</h1>
       <p className="text-sm">Stage: {e.stage}</p>
-      {ralat && <p role="alert" className="mt-2 text-sm text-red-600">{ralat}</p>}
+      {ralat && <p role="alert" className="mt-2 text-sm text-error">{ralat}</p>}
       {pending.length > 0 && !mine && (
-        heldByOther ? <p className="mt-3 rounded border border-amber-500 p-3 text-sm">Item ini sedang dipegang penilai lain.</p> : (
+        heldByOther ? <p className="mt-3 rounded-md border bg-surface border-warning p-3 text-sm">Item ini sedang dipegang penilai lain.</p> : (
           <form action={tuntut} className="mt-3"><input type="hidden" name="enrollment" value={enrollmentId} />
-            <button className="rounded bg-black px-4 py-2 text-white">Tuntut untuk semak</button></form>))}
+            <button className={buttonClass("primary")}>Tuntut untuk semak</button></form>))}
       {items.length === 0 && <p className="mt-4">Tiada penghantaran.</p>}
       {items.map((s) => (
-        <section key={s.id} className="mt-4 rounded border p-3">
+        <section key={s.id} className="mt-4 rounded-md border border-border bg-surface p-3">
           <h2 className="font-medium">{s.type === "subjective" ? "Subjektif" : "Skematik"} · percubaan {s.attempt_no}{s.source === "manual_fasi" && " · (manual)"} · {s.status}</h2>
           {s.type === "subjective" && <p className="mt-2 whitespace-pre-wrap text-sm">{s.text_answer ?? "(tiada teks, rekod manual)"}</p>}
           {s.type === "schematic" && s.file_key && (
@@ -51,10 +52,10 @@ export default async function Page({ params, searchParams }: { params: Promise<{
           {s.status === "pending" && mine && (
             <form action={semak} className="mt-3 flex flex-col gap-2">
               <input type="hidden" name="submission" value={s.id} /><input type="hidden" name="enrollment" value={enrollmentId} />
-              <textarea name="comment" rows={3} placeholder="Komen (wajib jika ditolak)" className="rounded border p-2 text-sm" />
+              <textarea name="comment" rows={3} placeholder="Komen (wajib jika ditolak)" className="rounded-md border border-border bg-surface p-2 text-sm" />
               <div className="flex gap-2">
-                <button name="decision" value="approved" className="rounded bg-green-700 px-3 py-1 text-white">Lulus</button>
-                <button name="decision" value="rejected" className="rounded bg-red-700 px-3 py-1 text-white">Tolak</button>
+                <button name="decision" value="approved" className={buttonClass("primary")}>Lulus</button>
+                <button name="decision" value="rejected" className={buttonClass("danger")}>Tolak</button>
               </div>
             </form>)}
         </section>))}

@@ -1,12 +1,13 @@
 "use client";
 import { useActionState } from "react";
 import { rekodManual, tambahPercubaan, tetapkanPautanTelegram, type AdminState } from "./actions";
+import { buttonClass } from "@/components/button";
 
 const Msg = ({ s }: { s: AdminState }) => (<>
-  {s?.error && <p role="alert" className="text-sm text-red-600">{s.error}</p>}
-  {s?.ok && <p role="status" className="text-sm text-green-700">{s.ok}</p>}
+  {s?.error && <p role="alert" className="text-sm text-error">{s.error}</p>}
+  {s?.ok && <p role="status" className="text-sm text-success">{s.ok}</p>}
 </>);
-const inp = "rounded border p-2 text-sm";
+const inp = "rounded-md border border-border bg-surface p-3 text-sm";
 
 export function TambahPercubaan() {
   const [s, a, p] = useActionState(tambahPercubaan, undefined);
@@ -16,7 +17,7 @@ export function TambahPercubaan() {
       <input name="count" type="number" min={1} defaultValue={1} required className={inp} />
       <input name="reason" required placeholder="Sebab (wajib, direkod)" className={inp} />
       <Msg s={s} />
-      <button disabled={p} className="rounded bg-black p-2 text-white disabled:opacity-50">Tambah percubaan</button>
+      <button disabled={p} className={buttonClass("primary")}>Tambah percubaan</button>
     </form>
   );
 }
@@ -36,7 +37,7 @@ export function RekodManual() {
       <label className="text-sm">Fail skematik (pilihan; jika tiada, ditanda &quot;fail di luar sistem&quot;) <input name="file" type="file" accept="image/*,.heic,.heif" /></label>
       <input name="reason" required placeholder="Sebab laluan manual (wajib, direkod)" className={inp} />
       <Msg s={s} />
-      <button disabled={p} className="rounded bg-black p-2 text-white disabled:opacity-50">Rekod</button>
+      <button disabled={p} className={buttonClass("primary")}>Rekod</button>
     </form>
   );
 }
@@ -48,7 +49,7 @@ export function PautanTelegram() {
       <input name="email" type="email" required placeholder="Emel pelajar" className={inp} />
       <input name="link" required placeholder="https://t.me/+..." className={inp} />
       <Msg s={s} />
-      <button disabled={p} className="rounded bg-black p-2 text-white disabled:opacity-50">Tetapkan pautan</button>
+      <button disabled={p} className={buttonClass("primary")}>Tetapkan pautan</button>
     </form>
   );
 }

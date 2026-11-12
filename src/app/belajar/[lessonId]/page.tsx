@@ -22,7 +22,7 @@ export default async function Page({ params }: { params: Promise<{ lessonId: str
     return (
       <main className="mx-auto w-full max-w-2xl p-6">
         <h1 className="text-xl font-semibold uppercase tracking-wide">{lesson.title}</h1>
-        <p role="status" className="mt-3 rounded border border-amber-500 p-3">Akses video telah tamat.</p>
+        <p role="status" className="mt-3 rounded-md border bg-surface border-warning p-3">Akses video telah tamat.</p>
         <Link className="mt-4 inline-block underline" href="/dashboard">Kembali</Link>
       </main>
     );

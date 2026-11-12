@@ -17,7 +17,7 @@ export default async function Page({ params }: { params: Promise<{ token: string
   return (
     <main className="mx-auto w-full max-w-md p-6">
       <h1 className="text-2xl font-semibold">Semakan sijil</h1>
-      <p role="status" className={`mt-3 rounded border p-3 font-medium ${ok ? "border-green-600 text-green-700" : "border-red-600 text-red-700"}`}>
+      <p role="status" className={`mt-3 rounded-md border p-3 font-medium ${ok ? "border-success text-success" : "border-error text-error"}`}>
         {ok ? "Sijil ini SAH." : "Sijil ini TELAH DIBATALKAN."}
       </p>
       <dl className="mt-4 grid grid-cols-[8rem_1fr] gap-y-2 text-sm">

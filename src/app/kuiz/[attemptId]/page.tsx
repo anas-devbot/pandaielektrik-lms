@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { quizContext, rpc } from "@/lib/quiz";
 import { hantar } from "../actions";
+import { buttonClass } from "@/components/button";
 
 export const dynamic = "force-dynamic";
 
@@ -33,7 +34,7 @@ export default async function Page({ params }: { params: Promise<{ attemptId: st
       <form action={hantar} className="mt-4 flex flex-col gap-4">
         <input type="hidden" name="attempt" value={attemptId} />
         {questions.map((q, i) => (
-          <fieldset key={q.id} className="rounded border p-3">
+          <fieldset key={q.id} className="rounded-md border border-border bg-surface p-3">
             <legend className="px-1 font-medium">{i + 1}. {q.body}</legend>
             {q.options.map((o) => (
               <label key={o.id} className="mt-1 flex items-start gap-2 text-sm">
@@ -41,7 +42,7 @@ export default async function Page({ params }: { params: Promise<{ attemptId: st
               </label>))}
           </fieldset>
         ))}
-        <button className="rounded bg-black p-2 text-white">Hantar jawapan</button>
+        <button className={buttonClass("primary")}>Hantar jawapan</button>
       </form>
     </main>
   );

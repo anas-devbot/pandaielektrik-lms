@@ -1,13 +1,14 @@
 "use client";
 import { useActionState } from "react";
 import { mula } from "./actions";
+import { buttonClass } from "@/components/button";
 
 export default function StartForm({ label }: { label: string }) {
   const [state, action, pending] = useActionState(mula, undefined);
   return (
     <form action={action} className="mt-4">
-      {state?.error && <p role="alert" className="mb-2 text-sm text-red-600">{state.error}</p>}
-      <button disabled={pending} className="rounded bg-black px-4 py-2 text-white disabled:opacity-50">{pending ? "Sila tunggu..." : label}</button>
+      {state?.error && <p role="alert" className="mb-2 text-sm text-error">{state.error}</p>}
+      <button disabled={pending} className={buttonClass("primary")}>{pending ? "Sila tunggu..." : label}</button>
     </form>
   );
 }
