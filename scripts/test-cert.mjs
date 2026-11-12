@@ -67,6 +67,21 @@ try {
   r = await get(`/api/sijil/${certId}`, cS); ({ text } = pdfText(r.buf)); ok(!text.includes("DRAF"), "PDF: DRAF hilang bila wording diluluskan");
   await approved(false);
 
+  // simpanan PDF (slice sijil): PDF disimpan sekali pada muat turun pertama bila wording dah lulus, dan tak berubah walau config ditukar
+  const SIM = await mk("sim"); const eSIM = await enr(SIM, "theory_passed");
+  await approved(true);
+  await db.rpc("choose_track", { p_enrollment: eSIM.id, p_track: "theory" });
+  const { data: certSIM } = await db.rpc("issue_certificate", { p_enrollment: eSIM.id, p_type: "theory", p_holder_name: "Siti Simpan Ujian" });
+  const cSIM = await cookieFor(SIM.email);
+  r = await get(`/api/sijil/${certSIM}`, cSIM); ({ text } = pdfText(r.buf));
+  const { data: certRowSIM } = await db.from("certificates").select("*").eq("id", certSIM).single();
+  ok(r.s === 200 && certRowSIM.pdf_key === `sijil/${certRowSIM.cert_id}.pdf`, "muat turun selepas wording diluluskan: PDF disimpan sekali (pdf_key)");
+  ok(text.includes("SIJIL PENCAPAIAN TEORI") && !text.includes("DRAF"), "PDF tersimpan: tajuk betul dan tiada penanda air DRAF");
+  await db.from("courses").update({ config: { ...course.config, certificate: { ...course.config.certificate, wording_approved: true, titles: { ...course.config.certificate.titles, theory: "TAJUK UJIAN SIMPAN" } } } }).eq("id", course.id);
+  r = await get(`/api/sijil/${certSIM}`, cSIM); ({ text } = pdfText(r.buf));
+  ok(r.s === 200 && text.includes("SIJIL PENCAPAIAN TEORI") && !text.includes("TAJUK UJIAN SIMPAN"), "PDF tersimpan kekal: tajuk asal walau config berubah");
+  await approved(false);
+
   // semakan awam
   r = await get(`/semak/${cert.verify_token}`);
   let t = r.buf.toString();

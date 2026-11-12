@@ -4,6 +4,7 @@ import { requireRole } from "@/lib/auth";
 import { getCourse } from "@/lib/course";
 import { enrollmentFor } from "@/lib/learning";
 import { adminClient } from "@/lib/supabase/admin";
+import { simpanPdfSijil } from "@/lib/sijil-pdf";
 
 export type SijilState = { error?: string; ok?: string } | undefined;
 const ERR: Record<string, string> = {
@@ -27,8 +28,11 @@ export async function terbitSijil(_: SijilState, form: FormData): Promise<SijilS
     const { error } = await db.rpc("choose_track", { p_enrollment: enrollment.id, p_track: "theory" });
     if (error) return { error: ERR[error.message] ?? "Tidak dapat memilih trek." };
   }
-  const { error } = await db.rpc("issue_certificate", { p_enrollment: enrollment.id, p_type: type, p_holder_name: String(form.get("name") ?? "") });
+  const { data: certId, error } = await db.rpc("issue_certificate", { p_enrollment: enrollment.id, p_type: type, p_holder_name: String(form.get("name") ?? "") });
   if (error) return { error: ERR[error.message] ?? "Sijil tidak dapat dikeluarkan." };
+  // simpan PDF sekali semasa terbit (kekal walau config berubah). Gagal simpan tidak membatalkan sijil.
+  try { await simpanPdfSijil(certId as string); }
+  catch (e) { console.error("simpan PDF sijil gagal", certId, e); }
   revalidatePath("/dashboard");
   return { ok: "Sijil dikeluarkan." };
 }

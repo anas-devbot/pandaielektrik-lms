@@ -24,6 +24,11 @@ export async function deleteObject(key: string) {
   if (isLocal()) { await unlink(localPath(key)).catch(() => {}); return; }
   await r2Delete(key);
 }
+/** Muat turun PDF (sijil): local = bait terus (dev); R2 = redirect ke signed URL jangka pendek (attachment). */
+export async function downloadObject(key: string, filename: string): Promise<{ bytes: Buffer } | { redirect: string }> {
+  if (isLocal()) return { bytes: await readFile(localPath(key)) };
+  return { redirect: await signedGetUrl(key, filename, false) };
+}
 /** Paparan imej: local = bait terus (dev); R2 = redirect ke signed URL jangka pendek. */
 export async function viewObject(key: string): Promise<{ bytes: Buffer } | { redirect: string }> {
   if (isLocal()) return { bytes: await readFile(localPath(key)) };
