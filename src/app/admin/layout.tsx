@@ -3,7 +3,7 @@ import { requireRole } from "@/lib/auth";
 import { logKeluar } from "@/app/log-masuk/actions";
 import { AdminNav, NavProvider } from "./nav";
 
-// Enam modul admin (CLAUDE.md bahagian 9). Setiap halaman tetap memanggil requireRole sendiri; layout hanya navigasi.
+// Tujuh modul admin (CLAUDE.md bahagian 9; Staf ditambah atas persetujuan Bos, 13 Nov 2026). Setiap halaman tetap memanggil requireRole sendiri; layout hanya navigasi.
 // Gaya ikut DESIGN.md: bar sisi pada komputer, chip boleh diskrol pada telefon.
 export default async function Layout({ children }: { children: React.ReactNode }) {
   const me = await requireRole(["admin"]);
