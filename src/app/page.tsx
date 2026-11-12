@@ -8,7 +8,7 @@ import { LANDING } from "@/content/landing";
 import { getLandingStats } from "@/lib/landing-stats";
 import { Journey } from "@/components/landing/journey";
 import { PhoneFrame } from "@/components/landing/phone-frame";
-import { Checklist, CertSample, Faq, Instructor, NotFor, RefundNote, Section, StatStrip, StickyCta } from "@/components/landing/sections";
+import { Checklist, CertSample, Faq, Instructor, NotFor, RefundNote, Section, StatStrip, StickyCta, Testimonials } from "@/components/landing/sections";
 
 export const dynamic = "force-dynamic"; // katalog dan tarikh live dikemas kini admin tanpa deploy (cache dibatal melalui tag "landing")
 
@@ -71,6 +71,7 @@ export default async function Home() {
             </Section>
             <Section title="Apa yang anda akan belajar"><Checklist items={LANDING.learn} /></Section>
             <Section title="Apa yang anda dapat"><Checklist items={LANDING.received} /></Section>
+            {show(LANDING.testimonials) && <Section title="Kata peserta"><Testimonials block={LANDING.testimonials} note={LANDING.testimonialNote} /></Section>}
             <Section title="Dari daftar sampai dapat sijil"><Journey steps={LANDING.journey} branches={LANDING.journeyBranches} /></Section>
             {show(LANDING.certificate) && <Section title="Contoh sijil"><CertSample block={LANDING.certificate} preview={preview} /></Section>}
             {show(LANDING.instructor) && <Section title="Pengajar"><Instructor block={LANDING.instructor} preview={preview} /></Section>}

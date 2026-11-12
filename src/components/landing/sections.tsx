@@ -28,7 +28,7 @@ export function Section({ title, children, id }: { title: string; children: Reac
 export function StatStrip({ stats }: { stats: LandingStats }) {
   const items: { big: string; label: string }[] = [];
   if (stats.videos > 0) items.push({ big: String(stats.videos), label: "video pelajaran" });
-  if (stats.chapters > 0) items.push({ big: String(stats.chapters), label: "bab" });
+  if (stats.chapters > 0) items.push({ big: String(stats.chapters), label: "bab dalam ebook" });
   if (stats.examQuestions) items.push({ big: String(stats.examQuestions), label: "soalan ujian akhir" });
   if (stats.accessMonths) items.push({ big: `${stats.accessMonths} bulan`, label: "akses" });
   if (items.length === 0) return null;
@@ -131,6 +131,31 @@ export function StickyCta({ href, label, priceText }: { href: string; label: str
         <div className="shrink-0 leading-tight"><p className="font-serif text-lg font-semibold">{priceText}</p><Link href="/terma" className="text-xs text-gold-text underline underline-offset-2">Terma</Link></div>
         <Link href={href} className="inline-flex min-h-12 flex-1 items-center justify-center rounded-md border border-b-[3px] border-ink border-b-gold bg-ink px-5 text-base font-semibold text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-info">{label}</Link>
       </div>
+    </div>
+  );
+}
+
+// Petikan peserta: satu kad utama gelap (satu-satunya momen berani), selebihnya kad tenang. Teks asal peserta, tanpa suntingan.
+export function Testimonials({ block, note }: { block: Block<{ quote: string; name: string; featured: boolean }[]>; note: string }) {
+  const [first, ...rest] = [...block.value].sort((a, b) => Number(b.featured) - Number(a.featured));
+  if (!first) return null;
+  return (
+    <div>
+      <figure className="relative overflow-hidden rounded-xl bg-ink p-6 text-paper">
+        <span aria-hidden className="absolute inset-x-0 top-0 h-[3px] bg-gold" />
+        <span aria-hidden className="font-serif text-6xl leading-none text-gold">&ldquo;</span>
+        <blockquote className="-mt-3 font-serif text-2xl font-semibold leading-snug">{first.quote}</blockquote>
+        <figcaption className="mt-4 text-sm"><span className="font-semibold">{first.name}</span><span className="block opacity-70">Peserta kelas langsung</span></figcaption>
+      </figure>
+      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+        {rest.map((t) => (
+          <figure key={t.name} className="rounded-xl border border-border border-l-4 border-l-gold bg-surface p-4">
+            <blockquote className="text-[15px] leading-relaxed">&ldquo;{t.quote}&rdquo;</blockquote>
+            <figcaption className="mt-3 text-sm"><span className="font-semibold">{t.name}</span><span className="block text-muted">Peserta kelas langsung</span></figcaption>
+          </figure>
+        ))}
+      </div>
+      <p className="mt-3 text-xs text-muted">{note}</p>
     </div>
   );
 }

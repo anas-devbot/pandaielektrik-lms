@@ -41,6 +41,17 @@ export const LANDING = {
     "Bukan sijil kompetensi. Ini sijil penyertaan atau pencapaian daripada AHZ Teknik.",
     "Tidak memberi kebenaran untuk membuat kerja pendawaian yang dikawal Suruhanjaya Tenaga.",
   ],
+  // Petikan asal peserta kelas langsung (31 Mac dan 1 April 2026), dengan kebenaran mereka (diberi semasa Google Meet).
+  // JANGAN tambah petikan yang menyebut peserta boleh/mampu/yakin membuat kerja pendawaian (peraturan 10; dijaga oleh ujian).
+  testimonials: {
+    approved: true,
+    value: [
+      { quote: "Kursus asas elektrik, walaupun online, memang boleh bagi kefahaman yang sangat jelas.", name: "Kornain Othman", featured: true },
+      { quote: "Saya dapat memahami setiap item yang digunakan dalam pendawaian elektrik single phase di rumah. Jadi tempat rujukan, sebab selama ini saya hanya menggunakan YouTube dan Google sahaja.", name: "Muhammad Nazmi bin Muhammad Fauzi", featured: false },
+      { quote: "Terima kasih cikgu kerana memberi penerangan yang ringkas dan padat.", name: "Lanun Darat", featured: false },
+    ],
+  } as Block<{ quote: string; name: string; featured: boolean }[]>,
+  testimonialNote: "Petikan daripada mesej peserta kelas langsung Asas Elektrik AHZ Teknik, 31 Mac dan 1 April 2026, dengan kebenaran mereka.",
   instructor: { approved: false, value: { name: "Saiful", role: "Pengajar, AHZ Teknik", bio: "[Menunggu bio daripada Saiful dan kelulusan AHZ]", photo: null as string | null } } as Block<{ name: string; role: string; bio: string; photo: string | null }>,
   faq: { approved: false, value: [{ q: "[Menunggu soalan lazim daripada Saiful]", a: "[Menunggu jawapan yang diluluskan AHZ]" }] } as Block<{ q: string; a: string }[]>,
   certificate: { approved: false, value: { caption: "[Menunggu kelulusan AHZ untuk contoh sijil]" } } as Block<{ caption: string }>,

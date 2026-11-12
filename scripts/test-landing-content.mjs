@@ -15,4 +15,9 @@ for (const k of ["instructor", "faq", "certificate", "refundNote"]) {
   assert.equal(b.approved, false, `${k} belum diluluskan AHZ`);
   assert.ok(JSON.stringify(b.value).includes("[Menunggu"), `${k} mesti bertanda [Menunggu`);
 }
+const quotes = JSON.stringify(LANDING.testimonials.value).toLowerCase();
+for (const w of ["melaksanakan pendawaian", "troubleshooting", "yakin melakukan", "mampu", "boleh membuat", "tidak ada lagi was"]) {
+  assert.ok(!quotes.includes(w), `petikan testimoni mengandungi dakwaan terlarang: "${w}"`);
+}
+assert.ok(LANDING.testimonials.value.every((t) => t.name && t.quote), "setiap petikan ada nama");
 console.log("test-landing-content: OK");
