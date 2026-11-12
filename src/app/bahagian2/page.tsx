@@ -20,7 +20,7 @@ export default async function Page() {
   const row = (t: "subjective" | "schematic") => {
     const s = latest(t);
     return (
-      <li key={t} className="rounded border p-3">
+      <li key={t} className="rounded-md border border-border bg-surface p-3">
         <p className="font-medium">{LABEL[t]}</p>
         {!s ? <p className="text-sm">Belum dihantar.</p> : (
           <>
@@ -43,18 +43,18 @@ export default async function Page() {
       <Link className="text-sm underline" href="/dashboard">&larr; Dashboard</Link>
       <h1 className="mt-2 text-2xl font-semibold">Bahagian 2: subjektif dan skematik</h1>
       {!open && enrollment.stage !== "theory_passed" && enrollment.stage !== "practical" && enrollment.stage !== "completed"
-        ? <p role="status" className="mt-3 rounded border border-amber-500 p-3">Bahagian 2 dibuka selepas ujian akhir lulus.</p>
+        ? <p role="status" className="mt-3 rounded-md border bg-surface border-warning p-3">Bahagian 2 dibuka selepas ujian akhir lulus.</p>
         : <>
             <p className="mt-2 text-sm">Kedua-dua item wajib. Penilai memberi keputusan lulus atau tolak dengan komen. Jika ditolak, anda boleh hantar semula. Skematik boleh dilukis orang lain.</p>
             {/* Soalan sebenar daripada AHZ dalam config (subjective_prompt / schematic_prompt): belum disediakan */}
-            <section className="mt-3 rounded border p-3 text-sm">
+            <section className="mt-3 rounded-md border border-border bg-surface p-3 text-sm">
               <p><b>Soalan subjektif:</b> {String(cfg.subjective_prompt ?? "PENANDA TEMPAT: soalan subjektif menunggu AHZ")}</p>
               <p className="mt-1"><b>Arahan skematik:</b> {String(cfg.schematic_prompt ?? "PENANDA TEMPAT: arahan skematik menunggu AHZ")}</p>
             </section>
           </>}
       <ul className="mt-4 flex flex-col gap-2">{row("subjective")}{row("schematic")}</ul>
       {(needText || needFile) && <Part2Form needText={needText} needFile={needFile} maxMb={Number.isFinite(maxMb) ? maxMb : 10} />}
-      {enrollment.stage === "theory_passed" && <p className="mt-4 rounded border border-green-600 p-3">Bahagian 2 lulus. Teori lulus.</p>}
+      {enrollment.stage === "theory_passed" && <p className="mt-4 rounded-md border bg-surface border-success p-3">Bahagian 2 lulus. Teori lulus.</p>}
     </main>
   );
 }

@@ -42,31 +42,31 @@ export default async function Page() {
       <p className="text-sm">{p.fullName}</p>
 
       {done ? (
-        <p role="status" className="mt-3 rounded border border-green-600 p-3">Keputusan praktikal: LULUS.{e?.practical_comment ? ` ${e.practical_comment}` : ""}</p>
+        <p role="status" className="mt-3 rounded-md border bg-surface border-success p-3">Keputusan praktikal: LULUS.{e?.practical_comment ? ` ${e.practical_comment}` : ""}</p>
       ) : approved ? (
-        <section role="status" className="mt-3 rounded border border-green-600 p-3">
+        <section role="status" className="mt-3 rounded-md border bg-surface border-success p-3">
           <p className="font-medium">Kebenaran memasukkan bekalan telah direkodkan oleh AHZ pada {fmt(e!.energize_approved_at!)}.</p>
           {guidance && <p className="mt-2 whitespace-pre-wrap text-sm">{guidance}</p>}
           <p className="mt-2 text-sm">Selepas itu, penilai akan merekod keputusan praktikal anda.</p>
         </section>
       ) : (
-        <p role="status" className="mt-3 rounded border border-red-600 p-3 font-medium text-red-700">{String(cfg.energize_waiting_notice ?? WAITING)}</p>
+        <p role="status" className="mt-3 rounded-md border bg-surface border-error p-3 font-medium text-error">{String(cfg.energize_waiting_notice ?? WAITING)}</p>
       )}
 
-      {e?.practical_result === "belum" && <p className="mt-3 rounded border border-amber-500 p-3 text-sm">Keputusan terakhir: belum lulus. {e.practical_comment} Hantar semula borang dan video untuk semakan baharu.</p>}
+      {e?.practical_result === "belum" && <p className="mt-3 rounded-md border bg-surface border-warning p-3 text-sm">Keputusan terakhir: belum lulus. {e.practical_comment} Hantar semula borang dan video untuk semakan baharu.</p>}
 
       <ol className="mt-4 flex flex-col gap-3">
-        <li className="rounded border p-3">
+        <li className="rounded-md border border-border bg-surface p-3">
           <h2 className="font-medium">1. Borang bertandatangan</h2>
           {form ? <p className="text-sm">{ST[form.status as keyof typeof ST]} (percubaan {form.attempt_no}). {form.comment && `Komen: ${form.comment}`} <a className="underline" href={`/api/submissions/${form.id}/file`} target="_blank">Lihat fail</a></p> : <p className="text-sm">Belum dihantar.</p>}
           {!done && active && form?.status !== "pending" && <BorangForm />}
           {form?.status === "pending" && <p className="mt-1 text-xs">Sedang disemak: hantar semula hanya selepas semakan selesai.</p>}
         </li>
-        <li className="rounded border p-3">
+        <li className="rounded-md border border-border bg-surface p-3">
           <h2 className="font-medium">2. Tugasan pada papan (TANPA bekalan)</h2>
           <p className="text-sm">{String(cfg.practical_task_text ?? "PENANDA TEMPAT: arahan tugasan praktikal daripada AHZ (Ujian Amali Papan Bay).")}</p>
         </li>
-        <li className="rounded border p-3">
+        <li className="rounded-md border border-border bg-surface p-3">
           <h2 className="font-medium">3. Video pengujian ke Telegram group</h2>
           {e?.telegram_invite_link ? <p className="text-sm"><a className="underline" href={e.telegram_invite_link}>Pautan jemputan Telegram group</a></p> : <p className="text-sm">Pautan jemputan belum disediakan. Hubungi AHZ.</p>}
           {video ? <p className="mt-1 text-sm">{ST[video.status as keyof typeof ST]} (percubaan {video.attempt_no}). Rujukan: {video.external_ref}. {video.comment && `Komen: ${video.comment}`}</p> : <p className="mt-1 text-sm">Belum diisytiharkan.</p>}

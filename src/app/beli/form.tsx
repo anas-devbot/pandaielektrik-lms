@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { buatPesanan } from "./actions";
+import { Button } from "@/components/button";
 
 export default function BeliForm({ sla }: { sla?: number }) {
   const [state, action, pending] = useActionState(buatPesanan, undefined);
@@ -13,8 +14,8 @@ export default function BeliForm({ sla }: { sla?: number }) {
         <input name="terms" type="checkbox" required className="mt-1" />
         <span>Saya bersetuju dengan <Link className="underline" href="/terma" target="_blank">terma dan syarat</Link>, termasuk polisi refund.</span>
       </label>
-      {state?.error && <p role="alert" className="text-sm text-red-600">{state.error}</p>}
-      <button disabled={pending} className="rounded bg-black p-2 text-white disabled:opacity-50">{pending ? "Sedang proses..." : "Teruskan ke pembayaran"}</button>
+      {state?.error && <p role="alert" className="text-sm text-error">{state.error}</p>}
+      <Button type="submit" loading={pending}>Teruskan ke pembayaran</Button>
     </form>
   );
 }

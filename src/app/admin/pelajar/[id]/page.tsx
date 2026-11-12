@@ -60,19 +60,19 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
       {!e.refunded_at && (<>
         <h2 className="mt-6 text-lg font-medium">Tindakan (semua direkod dalam admin_actions)</h2>
-        <section className="mt-2 rounded border p-3"><h3 className="font-medium">Lanjut tempoh akses</h3>
+        <section className="mt-2 rounded-md border border-border bg-surface p-3"><h3 className="font-medium">Lanjut tempoh akses</h3>
           <OpForm op="extend_access" hidden={{ enrollment: id }} fields={[{ name: "days", label: "Hari tambahan (1 hingga 365)", type: "number", required: true, defaultValue: 30 }, { name: "reason", label: "Sebab (wajib)", required: true }]} submit="Lanjutkan" /></section>
-        <section className="mt-3 rounded border p-3"><h3 className="font-medium">Tambah percubaan ujian akhir</h3>
+        <section className="mt-3 rounded-md border border-border bg-surface p-3"><h3 className="font-medium">Tambah percubaan ujian akhir</h3>
           <OpForm op="extra_attempts" hidden={{ enrollment: id }} fields={[{ name: "count", label: "Bilangan", type: "number", required: true, defaultValue: 1 }, { name: "reason", label: "Sebab (wajib)", required: true }]} submit="Tambah" /></section>
-        <section className="mt-3 rounded border p-3"><h3 className="font-medium">Sahkan identiti</h3><p className="text-xs">Hanya diperlukan jika flag identiti dihidupkan untuk jenis sijil.</p>
+        <section className="mt-3 rounded-md border border-border bg-surface p-3"><h3 className="font-medium">Sahkan identiti</h3><p className="text-xs">Hanya diperlukan jika flag identiti dihidupkan untuk jenis sijil.</p>
           <OpForm op="verify_identity" hidden={{ enrollment: id }} fields={[{ name: "method", label: "Kaedah (cth. semak kad pengenalan di sesi)", required: true }, { name: "reason", label: "Sebab (wajib)", required: true }]} submit="Sahkan" /></section>
-        <section className="mt-3 rounded border p-3"><h3 className="font-medium">Pautan jemputan Telegram</h3>
+        <section className="mt-3 rounded-md border border-border bg-surface p-3"><h3 className="font-medium">Pautan jemputan Telegram</h3>
           <OpForm op="telegram_link" hidden={{ enrollment: id }} fields={[{ name: "link", label: "https://t.me/+...", required: true }]} submit="Tetapkan" /></section>
-        {validCert.map((c) => <section key={c.id} className="mt-3 rounded border p-3"><h3 className="font-medium">Batalkan sijil {c.cert_id}</h3><p className="text-xs">Pelajar boleh mengeluarkan semula dengan nama betul.</p>
+        {validCert.map((c) => <section key={c.id} className="mt-3 rounded-md border border-border bg-surface p-3"><h3 className="font-medium">Batalkan sijil {c.cert_id}</h3><p className="text-xs">Pelajar boleh mengeluarkan semula dengan nama betul.</p>
           <OpForm op="revoke_cert" hidden={{ certificate: c.id, back: id }} fields={[{ name: "reason", label: "Sebab (wajib)", required: true }]} submit="Batalkan sijil" danger /></section>)}
       </>)}
 
-      <section className="mt-6 rounded border p-3"><h3 className="font-medium">Tukar nombor telefon</h3>
+      <section className="mt-6 rounded-md border border-border bg-surface p-3"><h3 className="font-medium">Tukar nombor telefon</h3>
         <p className="text-xs">Untuk pelajar yang tukar nombor atau belum ada telefon. Nombor tidak disimpan dalam log tindakan.</p>
         <OpForm op="edit_phone" hidden={{ enrollment: id, user: e.user_id }} fields={[{ name: "phone", label: "Nombor telefon (cth. 0123456789)", required: true, defaultValue: prof?.phone ?? "" }, { name: "reason", label: "Sebab (wajib)", required: true }]} submit="Kemas kini telefon" /></section>
 

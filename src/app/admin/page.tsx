@@ -35,7 +35,7 @@ export default async function Page() {
   const nm = (x: unknown) => ((x as { enrollments?: { profiles?: { full_name: string } | null } | null; profiles?: { full_name: string } | null }).enrollments?.profiles ?? (x as { profiles?: { full_name: string } | null }).profiles)?.full_name ?? "?";
   const stuckRows = (stuck.data ?? []) as { enrollment_id: string; full_name: string; email: string; phone: string | null; reason: keyof typeof L; detail: Record<string, number>; last_activity: string; access_ends_at: string }[];
   const msg = (r: (typeof stuckRows)[number]) => TPL[r.reason].replace("{nama}", r.full_name).replace("{hari}", String(r.detail.days ?? r.detail.days_left ?? "")).replace("{tarikh}", new Intl.DateTimeFormat("ms-MY", { timeZone: "Asia/Kuala_Lumpur" }).format(new Date(r.access_ends_at)));
-  const Row = ({ href, children }: { href: string; children: React.ReactNode }) => <li className="rounded border p-2 text-sm"><Link className="underline" href={href}>{children}</Link></li>;
+  const Row = ({ href, children }: { href: string; children: React.ReactNode }) => <li className="rounded-md border border-border bg-surface p-2 text-sm"><Link className="underline" href={href}>{children}</Link></li>;
 
   return (
     <main className="py-4">
@@ -58,7 +58,7 @@ export default async function Page() {
 
       <section className="mt-4"><h2 className="font-medium">Bayaran perlu semakan ({events.data?.length ?? 0})</h2>
         <p className="text-xs">Callback sah tetapi tidak membuka akses: bayaran berganda pada order yang sudah dibayar (pelanggan dicaj dua kali: perlu refund manual), amaun tidak sepadan, atau order tidak dikenali.</p>
-        <ul className="mt-1 flex flex-col gap-1">{(events.data ?? []).map((e) => <li key={e.id} className="rounded border border-amber-500 p-2 text-sm">{e.outcome} · order {e.order_number} · {e.amount !== null ? `RM${(e.amount / 100).toFixed(2)}` : "-"} · {e.transaction_id} · {fmt(e.received_at)}</li>)}</ul>
+        <ul className="mt-1 flex flex-col gap-1">{(events.data ?? []).map((e) => <li key={e.id} className="rounded-md border bg-surface border-warning p-2 text-sm">{e.outcome} · order {e.order_number} · {e.amount !== null ? `RM${(e.amount / 100).toFixed(2)}` : "-"} · {e.transaction_id} · {fmt(e.received_at)}</li>)}</ul>
         {(events.data?.length ?? 0) === 0 && <p className="text-sm">Tiada.</p>}</section>
 
       <section className="mt-4"><h2 className="font-medium">Pelajar tersangkut ({stuckRows.length})</h2>
@@ -66,7 +66,7 @@ export default async function Page() {
         {(Object.keys(L) as (keyof typeof L)[]).map((reason) => { const rows = stuckRows.filter((r) => r.reason === reason); return rows.length === 0 ? null : (
           <div key={reason} className="mt-2"><h3 className="text-sm font-medium">{L[reason]} ({rows.length})</h3>
             <ul className="mt-1 flex flex-col gap-1">{rows.map((r) => (
-              <li key={r.enrollment_id + reason} className="rounded border p-2 text-sm">
+              <li key={r.enrollment_id + reason} className="rounded-md border border-border bg-surface p-2 text-sm">
                 <Link className="underline" href={`/admin/pelajar/${r.enrollment_id}`}>{r.full_name}</Link> · {r.email}{r.phone ? ` · ${r.phone}` : ""} ·{" "}
                 {reason === "tiada_aktiviti" ? `${r.detail.days} hari tanpa aktiviti` : reason === "mcq_had_habis" ? `${r.detail.attempts}/${r.detail.limit} percubaan` : `${r.detail.days_left} hari baki akses`} · <CopyMsg text={msg(r)} />
               </li>))}</ul></div>); })}

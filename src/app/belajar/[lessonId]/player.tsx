@@ -67,7 +67,7 @@ export default function Player(props: { lessonId: string; provider: string; vide
         <span aria-hidden className="pointer-events-none absolute select-none text-xs text-white/40 transition-all duration-1000"
           style={{ top: `${wm.top}%`, left: `${wm.left}%` }}>{props.watermark}</span>
       </div>
-      {closed ? <p role="status" className="mt-2 text-sm text-red-600">Akses telah tamat. Kemajuan tidak lagi direkod.</p>
+      {closed ? <p role="status" className="mt-2 text-sm text-error">Akses telah tamat. Kemajuan tidak lagi direkod.</p>
         : <p role="status" className="mt-2 text-sm">Kemajuan: {pct}% saat unik ditonton{done ? " · Selesai" : ""}</p>}
     </div>
   );

@@ -1,16 +1,17 @@
 "use client";
 import { useActionState } from "react";
 import { logMasuk } from "./actions";
+import { Button } from "@/components/button";
 
 export default function LogMasukForm({ next }: { next: string }) {
   const [state, action, pending] = useActionState(logMasuk, undefined);
   return (
     <form action={action} className="mt-4 flex flex-col gap-3">
       <input type="hidden" name="next" value={next} />
-      <input name="email" type="email" defaultValue={state?.email} placeholder="Emel" required autoComplete="email" className="rounded border p-2" />
-      <input name="password" type="password" placeholder="Kata laluan" required autoComplete="current-password" className="rounded border p-2" />
-      {state?.error && <p role="alert" className="text-sm text-red-600">{state.error}</p>}
-      <button disabled={pending} className="rounded bg-black p-2 text-white disabled:opacity-50">{pending ? "Sedang log masuk..." : "Log masuk"}</button>
+      <input name="email" type="email" defaultValue={state?.email} placeholder="Emel" required autoComplete="email" className="rounded-md border border-border bg-surface p-3" />
+      <input name="password" type="password" placeholder="Kata laluan" required autoComplete="current-password" className="rounded-md border border-border bg-surface p-3" />
+      {state?.error && <p role="alert" className="text-sm text-error">{state.error}</p>}
+      <Button type="submit" loading={pending}>Log masuk</Button>
     </form>
   );
 }

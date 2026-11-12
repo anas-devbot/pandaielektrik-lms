@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { requireRole } from "@/lib/auth";
 import { adminClient } from "@/lib/supabase/admin";
 import { luluskanBekalan, rekodKeputusan, semakPraktikal, tuntutPraktikal } from "../../praktikal-actions";
+import { buttonClass } from "@/components/button";
 
 export const dynamic = "force-dynamic";
 const nowMs = () => Date.now();
@@ -37,13 +38,13 @@ export default async function Page({ params, searchParams }: { params: Promise<{
       <Link className="text-sm underline" href="/staff">&larr; Queue</Link>
       <h1 className="mt-2 text-2xl font-semibold">Praktikal: {name}</h1>
       <p className="text-sm">Stage: {e.stage} · Trek: {e.cert_track ?? "-"} · Keputusan: {e.practical_result ?? "-"}</p>
-      {ralat && <p role="alert" className="mt-2 text-sm text-red-600">{ralat}</p>}
+      {ralat && <p role="alert" className="mt-2 text-sm text-error">{ralat}</p>}
 
-      {pending.length > 0 && !mine && (heldByOther ? <p className="mt-3 rounded border border-amber-500 p-3 text-sm">Item ini sedang dipegang penilai lain.</p> : (
-        <form action={tuntutPraktikal} className="mt-3"><input type="hidden" name="enrollment" value={enrollmentId} /><button className="rounded bg-black px-4 py-2 text-white">Tuntut untuk semak</button></form>))}
+      {pending.length > 0 && !mine && (heldByOther ? <p className="mt-3 rounded-md border bg-surface border-warning p-3 text-sm">Item ini sedang dipegang penilai lain.</p> : (
+        <form action={tuntutPraktikal} className="mt-3"><input type="hidden" name="enrollment" value={enrollmentId} /><button className={buttonClass("primary")}>Tuntut untuk semak</button></form>))}
 
       {items.map((s) => (
-        <section key={s.id} className="mt-4 rounded border p-3">
+        <section key={s.id} className="mt-4 rounded-md border border-border bg-surface p-3">
           <h2 className="font-medium">{s.type === "form" ? "Borang bertandatangan" : "Deklarasi video (Telegram)"} · percubaan {s.attempt_no} · {s.status}</h2>
           {s.type === "form" && (
             // eslint-disable-next-line @next/next/no-img-element
@@ -54,17 +55,17 @@ export default async function Page({ params, searchParams }: { params: Promise<{
           {s.status === "pending" && mine && (
             <form action={semakPraktikal} className="mt-3 flex flex-col gap-2">
               <input type="hidden" name="submission" value={s.id} /><input type="hidden" name="enrollment" value={enrollmentId} />
-              <textarea name="comment" rows={2} placeholder="Komen (wajib jika ditolak)" className="rounded border p-2 text-sm" />
+              <textarea name="comment" rows={2} placeholder="Komen (wajib jika ditolak)" className="rounded-md border border-border bg-surface p-2 text-sm" />
               <div className="flex gap-2">
-                <button name="decision" value="approved" className="rounded bg-green-700 px-3 py-1 text-white">Terima</button>
-                <button name="decision" value="rejected" className="rounded bg-red-700 px-3 py-1 text-white">Tolak</button>
+                <button name="decision" value="approved" className={buttonClass("primary")}>Terima</button>
+                <button name="decision" value="rejected" className={buttonClass("danger")}>Tolak</button>
               </div>
             </form>)}
         </section>))}
       {items.length === 0 && <p className="mt-4">Tiada penghantaran.</p>}
 
       {e.stage === "practical" && e.practical_result !== "lulus" && (
-        <section className="mt-6 rounded border-2 border-red-600 p-3">
+        <section className="mt-6 rounded-md border bg-surface-2 border-error p-3">
           <h2 className="font-semibold">Kebenaran memasukkan bekalan</h2>
           {approved ? (
             <p className="mt-1 text-sm">Direkodkan pada {fmt(e.energize_approved_at!)}. Terikat pada deklarasi video semasa; hantar semula video atau borang membatalkannya secara automatik.</p>
@@ -73,10 +74,10 @@ export default async function Page({ params, searchParams }: { params: Promise<{
               <form action={luluskanBekalan} className="mt-2 flex flex-col gap-2">
                 <input type="hidden" name="enrollment" value={enrollmentId} /><input type="hidden" name="video" value={video.id} />
                 <p className="text-sm">Teks panduan keselamatan AHZ yang akan direkodkan bersama kelulusan:</p>
-                <pre className="whitespace-pre-wrap rounded border bg-zinc-50 p-2 text-sm text-black">{guidance || "(BELUM DITETAPKAN: kelulusan akan ditolak)"}</pre>
+                <pre className="whitespace-pre-wrap rounded-md border border-border bg-surface bg-surface p-2 text-sm text-ink">{guidance || "(BELUM DITETAPKAN: kelulusan akan ditolak)"}</pre>
                 <label className="flex items-start gap-2 text-sm"><input name="confirm" type="checkbox" required className="mt-1" />
                   <span>Saya telah menyemak borang dan video di Telegram, dan meluluskan ini secara manual. Sistem tidak menjana kebenaran ini.</span></label>
-                <button className="rounded bg-red-700 p-2 text-white">Luluskan kebenaran memasukkan bekalan</button>
+                <button className={buttonClass("danger")}>Luluskan kebenaran memasukkan bekalan</button>
               </form>
             ) : <p className="mt-1 text-sm">Borang dan video telah diterima. Hanya <b>approver</b> AHZ boleh meluluskan kebenaran bekalan.</p>
           ) : <p className="mt-1 text-sm">Belum boleh diluluskan: borang dan video terkini mesti disemak dan diterima dahulu.</p>}
@@ -84,13 +85,13 @@ export default async function Page({ params, searchParams }: { params: Promise<{
       )}
 
       {approved && e.stage === "practical" && e.practical_result !== "lulus" && me.role !== "admin" && (
-        <section className="mt-4 rounded border p-3">
+        <section className="mt-4 rounded-md border border-border bg-surface p-3">
           <h2 className="font-medium">Rekod keputusan praktikal (selepas bekalan dimasukkan di luar sistem)</h2>
           <form action={rekodKeputusan} className="mt-2 flex flex-col gap-2">
             <input type="hidden" name="enrollment" value={enrollmentId} />
-            <textarea name="comment" rows={2} placeholder="Komen (wajib jika belum lulus)" className="rounded border p-2 text-sm" />
-            <div className="flex gap-2"><button name="result" value="lulus" className="rounded bg-green-700 px-3 py-1 text-white">Lulus</button>
-              <button name="result" value="belum" className="rounded bg-red-700 px-3 py-1 text-white">Belum</button></div>
+            <textarea name="comment" rows={2} placeholder="Komen (wajib jika belum lulus)" className="rounded-md border border-border bg-surface p-2 text-sm" />
+            <div className="flex gap-2"><button name="result" value="lulus" className={buttonClass("primary")}>Lulus</button>
+              <button name="result" value="belum" className={buttonClass("danger")}>Belum</button></div>
           </form>
         </section>
       )}

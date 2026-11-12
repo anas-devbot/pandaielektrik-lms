@@ -52,7 +52,7 @@ export default async function Page() {
       {groups.size === 0 ? <p className="mt-4">Tiada item menunggu semakan.</p> : (
         <ul className="mt-4 flex flex-col gap-2">
           {[...groups].map(([eid, g]) => (
-            <li key={eid} className="rounded border p-3">
+            <li key={eid} className="rounded-md border border-border bg-surface p-3">
               <Link className="font-medium underline" href={`/staff/semak/${eid}`}>{g.name}</Link>
               <p className="text-sm">{g.types.join(" + ")} · sejak {fmt.format(new Date(g.since))}
                 {g.holder && ` · dituntut ${g.mine ? "oleh anda" : `oleh ${g.holder}`}`}</p>
@@ -60,9 +60,9 @@ export default async function Page() {
         </ul>)}
       <h2 className="mt-8 text-lg font-medium">Praktikal</h2>
       <ul className="mt-2 flex flex-col gap-2 text-sm">
-        {[...pgroups].map(([eid, g]) => <li key={eid} className="rounded border p-3"><Link className="font-medium underline" href={`/staff/praktikal/${eid}`}>{g.name}</Link>: semak {g.types.join(" + ")}</li>)}
-        {waitApproval.map((x) => <li key={x.id} className="rounded border border-red-600 p-3"><Link className="font-medium underline" href={`/staff/praktikal/${x.id}`}>{pname(x)}</Link>: menunggu kelulusan bekalan (approver)</li>)}
-        {waitResult.map((x) => <li key={x.id} className="rounded border p-3"><Link className="font-medium underline" href={`/staff/praktikal/${x.id}`}>{pname(x)}</Link>: menunggu keputusan praktikal</li>)}
+        {[...pgroups].map(([eid, g]) => <li key={eid} className="rounded-md border border-border bg-surface p-3"><Link className="font-medium underline" href={`/staff/praktikal/${eid}`}>{g.name}</Link>: semak {g.types.join(" + ")}</li>)}
+        {waitApproval.map((x) => <li key={x.id} className="rounded-md border bg-surface border-error p-3"><Link className="font-medium underline" href={`/staff/praktikal/${x.id}`}>{pname(x)}</Link>: menunggu kelulusan bekalan (approver)</li>)}
+        {waitResult.map((x) => <li key={x.id} className="rounded-md border border-border bg-surface p-3"><Link className="font-medium underline" href={`/staff/praktikal/${x.id}`}>{pname(x)}</Link>: menunggu keputusan praktikal</li>)}
         {pgroups.size + waitApproval.length + waitResult.length === 0 && <li>Tiada tindakan praktikal.</li>}
       </ul>
       <form action={logKeluar} className="mt-8"><button className="underline">Log keluar</button></form>

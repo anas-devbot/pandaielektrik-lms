@@ -29,12 +29,12 @@ export default async function Page() {
       <p className="mt-1 text-sm">Anda boleh bertanya admin AHZ dahulu sebelum memohon. Memohon di sini hanya mengeluarkan surat refund: akses anda <strong>tidak ditutup</strong> sehingga surat bertandatangan dihantar, admin meluluskan dan wang dipulangkan.</p>
 
       {enrollment.refunded_at ? (
-        <p role="status" className="mt-4 rounded border border-green-600 p-3">Refund telah diproses pada {fmt(enrollment.refunded_at)}. Akses ditutup dan sijil (jika ada) dibatalkan.</p>
+        <p role="status" className="mt-4 rounded-md border bg-surface border-success p-3">Refund telah diproses pada {fmt(enrollment.refunded_at)}. Akses ditutup dan sijil (jika ada) dibatalkan.</p>
       ) : !snap ? (
         <p className="mt-4 text-sm">Tiada bayaran direkodkan untuk pendaftaran ini, jadi refund tidak terpakai.</p>
       ) : (
         <>
-          <section className="mt-4 rounded border p-3">
+          <section className="mt-4 rounded-md border border-border bg-surface p-3">
             <h2 className="font-medium">Semakan kelayakan</h2>
             <ul className="mt-1 text-sm">
               <Item ok={snap.window_ok}>Dalam tempoh {snap.window_days} hari dari bayaran (sehingga {fmt(snap.deadline)}).</Item>
@@ -47,11 +47,11 @@ export default async function Page() {
 
           {!current || ["rejected"].includes(current.status) ? (
             <>
-              {current?.status === "rejected" && <p className="mt-3 rounded border border-amber-500 p-3 text-sm">Permohonan terdahulu ditolak.{current.decision_note ? ` Sebab: ${current.decision_note}` : ""}</p>}
-              {snap.window_ok ? <MohonForm /> : <p className="mt-4 rounded border border-amber-500 p-3 text-sm">Tempoh permohonan refund telah tamat.</p>}
+              {current?.status === "rejected" && <p className="mt-3 rounded-md border bg-surface border-warning p-3 text-sm">Permohonan terdahulu ditolak.{current.decision_note ? ` Sebab: ${current.decision_note}` : ""}</p>}
+              {snap.window_ok ? <MohonForm /> : <p className="mt-4 rounded-md border bg-surface border-warning p-3 text-sm">Tempoh permohonan refund telah tamat.</p>}
             </>
           ) : (
-            <section className="mt-4 rounded border p-3">
+            <section className="mt-4 rounded-md border border-border bg-surface p-3">
               <h2 className="font-medium">Permohonan anda ({fmt(current.created_at)})</h2>
               {current.status === "auto_failed" && <p role="status" className="mt-1 text-sm">Permohonan tidak lulus semakan automatik, jadi surat refund tidak dikeluarkan. Sila hubungi admin AHZ.</p>}
               {current.status === "letter_issued" && (

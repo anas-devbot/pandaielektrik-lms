@@ -27,7 +27,7 @@ export default async function Page() {
         const en = r.enrollments as unknown as { order_id: string; profiles: { full_name: string } | null } | null;
         const o = en ? orders.get(en.order_id) : undefined; const s = r.auto_check_snapshot as Record<string, unknown> | null;
         return (
-          <section key={r.id} className="mt-4 rounded border p-3">
+          <section key={r.id} className="mt-4 rounded-md border border-border bg-surface p-3">
             <h2 className="font-medium">{en?.profiles?.full_name ?? "?"} · {o?.order_number ?? "-"} · RM{o ? (o.amount / 100).toFixed(2) : "-"}</h2>
             <p className="text-sm"><b>{LABEL[r.status] ?? r.status}</b> · dimohon {fmt(r.created_at)}</p>
             {s && <p className="text-xs">Semakan: tempoh {String(s.window_ok)} · progres {String(s.progress_pct)}% (had &lt;{String(s.progress_max_pct)}%) · penghantaran {String(s.submissions)} · Ujian akhir {String(s.final_attempts)} · PDF {String(s.pdf_downloads)}{s.pdf_max !== null ? `/${String(s.pdf_max)}` : ""} → {s.eligible ? "LAYAK" : "TIDAK LAYAK"}</p>}

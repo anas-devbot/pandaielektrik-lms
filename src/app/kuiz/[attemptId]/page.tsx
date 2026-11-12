@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { quizContext, rpc } from "@/lib/quiz";
 import { hantar } from "../actions";
+import { buttonClass } from "@/components/button";
 
 export const dynamic = "force-dynamic";
 
@@ -28,20 +29,22 @@ export default async function Page({ params }: { params: Promise<{ attemptId: st
     );
   }
   return (
-    <main className="mx-auto w-full max-w-2xl p-6">
+    <main className="mx-auto w-full max-w-2xl px-4 py-6">
       <h1 className="text-2xl font-semibold">Ujian akhir (percubaan {a.attempt_no})</h1>
       <form action={hantar} className="mt-4 flex flex-col gap-4">
         <input type="hidden" name="attempt" value={attemptId} />
         {questions.map((q, i) => (
-          <fieldset key={q.id} className="rounded border p-3">
-            <legend className="px-1 font-medium">{i + 1}. {q.body}</legend>
-            {q.options.map((o) => (
-              <label key={o.id} className="mt-1 flex items-start gap-2 text-sm">
-                <input type="radio" name={`q_${q.id}`} value={o.id} className="mt-1" /><span>{o.body}</span>
-              </label>))}
+          <fieldset key={q.id} className="rounded-md border border-border bg-surface p-4">
+            <legend className="px-1 font-serif text-lg font-semibold">{i + 1}. {q.body}</legend>
+            <div className="mt-2 flex flex-col gap-2">
+              {q.options.map((o) => (
+                <label key={o.id} className="flex min-h-12 cursor-pointer items-center gap-3 rounded-md border border-border px-3 text-base has-[:checked]:border-ink has-[:checked]:bg-paper">
+                  <input type="radio" name={`q_${q.id}`} value={o.id} className="size-5 accent-ink" /><span>{o.body}</span>
+                </label>))}
+            </div>
           </fieldset>
         ))}
-        <button className="rounded bg-black p-2 text-white">Hantar jawapan</button>
+        <button className={buttonClass("primary")}>Hantar jawapan</button>
       </form>
     </main>
   );

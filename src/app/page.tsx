@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getLanding, rm } from "@/lib/course";
 import { salesOpen } from "@/lib/sales";
+import { buttonClass } from "@/components/button";
 
 export const dynamic = "force-dynamic"; // tarikh live dikemas kini admin tanpa deploy (cache dibatal melalui tag "landing")
 
@@ -20,8 +21,8 @@ export default async function Home() {
           <p className="mt-4 text-2xl">{rm(course.price)} <span className="text-base">untuk seluruh program</span></p>
           <p className="text-sm">Bayaran tertakluk kepada <Link className="underline" href="/terma">terma dan syarat</Link>.</p>
           {open
-            ? <Link href="/beli" className="mt-4 inline-block rounded bg-black px-4 py-2 text-white">Daftar dan bayar</Link>
-            : <p className="mt-4 rounded border p-3">Pendaftaran belum dibuka. Sila kembali tidak lama lagi.</p>}
+            ? <Link href="/beli" className={buttonClass("primary", "mt-4 sm:w-auto")}>Daftar dan bayar</Link>
+            : <p className="mt-4 rounded-md border border-border bg-surface p-3">Pendaftaran belum dibuka. Sila kembali tidak lama lagi.</p>}
           <h2 className="mt-8 text-xl font-medium">Kursus live akan datang</h2>
           {sessions?.length ? (
             <ul className="mt-2 flex flex-col gap-2">

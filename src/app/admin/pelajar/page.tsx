@@ -3,6 +3,7 @@ import { requireRole } from "@/lib/auth";
 import { adminClient } from "@/lib/supabase/admin";
 import { PautanTelegram, RekodManual, TambahPercubaan } from "../forms";
 import { OpForm } from "../op-form";
+import { buttonClass } from "@/components/button";
 
 export const dynamic = "force-dynamic";
 const d = (iso: string) => new Intl.DateTimeFormat("ms-MY", { timeZone: "Asia/Kuala_Lumpur" }).format(new Date(iso));
@@ -20,18 +21,28 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ q
   return (
     <main className="py-4">
       <h1 className="text-2xl font-semibold">Pelajar &amp; enrollment</h1>
-      <form className="mt-3 flex gap-2"><input name="q" defaultValue={term} placeholder="Emel penuh atau nama" className="flex-1 rounded border p-2 text-sm" aria-label="Cari pelajar" /><button className="rounded bg-black px-3 text-white">Cari</button></form>
-      <table className="mt-3 w-full text-sm"><thead><tr className="text-left"><th>Nama</th><th>Stage</th><th>Trek</th><th>Akses hingga</th></tr></thead>
-        <tbody>{(rows ?? []).map((r) => <tr key={r.id} className="border-t"><td><Link className="underline" href={`/admin/pelajar/${r.id}`}>{(r.profiles as unknown as { full_name: string } | null)?.full_name ?? "?"}</Link></td><td>{r.stage}</td><td>{r.cert_track ?? "-"}</td><td>{r.refunded_at ? "refunded" : d(r.access_ends_at)}</td></tr>)}</tbody></table>
+      <form className="mt-3 flex gap-2"><input name="q" defaultValue={term} placeholder="Emel penuh atau nama" className="flex-1 rounded-md border border-border bg-surface p-2 text-sm" aria-label="Cari pelajar" /><button className={buttonClass("primary")}>Cari</button></form>
+      {/* Telefon: kad. Skrin lebar: jadual. */}
+      <ul className="mt-3 flex flex-col gap-2 sm:hidden">
+        {(rows ?? []).map((r) => (
+          <li key={r.id} className="rounded-md border border-border bg-surface p-3">
+            <Link className="font-semibold underline" href={`/admin/pelajar/${r.id}`}>{(r.profiles as unknown as { full_name: string } | null)?.full_name ?? "?"}</Link>
+            <p className="mt-1 text-sm text-muted">{r.stage} · {r.cert_track ?? "-"}</p>
+            <p className="text-sm text-muted">Akses: {r.refunded_at ? "refunded" : d(r.access_ends_at)}</p>
+          </li>
+        ))}
+      </ul>
+      <div className="mt-3 hidden overflow-x-auto sm:block"><table className="w-full text-sm"><thead><tr className="text-left"><th className="pr-3">Nama</th><th className="pr-3">Stage</th><th className="pr-3">Trek</th><th>Akses hingga</th></tr></thead>
+        <tbody>{(rows ?? []).map((r) => <tr key={r.id} className="border-t"><td><Link className="underline" href={`/admin/pelajar/${r.id}`}>{(r.profiles as unknown as { full_name: string } | null)?.full_name ?? "?"}</Link></td><td>{r.stage}</td><td>{r.cert_track ?? "-"}</td><td>{r.refunded_at ? "refunded" : d(r.access_ends_at)}</td></tr>)}</tbody></table></div>
       {(rows?.length ?? 0) === 0 && <p className="mt-3">Tiada hasil.</p>}
 
       <h2 className="mt-8 text-lg font-medium">Alat admin (berdasarkan emel)</h2>
-      <section className="mt-2 rounded border p-3"><h3 className="font-medium">Beri akses manual (tanpa bayaran)</h3>
+      <section className="mt-2 rounded-md border border-border bg-surface p-3"><h3 className="font-medium">Beri akses manual (tanpa bayaran)</h3>
         <p className="text-sm">Mencipta enrollment tanpa order, dengan sebab wajib.</p>
         <OpForm op="grant_manual" fields={[{ name: "email", label: "Emel pelajar", type: "email", required: true }, { name: "reason", label: "Sebab (wajib)", required: true }]} submit="Beri akses" /></section>
-      <section className="mt-4 rounded border p-3"><h3 className="font-medium">Tambah percubaan ujian akhir</h3><TambahPercubaan /></section>
-      <section className="mt-4 rounded border p-3"><h3 className="font-medium">Rekod penghantaran manual (sesi bantuan fasilitator)</h3><RekodManual /></section>
-      <section className="mt-4 rounded border p-3"><h3 className="font-medium">Pautan jemputan Telegram</h3><PautanTelegram /></section>
+      <section className="mt-4 rounded-md border border-border bg-surface p-3"><h3 className="font-medium">Tambah percubaan ujian akhir</h3><TambahPercubaan /></section>
+      <section className="mt-4 rounded-md border border-border bg-surface p-3"><h3 className="font-medium">Rekod penghantaran manual (sesi bantuan fasilitator)</h3><RekodManual /></section>
+      <section className="mt-4 rounded-md border border-border bg-surface p-3"><h3 className="font-medium">Pautan jemputan Telegram</h3><PautanTelegram /></section>
     </main>
   );
 }

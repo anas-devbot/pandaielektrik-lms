@@ -1,26 +1,99 @@
 @import "tailwindcss";
 
+/* Token reka bentuk: sumber kebenaran ialah DESIGN.md. Jangan tambah warna di luar sini tanpa kemas kini DESIGN.md. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --ink: #161616;
+  --paper: #faf9f6;
+  --surface: #ffffff;
+  --border: #e5e2da;
+  --muted: #5c5a55;
+  --gold-text: #8a6a00;
+  --gold: #c9a227;
+  --success: #1e7b4f;
+  --warning: #9a5b00;
+  --error: #b42318;
+  --info: #1d4ed8;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  :root:not([data-theme="light"]) {
+    --ink: #f2f0ea;
+    --paper: #121212;
+    --surface: #1c1c1c;
+    --border: #2e2c28;
+    --muted: #a8a49b;
+    --gold-text: #d4b04a;
+    --gold: #d4b04a;
+    --success: #4fb37f;
+    --warning: #d4913a;
+    --error: #f08070;
+    --info: #7ea6ff;
   }
 }
 
+:root[data-theme="dark"] {
+  --ink: #f2f0ea;
+  --paper: #121212;
+  --surface: #1c1c1c;
+  --border: #2e2c28;
+  --muted: #a8a49b;
+  --gold-text: #d4b04a;
+  --gold: #d4b04a;
+  --success: #4fb37f;
+  --warning: #d4913a;
+  --error: #f08070;
+  --info: #7ea6ff;
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+  --color-gold-text: var(--gold-text);
+  --color-gold: var(--gold);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-info: var(--info);
+  --font-sans: var(--font-source-sans);
+  --font-serif: var(--font-fraunces);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* Sasaran sentuh dan input: 16px elak zoom iOS */
+input, select, textarea {
+  font-size: 16px;
+}
+
+/* Input fail dan kawalan pilihan ikut tema, bukan gaya pelayar */
+input[type="file"]::file-selector-button {
+  margin-right: 12px;
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid var(--ink);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink);
+  font: 600 15px var(--font-sans), system-ui, sans-serif;
+  cursor: pointer;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--ink);
 }
