@@ -14,9 +14,13 @@ const sourceSans = Source_Sans_3({
   weight: ["400", "600", "700"],
 });
 
+// Asas URL untuk pautan mutlak dalam tag Open Graph (gambar pratonton WhatsApp/Facebook/Telegram).
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://pandaielektrik.com"),
   title: "Pandai Elektrik",
   description: "Kursus elektrik AHZ Teknik",
+  openGraph: { siteName: "Pandai Elektrik", locale: "ms_MY", type: "website" },
+  twitter: { card: "summary_large_image" },
 };
 
 export default function RootLayout({

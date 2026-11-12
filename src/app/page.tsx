@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
@@ -15,6 +16,14 @@ export const dynamic = "force-dynamic"; // katalog dan tarikh live dikemas kini 
 
 // Checkout (/beli) masih untuk kursus pertama sahaja. CTA daftar hanya untuk kursus DIY sehingga checkout pelbagai kursus siap.
 const SLUG_DAFTAR = "kursus-elektrik";
+
+// Tajuk dibaca dari DB (kursus DIY); ayat kongsi ditetapkan Bos (13 Nov 2026). Gambar: src/app/opengraph-image.tsx.
+export async function generateMetadata(): Promise<Metadata> {
+  const { courses } = await getLanding();
+  const title = courses.find((c) => c.slug === SLUG_DAFTAR)?.title ?? "Pandai Elektrik";
+  const description = "Belajar sendiri ikut masa anda, bersama AHZ Teknik";
+  return { title, description, alternates: { canonical: "/" }, openGraph: { title, description, url: "/", siteName: "Pandai Elektrik", locale: "ms_MY", type: "website" }, twitter: { card: "summary_large_image", title, description } };
+}
 
 export default async function Home() {
   const supabase = await createClient();
