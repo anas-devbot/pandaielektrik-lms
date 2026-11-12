@@ -12,7 +12,7 @@ export default async function Page() {
       <h2 className="mt-6 text-lg font-medium">Akses</h2>
       <p className="mt-1">Akses video dan bahan ialah {c?.access_months ?? "?"} bulan dari tarikh bayaran. Sijil dan rekod kekal sah selepas akses tamat.</p>
       <h2 className="mt-6 text-lg font-medium">Penilaian</h2>
-      <p className="mt-1">Penghantaran subjektif dan skematik disemak dalam {c?.sla_business_days ?? "?"} hari bekerja.</p>
+      <p className="mt-1">Semakan subjektif, skematik dan praktikal dilakukan dalam tempoh {c?.sla_business_days ?? "?"} hari bekerja.</p>
     </main>
   );
 }
