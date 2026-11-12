@@ -5,7 +5,7 @@ import { PautanTelegram, RekodManual, TambahPercubaan } from "../forms";
 import { OpForm } from "../op-form";
 
 export const dynamic = "force-dynamic";
-const d = (iso: string) => new Date(iso).toLocaleDateString("ms-MY");
+const d = (iso: string) => new Intl.DateTimeFormat("ms-MY", { timeZone: "Asia/Kuala_Lumpur" }).format(new Date(iso));
 
 export default async function Page({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   await requireRole(["admin"]);
