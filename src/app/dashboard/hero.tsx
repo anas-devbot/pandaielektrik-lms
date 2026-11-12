@@ -50,7 +50,7 @@ export function Hero(p: HeroProps) {
               href={`/belajar/${p.resume.id}`}
               className="mt-3 inline-flex min-h-12 w-full items-center justify-center rounded-md border border-b-[3px] border-paper border-b-gold bg-paper px-5 text-base font-semibold text-ink transition-opacity duration-150 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-info"
             >
-              Sambung tonton: <span className="ml-1 truncate">{p.resume.title}</span>
+              Sambung tonton
             </Link>
           </>
         )}
