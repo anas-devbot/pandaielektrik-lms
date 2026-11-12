@@ -7,6 +7,7 @@ import { buttonClass } from "@/components/button";
 import { LANDING } from "@/content/landing";
 import { getLandingStats } from "@/lib/landing-stats";
 import { Journey } from "@/components/landing/journey";
+import { PhoneFrame } from "@/components/landing/phone-frame";
 import { Checklist, CertSample, Faq, Instructor, NotFor, RefundNote, Section, StatStrip, StickyCta } from "@/components/landing/sections";
 
 export const dynamic = "force-dynamic"; // katalog dan tarikh live dikemas kini admin tanpa deploy (cache dibatal melalui tag "landing")
@@ -59,6 +60,12 @@ export default async function Home() {
 
             {stats && <StatStrip stats={stats} />}
 
+            <Section title="Lihat di dalam LMS">
+              <div className="flex items-start justify-center gap-4">
+                <PhoneFrame src="/landing/dashboard.webp" alt="Dashboard pelajar: kemajuan video, langkah semasa dan butang sambung tonton" width={375} height={812} caption="Dashboard anda" />
+                <PhoneFrame src="/landing/video.webp" alt="Paparan video dengan butang Dashboard dan Video seterusnya" width={375} height={812} caption="Paparan video" />
+              </div>
+            </Section>
             <Section title="Apa yang anda akan pelajari"><Checklist items={LANDING.learn} /></Section>
             <Section title="Apa yang anda dapat"><Checklist items={LANDING.received} /></Section>
             <Section title="Laluan program, dari daftar hingga sijil"><Journey steps={LANDING.journey} branches={LANDING.journeyBranches} /></Section>
