@@ -53,6 +53,32 @@ export const LANDING = {
   } as Block<{ quote: string; name: string; featured: boolean }[]>,
   testimonialNote: "Petikan daripada mesej peserta kelas langsung Asas Elektrik AHZ Teknik, 31 Mac dan 1 April 2026, dengan kebenaran mereka.",
   instructor: { approved: false, value: { name: "Saiful", role: "Pengajar, AHZ Teknik", bio: "[Menunggu bio daripada Saiful dan kelulusan AHZ]", photo: null as string | null } } as Block<{ name: string; role: string; bio: string; photo: string | null }>,
-  faq: { approved: false, value: [{ q: "[Menunggu soalan lazim daripada Saiful]", a: "[Menunggu jawapan yang diluluskan AHZ]" }] } as Block<{ q: string; a: string }[]>,
-  refundNote: { approved: false, value: "[Menunggu teks refund yang diluluskan AHZ]" } as Block<string>,
+  // Templat: {hari_refund}, {peratus_refund}, {bulan_akses}, {soalan_ujian}, {markah_lulus}, {had_percubaan}, {hari_semakan}, {potongan}
+  // diisi dari courses.config semasa render (lihat statVars dalam src/lib/landing-shape.ts). Baris dengan nilai tiada dibuang.
+  // Faq dan refundNote disahkan Bos (13 Nov 2026): potongan refund RM5, semakan 5 hari bekerja.
+  faq: {
+    approved: true,
+    value: [
+      { q: "Kursus ini sesuai untuk siapa?", a: "Untuk sesiapa yang mahu memahami asas elektrik rumah 1 fasa: dari bekalan ke rumah, meter dan DB, sehingga kabel, peralatan dan skematik." },
+      { q: "Adakah ini kursus untuk menjadi pendawai berlesen?", a: "Tidak. Ini bukan lesen wireman atau lesen Suruhanjaya Tenaga, dan bukan sijil kompetensi. Anda mendapat sijil penyertaan atau pencapaian daripada AHZ Teknik. Kerja pendawaian yang dikawal Suruhanjaya Tenaga memerlukan pihak yang didaftarkan dan dibenarkan oleh Suruhanjaya Tenaga." },
+      { q: "Berapa lama saya boleh belajar?", a: "Anda ada akses selama {bulan_akses} bulan dari tarikh bayaran. Dalam tempoh itu anda boleh menonton dan mengulang video serta memuat turun nota PDF. Selepas akses tamat, video dan PDF ditutup, tetapi sijil dan rekod anda kekal sah." },
+      { q: "Bagaimana ujian akhir berfungsi?", a: "Ujian akhir dibuka selepas kesemua video selesai ditonton." },
+      { q: "Apa yang perlu saya hantar untuk disemak?", a: "Selepas lulus ujian akhir, anda menghantar jawapan subjektif dan skematik. Fasilitator menyemak dan memberi komen, dan anda boleh menghantar semula jika perlu diperbaiki. Semakan mengambil masa {hari_semakan} hari bekerja." },
+      { q: "Apa beza sijil teori sahaja dengan teori dan praktikal?", a: "Teori sahaja memberi Sijil Pencapaian Teori selepas anda lulus ujian dan semakan. Teori dan praktikal ialah pilihan tambahan: tugasan praktikal disemak dan dilulus secara manual oleh AHZ sebelum Sijil Teori dan Praktikal diberi. Anda memilih trek selepas teori lulus." },
+      { q: "Bagaimana kalau saya perlukan bantuan?", a: "Tanya tutor dan fasilitator melalui group WhatsApp program. Pautan sesi live dimaklumkan di sana juga." },
+      { q: "Mesti tonton video mengikut turutan?", a: "Disyorkan tonton mengikut turutan." },
+      { q: "Bagaimana kalau kursus ini tidak sesuai dengan saya?", a: "Anda boleh memohon bayaran balik dalam {hari_refund} hari dari tarikh bayaran. Lihat bahagian Bayaran balik di atas." },
+      { q: "Bagaimana saya membayar?", a: "Bayaran dibuat secara dalam talian." },
+    ],
+  } as Block<{ q: string; a: string }[]>,
+  refundNote: {
+    approved: true,
+    value: [
+      "Anda boleh memohon bayaran balik dalam {hari_refund} hari dari tarikh bayaran. Permohonan dibuat dalam akaun anda dan disemak secara automatik: kemajuan pembelajaran anda tidak melebihi {peratus_refund}%, anda belum menghantar apa-apa untuk disemak, dan belum membuat percubaan ujian akhir.",
+      "Jika lulus semakan, sistem menyediakan surat permohonan. Anda menandatanganinya dan memuat naiknya semula. AHZ Teknik menyemak permohonan itu, dan jika diluluskan, bayaran balik dibuat melalui pindahan bank.",
+      "Jumlah yang dipulangkan ialah jumlah yang anda bayar tolak {potongan} untuk kos pemprosesan bayaran.",
+      "Jika permohonan anda tidak lulus semakan automatik, hubungi admin dan kes anda akan dilihat secara berasingan.",
+      "Bila bayaran balik diluluskan, akses anda ditutup dan sijil yang telah dikeluarkan (jika ada) dibatalkan.",
+    ],
+  } as Block<string[]>,
 } as const;

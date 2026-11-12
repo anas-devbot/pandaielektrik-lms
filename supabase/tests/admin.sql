@@ -100,6 +100,8 @@ select pg_temp.fails('config: jenis salah (teks untuk nombor)', format($q$select
 select pg_temp.fails('config: schematic_max_mb melebihi had badan permintaan (11)', format($q$select update_course_config(%L,%L,'{schematic_max_mb}','12','x')$q$, :adm, :c1), 'out_of_range');
 select pg_temp.fails('config: bool bukan boolean', format($q$select update_course_config(%L,%L,'{certificate,wording_approved}','"ya"','x')$q$, :adm, :c1), 'bad_value');
 select pg_temp.fails('config: teks > 4000', format($q$select update_course_config(%L,%L,'{energize_guidance_text}', to_jsonb(repeat('a', 4001)),'x')$q$, :adm, :c1), 'bad_value');
+select pg_temp.fails('config: potongan refund negatif', format($q$select update_course_config(%L,%L,'{refund_deduction_sen}','-1','x')$q$, :adm, :c1), 'out_of_range');
+select pg_temp.eq('config: potongan refund 500 sen dibenarkan', (update_course_config(:adm, :c1, '{refund_deduction_sen}', '500', 'Bos: potongan RM5')->>'new'), '500');
 select pg_temp.eq('config: ubah markah lulus', (update_course_config(:adm, :c1, '{pass_mark_mcq}', '75', 'AHZ putuskan 75')->>'new'), '75');
 select pg_temp.eq('config: nilai baharu dalam courses', (select config->>'pass_mark_mcq' from courses where id=:c1), '75');
 select pg_temp.eq('config: log lama dan baharu', (select (detail->>'old' = '70' and detail->>'new' = '75' and detail->>'key' = 'pass_mark_mcq')::text from admin_actions where action='config_changed' and reason='AHZ putuskan 75'), 'true');
@@ -135,7 +137,7 @@ reset role;
 select pg_temp.eq('anon tak nampak sesi draft', :'c_draft', '0');
 
 -- 5. setiap tindakan baharu direkod
-select pg_temp.eq('admin_actions bertambah untuk setiap tindakan admin (extend 2 + config 3 + sesi 2 = 7), gagal tidak direkod', ((select count(*) from admin_actions) - (select c from n0))::text, '7');
+select pg_temp.eq('admin_actions bertambah untuk setiap tindakan admin (extend 2 + config 4 + sesi 2 = 8), gagal tidak direkod', ((select count(*) from admin_actions) - (select c from n0))::text, '8');
 
 -- 6. klien tak boleh panggil
 set local role authenticated;

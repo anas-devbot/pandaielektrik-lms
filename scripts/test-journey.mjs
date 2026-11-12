@@ -81,7 +81,7 @@ async function toTheoryPassed(user, n, label) {
 
   let r = await get("/kuiz/akhir", cookie); ok(r.t.includes("dibuka selepas setiap video") && !r.t.includes("Mula percubaan"), `${label}: MCQ akhir tertutup sebelum video`);
   ok(await rpcErr("start_quiz", { p_enrollment: enr, p_type: "final" }) === "gate_closed", `${label}: DB tolak start_quiz (gate_closed)`);
-  r = await get("/bahagian2", cookie); ok(r.t.includes("dibuka selepas MCQ akhir lulus"), `${label}: bahagian 2 tertutup sebelum MCQ lulus`);
+  r = await get("/bahagian2", cookie); ok(r.t.includes("dibuka selepas ujian akhir lulus"), `${label}: bahagian 2 tertutup sebelum MCQ lulus`);
 
   // latihan bab tidak menghalang dan tidak mengubah stage
   const pa = await rpc("start_quiz", { p_enrollment: enr, p_type: "practice", p_chapter: c1.id });
@@ -95,11 +95,11 @@ async function toTheoryPassed(user, n, label) {
   const a1 = await rpc("start_quiz", { p_enrollment: enr, p_type: "final" });
   const f = await rpc("submit_quiz", { p_attempt: a1, p_enrollment: enr, p_answers: await answers(a1, false) });
   ok(f.passed === false && f.score_pct === 0, `${label}: MCQ semua salah -> gagal`);
-  r = await get("/bahagian2", cookie); ok(r.t.includes("dibuka selepas MCQ akhir lulus"), `${label}: bahagian 2 masih tertutup selepas MCQ gagal`);
+  r = await get("/bahagian2", cookie); ok(r.t.includes("dibuka selepas ujian akhir lulus"), `${label}: bahagian 2 masih tertutup selepas MCQ gagal`);
   const a2 = await rpc("start_quiz", { p_enrollment: enr, p_type: "final" });
   const p = await rpc("submit_quiz", { p_attempt: a2, p_enrollment: enr, p_answers: await answers(a2, true) });
   ok(p.passed === true && p.score_pct === 100 && p.total === 6, `${label}: percubaan ke-2 lulus (6 soalan)`);
-  r = await get("/bahagian2", cookie); ok(r.s === 200 && !r.t.includes("dibuka selepas MCQ akhir lulus"), `${label}: bahagian 2 dibuka selepas MCQ lulus`);
+  r = await get("/bahagian2", cookie); ok(r.s === 200 && !r.t.includes("dibuka selepas ujian akhir lulus"), `${label}: bahagian 2 dibuka selepas MCQ lulus`);
 
   // bahagian 2: subjektif + skematik -> reviewer
   const sj = await rpc("submit_part2", { p_enrollment: enr, p_type: "subjective", p_text: "Jawapan subjektif ujian.", p_file_key: null });

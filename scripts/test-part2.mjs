@@ -47,7 +47,7 @@ r = await get(`/api/submissions/${sch}/file`, cS2); ok(r.s === 404, "pelajar lai
 r = await get(`/api/submissions/${sch}/file`, cR1); ok(r.s === 200, "penilai boleh lihat fail");
 r = await get(`/api/submissions/${subj}/file`, cR1); ok(r.s === 404, "item subjektif tiada fail = 404");
 // halaman pelajar
-r = await get("/bahagian2", cS2); ok(r.s === 200 && r.t.includes("dibuka selepas MCQ akhir lulus") && !r.t.includes('name="subjective"'), "pelajar belum lulus MCQ: bahagian 2 tertutup, tiada borang");
+r = await get("/bahagian2", cS2); ok(r.s === 200 && r.t.includes("dibuka selepas ujian akhir lulus") && !r.t.includes('name="subjective"'), "pelajar belum lulus MCQ: bahagian 2 tertutup, tiada borang");
 r = await get("/bahagian2", cS); ok(r.s === 200 && r.t.includes("Menunggu semakan") && !r.t.includes('name="subjective"'), "pelajar S: kedua-dua pending, borang tidak dipaparkan");
 r = await get("/dashboard", cS); ok(r.t.includes("/bahagian2"), "dashboard S: pautan bahagian 2");
 // akses peranan

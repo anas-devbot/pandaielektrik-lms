@@ -6,6 +6,7 @@ import { salesOpen } from "@/lib/sales";
 import { buttonClass } from "@/components/button";
 import { LANDING } from "@/content/landing";
 import { getLandingStats } from "@/lib/landing-stats";
+import { fill, statVars } from "@/lib/landing-shape";
 import { Journey } from "@/components/landing/journey";
 import { PhoneFrame } from "@/components/landing/phone-frame";
 import { Checklist, Faq, Instructor, NotFor, RefundNote, Section, StatStrip, StickyCta, Testimonials } from "@/components/landing/sections";
@@ -26,6 +27,10 @@ export default async function Home() {
   const main = courses.find((c) => c.slug === SLUG_DAFTAR) ?? null;
   const stats = main ? await getLandingStats(main.id) : null;
   const ctaLabel = "Daftar dan bayar";
+  // Teks templat diisi dari config kursus; baris yang nilainya tiada dibuang (tiada "{...}" atau angka tekaan).
+  const vars = stats ? statVars(stats, rm) : null;
+  const faqItems = vars ? LANDING.faq.value.flatMap((f) => { const a = fill(f.a, vars); const q = fill(f.q, vars); return a && q ? [{ q, a }] : []; }) : [];
+  const refundParas = vars ? LANDING.refundNote.value.flatMap((t) => { const x = fill(t, vars); return x ? [x] : []; }) : [];
   const show = (b: { approved: boolean }) => b.approved || preview; // blok DRAF: tajuk dan isi disembunyikan daripada awam
 
   return (
@@ -75,8 +80,8 @@ export default async function Home() {
             <Section title="Dari daftar sampai dapat sijil"><Journey steps={LANDING.journey} branches={LANDING.journeyBranches} /></Section>
             {show(LANDING.instructor) && <Section title="Pengajar"><Instructor block={LANDING.instructor} preview={preview} /></Section>}
             <Section title="Apa kursus ini bukan"><NotFor items={LANDING.notFor} /></Section>
-            {show(LANDING.refundNote) && <Section title="Bayaran balik (refund)"><RefundNote block={LANDING.refundNote} preview={preview} /></Section>}
-            {show(LANDING.faq) && <Section title="Soalan lazim"><Faq block={LANDING.faq} preview={preview} /></Section>}
+            {show(LANDING.refundNote) && refundParas.length > 0 && <Section title="Bayaran balik (refund)"><RefundNote paragraphs={refundParas} /></Section>}
+            {show(LANDING.faq) && faqItems.length > 0 && <Section title="Soalan lazim"><Faq items={faqItems} /></Section>}
           </>
         )}
 
