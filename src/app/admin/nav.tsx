@@ -13,6 +13,7 @@ const MODUL = [
   ["/admin/pelajar", "Pelajar & enrollment", "Pelajar"],
   ["/admin/kursus", "Kursus & sesi live", "Kursus"],
   ["/admin/refund", "Refund", "Refund"],
+  ["/admin/staf", "Staf", "Staf"],
 ] as const;
 
 const Ctx = createContext<{ counts: NavCounts; set: (c: NavCounts) => void }>({ counts: {}, set: () => {} });
