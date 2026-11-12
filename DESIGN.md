@@ -57,6 +57,41 @@ Serius dan boleh dipercayai. Ia rasa seperti kursus rasmi, bukan kelas main-main
 - **Duration:** micro(100ms) short(150-200ms). Tiada animasi hiasan.
 - **Reduced motion:** hormat `prefers-reduced-motion`.
 
+## Mobile-first
+- **Majoriti pengguna guna telefon.** Reka dan uji pada 360px dahulu, kemudian naik ke tablet dan desktop.
+- **Breakpoint:** asas (<640px) telefon, 640px tablet, 1024px desktop. Tiada breakpoint lain kecuali perlu.
+- **Lebar minimum disokong:** 320px. Tiada scroll mendatar pada mana-mana halaman.
+- **Susunan:** satu kolum pada telefon. Kad penuh lebar dengan tepi 16px.
+- **Saiz input:** 16px minimum, supaya iOS tak zoom bila pelajar taip.
+- **Sasaran sentuh:** minimum 48×48px. Jarak antara sasaran sentuh minimum 8px.
+- **Jadual:** pada telefon tukar kepada kad bertindan. Jangan biar jadual melimpah.
+- **Video:** lebar penuh, nisbah 16:9, di atas teks bab.
+- **Teks bab dan terma:** lebar baca maksimum 720px, tetapi pada telefon ikut lebar skrin dengan tepi 16px.
+- **Safe area:** bar CTA di bawah hormat `env(safe-area-inset-bottom)` supaya tak ditutup bar Home iPhone.
+- **Ujian minimum:** 360×800 (Android kecil) dan 390×844 (iPhone). Semak juga mod gelap.
+
+## Butang
+Butang perlu nampak yakin dan jelas dapat disentuh. Ini bukan hiasan. Ia menentukan sama ada pelajar teruskan belajar atau bayar.
+
+**Hierarki (satu primary setiap skrin):**
+- **Primary:** latar `#161616`, teks `#FAF9F6`, berat 600. Tinggi 48px, radius 6px, padding 0 20px. Tambah garis bawah emas `#C9A227` 3px sebagai tanda tangan visual. Lebar penuh pada telefon.
+- **Secondary:** garis 1px `#161616`, latar telus, teks `#161616`. Untuk tindakan kedua (cth. "Lihat kurikulum").
+- **Tertiary:** teks `#8A6A00`, garis bawah 1px. Untuk pautan dan tindakan kecil.
+- **Destruktif:** garis dan teks `#B42318`. Untuk tindakan yang tak boleh diundur (cth. batal permohonan refund). Sentiasa perlu pengesahan.
+
+**Keadaan:**
+- **Hover (desktop sahaja):** latar `#2B2B2B`. Dalam mod gelap, latar `#E8E5DD`.
+- **Active:** anjak 1px ke bawah, tanpa skala. Masa 100ms.
+- **Fokus:** cincin 2px `#1D4ED8`, offset 2px. Wajib untuk papan kekunci dan pembaca skrin.
+- **Disabled:** 40% kelegapan, `cursor: not-allowed`. Sertakan sebab di atas atau bawah butang.
+- **Loading:** kekal lebar sama, tukar teks kepada "Memproses…" dan tunjuk penunjuk kecil. Jangan lompat saiz.
+
+**Label:** kata kerja dahulu, jelas, dalam BM. Contoh: "Bayar sekarang", "Teruskan belajar", "Hantar jawapan", "Mohon refund". Elak "Klik sini" dan "Submit".
+
+**CTA melekat (sticky) pada telefon:** untuk halaman beli dan langkah ujian. Bar putih (`#FFFFFF`) di bawah skrin dengan garis atas 1px `#E5E2DA`, padding 12px 16px. Hanya satu butang primary dalam bar.
+
+**Elak:** gradient sebagai latar butang, bayang besar, butang bulat sepenuhnya, dan ikon sahaja tanpa label untuk tindakan penting.
+
 ## Elak
 - Warna ungu dan gradient sebagai default.
 - Grid 3 kolum dengan ikon dalam bulatan berwarna.
@@ -70,3 +105,5 @@ Serius dan boleh dipercayai. Ia rasa seperti kursus rasmi, bukan kelas main-main
 | 12 Nov 2026 | Sistem reka bentuk awal diluluskan Bos berdasarkan pratonton | Formal-kemas, serif untuk tajuk, emas dari sijil |
 | 12 Nov 2026 | SLA pilihan A dipaparkan sebelum bayar | Keputusan Bos (DRAF-teks-AHZ seksyen 7) |
 | 12 Nov 2026 | Ikon dari kepala dan topi maskot sahaja | Elak imej kabel dan percikan dalam ikon |
+| 12 Nov 2026 | Mobile-first: reka pada 360px dahulu | Majoriti pelajar guna telefon |
+| 12 Nov 2026 | Butang primary dengan garis emas bawah, sasaran sentuh 48px | Menarik tanpa mengorbankan keseriusan dan kebolehsentuhan |
