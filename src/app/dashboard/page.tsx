@@ -7,6 +7,7 @@ import { adminClient } from "@/lib/supabase/admin";
 import { logKeluar } from "@/app/log-masuk/actions";
 import SijilForm from "@/app/sijil/form";
 import { PilihTrekForm } from "@/app/praktikal/forms";
+import { buttonClass } from "@/components/button";
 
 export const dynamic = "force-dynamic";
 
@@ -31,7 +32,7 @@ export default async function Page() {
       <main className="mx-auto w-full max-w-2xl p-6">
         <h1 className="text-2xl font-semibold">Dashboard</h1>
         <p className="mt-2">Selamat datang, {p.fullName}. Anda belum mendaftar dalam kursus.</p>
-        <Link href="/beli" className="mt-4 inline-block rounded bg-black px-4 py-2 text-white">Daftar dan bayar</Link>
+        <Link href="/beli" className={buttonClass("primary", "mt-4 sm:w-auto")}>Daftar dan bayar</Link>
       </main>
     );
   }
@@ -80,46 +81,46 @@ export default async function Page() {
       <h1 className="text-2xl font-semibold">{course.title}</h1>
       <p className="mt-1 text-sm">{p.fullName}</p>
       {enrollment.refunded_at ? (
-        <p role="status" className="mt-3 rounded border border-red-500 p-3">Akses ditutup (refund).</p>
+        <p role="status" className="mt-3 rounded-md border border-error p-3 text-error">Akses ditutup (refund).</p>
       ) : active ? (
         <p className="mt-3 text-sm">Akses sehingga {fmt.format(ends)}.</p>
       ) : (
-        <p role="status" className="mt-3 rounded border border-amber-500 p-3">Akses video dan bahan tamat pada {fmt.format(ends)}. Sijil dan rekod anda kekal sah.</p>
+        <p role="status" className="mt-3 rounded-md border border-warning p-3">Akses video dan bahan tamat pada {fmt.format(ends)}. Sijil dan rekod anda kekal sah.</p>
       )}
 
-      <section className="mt-4 rounded border p-3">
+      <section className="mt-4 rounded-md border border-border bg-surface p-3">
         <h2 className="font-medium">Anda di langkah ini</h2>
         <p className="mt-1 text-sm">{STEP[enrollment.stage] ?? STEP.enrolled}</p>
         <div className="mt-3">
           <p className="text-sm">Video selesai: {done} / {total} ({pctDone}%)</p>
-          <div className="mt-1 h-2 w-full rounded bg-gray-200" role="progressbar" aria-valuenow={pctDone} aria-valuemin={0} aria-valuemax={100}>
-            <div className="h-2 rounded bg-black" style={{ width: `${pctDone}%` }} />
+          <div className="mt-1 h-2 w-full rounded-full bg-border" role="progressbar" aria-valuenow={pctDone} aria-valuemin={0} aria-valuemax={100}>
+            <div className="h-2 rounded-full bg-ink" style={{ width: `${pctDone}%` }} />
           </div>
           <p className="mt-1 text-xs">Selesai = {Math.round(pct * 100)}% saat unik ditonton.</p>
         </div>
         {active && <p className="mt-2 text-sm">Baki akses: {daysLeft} hari.</p>}
         {resume && (
-          <Link className="mt-3 inline-block rounded bg-black px-3 py-2 text-sm text-white" href={`/belajar/${resume.id}`}>
+          <Link className={buttonClass("primary", "mt-3 sm:w-auto")} href={`/belajar/${resume.id}`}>
             Sambung tonton: <span className="uppercase tracking-wide">{resume.title}</span>
           </Link>
         )}
       </section>
 
       {onPractical && enrollment.practical_result !== "lulus" && (
-        <section className="mt-4 rounded border p-3">
+        <section className="mt-4 rounded-md border border-border bg-surface p-3">
           <h2 className="font-medium">Trek praktikal</h2>
           <Link className="mt-1 inline-block text-sm underline" href="/praktikal">Buka halaman praktikal</Link>
         </section>
       )}
       {choosingTrack && (
-        <section className="mt-4 rounded border p-3">
+        <section className="mt-4 rounded-md border border-border bg-surface p-3">
           <h2 className="font-medium">Pilih trek</h2>
           <p className="mt-1 text-sm">Anda boleh memilih trek teori sahaja (sijil di bawah) atau trek teori dan praktikal. Pilihan tidak boleh ditukar.</p>
           <PilihTrekForm />
         </section>
       )}
       {(validCert || canIssue) && (
-        <section className="mt-4 rounded border p-3">
+        <section className="mt-4 rounded-md border border-border bg-surface p-3">
           <h2 className="font-medium">Sijil</h2>
           {validCert ? (
             <p className="mt-1 text-sm">
@@ -135,13 +136,13 @@ export default async function Page() {
         </section>
       )}
       {active && ["part2_review", "theory_passed"].includes(enrollment.stage) && (
-        <section className="mt-4 rounded border p-3">
+        <section className="mt-4 rounded-md border border-border bg-surface p-3">
           <h2 className="font-medium">Bahagian 2</h2>
           <Link className="mt-1 inline-block text-sm underline" href="/bahagian2">Subjektif dan skematik</Link>
         </section>
       )}
       {active && (
-        <section className="mt-4 rounded border p-3">
+        <section className="mt-4 rounded-md border border-border bg-surface p-3">
           <h2 className="font-medium">Ujian akhir</h2>
           {finals?.some((f) => f.passed) ? <p className="mt-1 text-sm">Lulus ({finals.find((f) => f.passed)?.score_pct}%).</p>
             : gate?.open ? <Link className="mt-1 inline-block text-sm underline" href="/kuiz/akhir">Buka ujian akhir</Link>
@@ -150,7 +151,7 @@ export default async function Page() {
       )}
 
       {active && (
-        <section className="mt-6 rounded border p-3">
+        <section className="mt-6 rounded-md border border-border bg-surface p-3">
           <h2 className="font-medium">Sesi live dan chat</h2>
           {(liveSessions ?? []).length === 0 ? <p className="mt-1 text-sm">Tiada sesi live akan datang buat masa ini.</p> : (
             <ul className="mt-1 flex flex-col gap-1 text-sm">
@@ -171,7 +172,7 @@ export default async function Page() {
           {active && <p className="mt-1 text-xs">{ebookLast ? `Terakhir dimuat turun: ${fmt.format(new Date(ebookLast.accessed_at))}` : "Belum dimuat turun."}</p>}
           <ul className="mt-2 flex flex-col gap-2">
             {(materials ?? []).filter((m) => !m.chapter_id).map((m) => (
-              <li key={m.id} className="rounded border p-3 text-sm">
+              <li key={m.id} className="rounded-md border border-border bg-surface p-3 text-sm">
                 {active ? <a className="underline" href={`/api/materials/${m.id}`}>PDF: {m.title} (muat turun)</a> : <span>PDF: {m.title} (akses tamat)</span>}
               </li>
             ))}
@@ -187,7 +188,7 @@ export default async function Page() {
             const r = byLesson.get(l.id);
             const w = r ? Math.min(100, Math.round((r.watched_seconds_unique / l.duration_seconds) * 100)) : 0;
             return (
-              <li key={l.id} className="flex items-baseline gap-3 rounded border p-3">
+              <li key={l.id} className="flex items-baseline gap-3 rounded-md border border-border bg-surface p-3">
                 <span className="w-8 shrink-0 text-sm font-medium tabular-nums">{l.urutan_global ?? "-"}.</span>
                 <span className="min-w-0 flex-1 break-words text-sm font-medium uppercase tracking-wide">
                   {active ? <Link className="underline" href={`/belajar/${l.id}`}>{l.title}</Link> : <span>{l.title}</span>}
@@ -204,7 +205,7 @@ export default async function Page() {
           <h2 className="text-lg font-medium">Bahan tambahan</h2>
           <ul className="mt-2 flex flex-col gap-2">
             {chapterPdfs.map((m) => (
-              <li key={m.id} className="rounded border p-3 text-sm">
+              <li key={m.id} className="rounded-md border border-border bg-surface p-3 text-sm">
                 {active ? <a className="underline" href={`/api/materials/${m.id}`}>PDF: {m.title}</a> : <span>PDF: {m.title} (akses tamat)</span>}
               </li>
             ))}
