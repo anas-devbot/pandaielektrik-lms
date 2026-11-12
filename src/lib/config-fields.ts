@@ -13,6 +13,7 @@ export const CONFIG_FIELDS: { key: string; label: string; kind: CfgKind; hint?: 
   { key: "sla_business_days", label: "SLA semakan (hari bekerja)", kind: "int", group: "Ujian" },
   { key: "refund_window_days", label: "Tetingkap refund (hari)", kind: "int", group: "Refund" },
   { key: "refund_progress_max_pct", label: "Progres maksimum untuk refund (%, mesti kurang daripada)", kind: "int", group: "Refund" },
+  { key: "refund_deduction_sen", label: "Potongan kos refund (sen; 500 = RM5)", kind: "int", group: "Refund" },
   { key: "refund_pdf_downloads_max", label: "Had akses PDF untuk refund (kosong = tidak digunakan)", kind: "int", group: "Refund" },
   { key: "refund_letter.approved", label: "Surat refund diluluskan AHZ (hilangkan DRAF)", kind: "bool", group: "Refund" },
   { key: "telegram_member_delete_days", label: "Padam ahli Telegram selepas keputusan (hari)", kind: "int", group: "Praktikal" },
