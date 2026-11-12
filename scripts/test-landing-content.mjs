@@ -10,7 +10,7 @@ assert.equal(LANDING.journey.length, 7);
 LANDING.journey.forEach((s, i) => assert.equal(s.n, i + 1));
 const notFor = LANDING.notFor.join(" ").toLowerCase();
 assert.ok(notFor.includes("lesen") && notFor.includes("kompetensi"), "notFor mesti sebut lesen dan kompetensi");
-for (const k of ["instructor", "faq", "certificate", "refundNote"]) {
+for (const k of ["instructor", "faq", "refundNote"]) {
   const b = LANDING[k];
   assert.equal(b.approved, false, `${k} belum diluluskan AHZ`);
   assert.ok(JSON.stringify(b.value).includes("[Menunggu"), `${k} mesti bertanda [Menunggu`);
@@ -20,4 +20,5 @@ for (const w of ["melaksanakan pendawaian", "troubleshooting", "yakin melakukan"
   assert.ok(!quotes.includes(w), `petikan testimoni mengandungi dakwaan terlarang: "${w}"`);
 }
 assert.ok(LANDING.testimonials.value.every((t) => t.name && t.quote), "setiap petikan ada nama");
+assert.ok(!("certificate" in LANDING), "contoh sijil dikeluarkan daripada landing (keputusan Bos 13 Nov)");
 console.log("test-landing-content: OK");

@@ -54,6 +54,5 @@ export const LANDING = {
   testimonialNote: "Petikan daripada mesej peserta kelas langsung Asas Elektrik AHZ Teknik, 31 Mac dan 1 April 2026, dengan kebenaran mereka.",
   instructor: { approved: false, value: { name: "Saiful", role: "Pengajar, AHZ Teknik", bio: "[Menunggu bio daripada Saiful dan kelulusan AHZ]", photo: null as string | null } } as Block<{ name: string; role: string; bio: string; photo: string | null }>,
   faq: { approved: false, value: [{ q: "[Menunggu soalan lazim daripada Saiful]", a: "[Menunggu jawapan yang diluluskan AHZ]" }] } as Block<{ q: string; a: string }[]>,
-  certificate: { approved: false, value: { caption: "[Menunggu kelulusan AHZ untuk contoh sijil]" } } as Block<{ caption: string }>,
   refundNote: { approved: false, value: "[Menunggu teks refund yang diluluskan AHZ]" } as Block<string>,
 } as const;
