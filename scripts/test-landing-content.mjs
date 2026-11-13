@@ -11,11 +11,10 @@ assert.equal(LANDING.journey.length, 7);
 LANDING.journey.forEach((s, i) => assert.equal(s.n, i + 1));
 const notFor = LANDING.notFor.join(" ").toLowerCase();
 assert.ok(notFor.includes("lesen") && notFor.includes("kompetensi"), "notFor mesti sebut lesen dan kompetensi");
-for (const k of ["instructor"]) {
-  const b = LANDING[k];
-  assert.equal(b.approved, false, `${k} belum diluluskan AHZ`);
-  assert.ok(JSON.stringify(b.value).includes("[Menunggu"), `${k} mesti bertanda [Menunggu`);
-}
+const ins = LANDING.instructor;
+assert.equal(ins.approved, true);
+assert.equal(ins.value.stats.length, 3);
+assert.ok(ins.value.paragraphs.length === 4 && !JSON.stringify(ins.value).includes("[Menunggu"), "bio pengajar lengkap");
 const quotes = JSON.stringify(LANDING.testimonials.value).toLowerCase();
 for (const w of ["melaksanakan pendawaian", "troubleshooting", "yakin melakukan", "mampu", "boleh membuat", "tidak ada lagi was"]) {
   assert.ok(!quotes.includes(w), `petikan testimoni mengandungi dakwaan terlarang: "${w}"`);

@@ -52,7 +52,26 @@ export const LANDING = {
     ],
   } as Block<{ quote: string; name: string; featured: boolean }[]>,
   testimonialNote: "Petikan daripada mesej peserta kelas langsung Asas Elektrik AHZ Teknik, 31 Mac dan 1 April 2026, dengan kebenaran mereka.",
-  instructor: { approved: false, value: { name: "Saiful", role: "Pengajar, AHZ Teknik", bio: "[Menunggu bio daripada Saiful dan kelulusan AHZ]", photo: null as string | null } } as Block<{ name: string; role: string; bio: string; photo: string | null }>,
+  // Teks disusun Bos (13 Nov 2026) daripada CV Saiful. Gambar belum ada (logo pada baju perlu di-crop). Saiful perlu baca sebelum deploy.
+  instructor: {
+    approved: true,
+    value: {
+      name: "Mohd Saiful Akmal bin A. Karim",
+      role: "Pakar Industri Kejuruteraan Elektrik & Pengurusan Fasiliti",
+      paragraphs: [
+        "Berpengalaman lebih 25 tahun dalam bidang kejuruteraan elektrik, pengurusan projek Mechanical & Electrical (M&E), penyelenggaraan fasiliti serta latihan teknikal.",
+        "Beliau merupakan Pengarah Mazateknik Sdn. Bhd. sejak tahun 2000 dan turut aktif sebagai perunding latihan elektrik serta pembangunan kemahiran teknikal.",
+        "Sepanjang kerjayanya, beliau terlibat dalam pelbagai projek dan operasi fasiliti utama termasuk KLIA, Menara Kawalan DCA, TNB, USIM, JKR serta fasiliti kerajaan dan institusi awam.",
+        "Dengan gabungan pengalaman pengurusan projek, kepakaran teknikal dan penglibatan langsung dalam industri, beliau membawa pendekatan latihan yang berteraskan pengalaman sebenar, aplikasi praktikal dan keperluan industri.",
+      ],
+      stats: [
+        { big: "25+", label: "Tahun pengalaman industri" },
+        { big: "2000", label: "Pengarah syarikat sejak" },
+        { big: "M&E", label: "Pengalaman projek & fasiliti" },
+      ],
+      photo: null as string | null,
+    },
+  } as Block<{ name: string; role: string; paragraphs: string[]; stats: { big: string; label: string }[]; photo: string | null }>,
   // Templat: {hari_refund}, {peratus_refund}, {bulan_akses}, {soalan_ujian}, {markah_lulus}, {had_percubaan}, {hari_semakan}, {potongan}
   // diisi dari courses.config semasa render (lihat statVars dalam src/lib/landing-shape.ts). Baris dengan nilai tiada dibuang.
   // Faq dan refundNote disahkan Bos (13 Nov 2026): potongan refund RM5, semakan 5 hari bekerja.
