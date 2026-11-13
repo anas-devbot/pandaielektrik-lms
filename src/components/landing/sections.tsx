@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import type { Block } from "@/content/landing";
+import type { Block, LANDING } from "@/content/landing";
 import type { LandingStats } from "@/lib/landing-stats";
 
 // Blok approved:false hanya dipaparkan dalam pratonton, dengan label DRAF. Awam tidak nampak penanda tempat.
@@ -67,18 +67,28 @@ export function NotFor({ items }: { items: readonly string[] }) {
   );
 }
 
-export function Instructor({ block, preview }: { block: Block<{ name: string; role: string; bio: string; photo: string | null }>; preview: boolean }) {
+export function Instructor({ block, preview }: { block: typeof LANDING.instructor; preview: boolean }) {
   const v = block.value;
   const card = (
-    <div className="flex items-start gap-4 rounded-lg border border-border bg-surface p-4">
-      {v.photo
-        ? <Image src={v.photo} alt={`Gambar ${v.name}`} width={72} height={72} className="size-[72px] shrink-0 rounded-full border-2 border-gold object-cover" />
-        : <span aria-hidden className="grid size-[72px] shrink-0 place-items-center rounded-full bg-ink font-serif text-2xl font-bold text-gold">{v.name.slice(0, 1)}</span>}
-      <div>
-        <p className="font-serif text-lg font-semibold leading-tight">{v.name}</p>
-        <p className="text-sm text-muted">{v.role}</p>
-        <p className="mt-2 text-sm">{v.bio}</p>
+    <div className="rounded-lg border border-border bg-surface p-4">
+      <div className="flex items-center gap-4">
+        {v.photo
+          ? <Image src={v.photo} alt={`Gambar ${v.name}`} width={72} height={72} className="size-[72px] shrink-0 rounded-full border-2 border-gold object-cover" />
+          : <span aria-hidden className="grid size-[72px] shrink-0 place-items-center rounded-full bg-ink font-serif text-2xl font-bold text-gold">{v.name.slice(0, 1)}</span>}
+        <div>
+          <p className="font-serif text-lg font-semibold leading-tight">{v.name}</p>
+          <p className="mt-1 text-sm text-muted">{v.role}</p>
+        </div>
       </div>
+      <div className="mt-4 space-y-3 text-sm">{v.paragraphs.map((p) => <p key={p}>{p}</p>)}</div>
+      <dl className="mt-4 grid grid-cols-3 gap-2 border-t border-border pt-4 text-center">
+        {v.stats.map((x) => (
+          <div key={x.big}>
+            <dt className="font-serif text-2xl font-bold text-gold-text">{x.big}</dt>
+            <dd className="mt-1 text-xs text-muted">{x.label}</dd>
+          </div>
+        ))}
+      </dl>
     </div>
   );
   return block.approved ? card : <DraftBox preview={preview}>{card}</DraftBox>;

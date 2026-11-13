@@ -87,7 +87,7 @@ export default async function Home() {
             <Section title="Apa yang anda dapat"><Checklist items={LANDING.received} /></Section>
             {show(LANDING.testimonials) && <Section title="Kata peserta"><Testimonials block={LANDING.testimonials} note={LANDING.testimonialNote} /></Section>}
             <Section title="Dari daftar sampai dapat sijil"><Journey steps={LANDING.journey} branches={LANDING.journeyBranches} /></Section>
-            {show(LANDING.instructor) && <Section title="Pengajar"><Instructor block={LANDING.instructor} preview={preview} /></Section>}
+            {show(LANDING.instructor) && <Section title="Kenali Tenaga Pengajar Anda"><Instructor block={LANDING.instructor} preview={preview} /></Section>}
             <Section title="Apa kursus ini bukan"><NotFor items={LANDING.notFor} /></Section>
             {show(LANDING.refundNote) && refundParas.length > 0 && <Section title="Bayaran balik (refund)"><RefundNote paragraphs={refundParas} /></Section>}
             {show(LANDING.faq) && faqItems.length > 0 && <Section title="Soalan lazim"><Faq items={faqItems} /></Section>}
