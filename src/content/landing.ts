@@ -52,7 +52,7 @@ export const LANDING = {
     ],
   } as Block<{ quote: string; name: string; featured: boolean }[]>,
   testimonialNote: "Petikan daripada mesej peserta kelas langsung Asas Elektrik AHZ Teknik, 31 Mac dan 1 April 2026, dengan kebenaran mereka.",
-  // Teks disusun Bos (13 Nov 2026) daripada CV Saiful. Gambar belum ada (logo pada baju perlu di-crop). Saiful perlu baca sebelum deploy.
+  // Teks disusun Bos (13 Nov 2026) daripada CV Saiful. Saiful perlu baca sebelum deploy.
   instructor: {
     approved: true,
     value: {
@@ -69,7 +69,7 @@ export const LANDING = {
         { big: "2000", label: "Pengarah syarikat sejak" },
         { big: "M&E", label: "Pengalaman projek & fasiliti" },
       ],
-      photo: null as string | null,
+      photo: "/landing/saiful.webp" as string | null,
     },
   } as Block<{ name: string; role: string; paragraphs: string[]; stats: { big: string; label: string }[]; photo: string | null }>,
   // Templat: {hari_refund}, {peratus_refund}, {bulan_akses}, {soalan_ujian}, {markah_lulus}, {had_percubaan}, {hari_semakan}, {potongan}
