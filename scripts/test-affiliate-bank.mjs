@@ -3,6 +3,7 @@
 import assert from "node:assert/strict";
 import { randomBytes } from "node:crypto";
 import * as B from "../src/lib/affiliate-bank.ts";
+import { BANK_LIST } from "../src/lib/bank-list.ts";
 
 let fail = 0;
 const t = (name, fn) => { try { fn(); console.log("lulus: " + name); } catch (e) { fail++; console.log("GAGAL: " + name + " -> " + e.message); } };
@@ -32,7 +33,7 @@ t("normalAkaun buang ruang dan sempang", () => assert.equal(B.normalAkaun("1234-
 t("normalAkaun tolak huruf", () => assert.equal(B.normalAkaun("12AB56789"), null));
 t("normalAkaun tolak terlalu pendek", () => assert.equal(B.normalAkaun("12345"), null));
 t("last4 ambil 4 digit akhir", () => assert.equal(B.last4("1234567890"), "7890"));
-t("senarai bank mengandungi Maybank", () => assert.ok(B.BANK_LIST.includes("Maybank")));
+t("senarai bank mengandungi Maybank", () => assert.ok(BANK_LIST.includes("Maybank")));
 
 console.log(fail ? `\n${fail} GAGAL` : "\nSEMUA lulus");
 process.exit(fail ? 1 : 0);

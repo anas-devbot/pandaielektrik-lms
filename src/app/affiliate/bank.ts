@@ -1,7 +1,8 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { getProfile } from "@/lib/auth";
-import { BANK_LIST, encryptAkaun, last4, normalAkaun } from "@/lib/affiliate-bank";
+import { encryptAkaun, last4, normalAkaun } from "@/lib/affiliate-bank";
+import { BANK_LIST } from "@/lib/bank-list";
 import { adminClient } from "@/lib/supabase/admin";
 
 export type BankState = { error?: string; ok?: string } | undefined;

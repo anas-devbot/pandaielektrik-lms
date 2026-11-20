@@ -2,13 +2,6 @@
 // Tiada import Next: boleh diuji terus dengan Node (scripts/test-affiliate-bank.mjs).
 import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
 
-// ASSUMPTION: senarai bank ringkas (bank komersial/Islam/koperasi utama). Semak dengan AHZ sebelum launch.
-export const BANK_LIST = [
-  "Affin Bank", "Agrobank", "Alliance Bank", "AmBank", "Bank Islam", "Bank Muamalat", "Bank Rakyat",
-  "Bank Simpanan Nasional (BSN)", "CIMB Bank", "Hong Leong Bank", "HSBC Bank Malaysia", "Maybank",
-  "OCBC Bank (Malaysia)", "Public Bank", "RHB Bank", "Standard Chartered Malaysia", "UOB Malaysia",
-] as const;
-
 /** Nombor akaun: buang ruang dan sempang. Hanya digit, 6 hingga 20. Tak sah → null. */
 export function normalAkaun(v: string): string | null {
   const d = v.replace(/[\s-]/g, "");

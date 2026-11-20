@@ -1,7 +1,7 @@
 "use client";
 import { useActionState } from "react";
 import { simpanBank } from "./bank";
-import { BANK_LIST } from "@/lib/affiliate-bank";
+import { BANK_LIST } from "@/lib/bank-list";
 import { buttonClass } from "@/components/button";
 
 export function BankForm({ current }: { current: boolean }) {
