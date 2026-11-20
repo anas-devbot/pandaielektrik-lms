@@ -57,11 +57,13 @@ export default async function Page() {
       <section className="mt-6 rounded-lg border border-border bg-surface p-4">
         <h2 className="text-xl font-semibold">Larangan</h2>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-sm">
-          <li>Jangan janjikan pendapatan, keuntungan atau kerja tetap kepada sesiapa.</li>
-          <li>Jangan dakwa sijil kursus sebagai lesen, tauliah atau kelayakan pendawaian. Sijil ialah sijil penyertaan atau pencapaian AHZ Teknik, bukan sijil kompetensi.</li>
-          <li>Jangan guna nama AHZ Teknik atau PandaiElektrik dengan cara yang mengelirukan atau palsu.</li>
-          <li>Jangan hantar mesej spam atau bahan promosi tanpa kebenaran penerima.</li>
-          <li>Jangan daftar melalui kod sendiri. Pendaftaran sendiri tidak dikira komisen.</li>
+          <li>Tidak dibenarkan menjanjikan pendapatan, keuntungan atau kerja tetap kepada sesiapa.</li>
+          <li>Tidak dibenarkan mendakwa sijil kursus sebagai lesen, tauliah atau kelayakan pendawaian. Sijil ialah sijil penyertaan atau pencapaian AHZ Teknik, bukan sijil kompetensi.</li>
+          <li>Tidak dibenarkan menggunakan nama AHZ Teknik atau PandaiElektrik dengan cara yang mengelirukan atau palsu.</li>
+          <li>Tidak dibenarkan menghantar mesej spam atau bahan promosi tanpa kebenaran penerima.</li>
+          <li>Tidak dibenarkan mendaftar melalui kod sendiri. Pendaftaran sendiri tidak dikira komisen.</li>
+          <li>Tidak dibenarkan membuat iklan berbentuk clickbait, iaitu tajuk atau janji yang menyesatkan semata-mata untuk meraih klik.</li>
+          <li>Tidak dibenarkan mempromosikan sebarang perkara yang mengandungi gharar, atau yang diharamkan menurut agama Islam.</li>
         </ul>
       </section>
 
@@ -72,8 +74,21 @@ export default async function Page() {
 
       <section className="mt-6 rounded-lg border border-border bg-surface p-4 text-sm">
         <h2 className="text-base font-semibold">Terma affiliate (DRAF)</h2>
-        <p className="mt-2 font-semibold text-warning">Draf ini belum diluluskan AHZ Teknik. Jangan iklankan program ini sehingga disahkan.</p>
-        <p className="mt-2">Terma penuh akan dipaparkan selepas diluluskan. Dengan memohon, anda bersetuju dengan larangan di atas dan keputusan AHZ terhadap komisen.</p>
+        <p className="mt-2 font-semibold text-warning">Draf ini belum diluluskan AHZ Teknik. Tidak dibenarkan mengiklankan program ini sehingga disahkan.</p>
+        <ol className="mt-2 list-decimal space-y-2 pl-5">
+          <li><strong>Pengenalan.</strong> Terma ini mengawal penyertaan dalam program affiliate PandaiElektrik. Dengan memohon, anda bersetuju dengan terma ini dan larangan di atas.</li>
+          <li><strong>Kelayakan.</strong> Akaun mesti atas nama sendiri dan maklumat yang diberikan mesti benar. Staf AHZ Teknik dan PandaiElektrik tidak layak memohon.</li>
+          <li><strong>Kod rujukan.</strong> Kod ialah unik dan tidak boleh ditukar selepas diluluskan. Kod tidak boleh dijual atau dipindahkan kepada pihak lain.</li>
+          <li><strong>Komisen.</strong> {rate}% daripada harga penuh kursus bagi setiap pendaftaran berbayar. Komisen diluluskan {approveDays} hari selepas bayaran pelajar.</li>
+          <li><strong>Atribusi.</strong> Pautan rujukan menyimpan atribusi {cookieDays} hari. Pautan terakhir yang diklik ialah yang dikira. Pelajar yang sudah berdaftar sebelum pautan diklik tidak dikira. Pendaftaran sendiri tidak dikira.</li>
+          <li><strong>Refund.</strong> Jika pelajar mendapat refund, komisen berkaitan dibatalkan. Jika komisen sudah dibayar, jumlah itu ditolak daripada bayaran bulan berikutnya.</li>
+          <li><strong>Pembayaran.</strong> Kiraan ditutup pada hujung bulan. Bayaran dibuat sekitar hari ke-{payoutDay} bulan berikut melalui transfer bank oleh AHZ Teknik. Tiada had bayaran minimum. Butiran bank mesti tepat; kesilapan butiran yang diberikan menjadi tanggungjawab affiliate.</li>
+          <li><strong>Penggantungan dan penamatan.</strong> AHZ Teknik boleh menggantung atau menamatkan affiliate yang melanggar larangan atau terma ini. Komisen yang belum diluluskan bagi affiliate yang digantung tidak akan diluluskan.</li>
+          <li><strong>Cukai.</strong> Tanggungjawab cukai atas komisen belum diputuskan AHZ Teknik.</li>
+          <li><strong>Keputusan.</strong> Keputusan AHZ Teknik mengenai kelayakan, kelulusan dan jumlah komisen adalah muktamad, kecuali kesilapan jelas yang dibetulkan.</li>
+          <li><strong>Pindaan.</strong> AHZ Teknik boleh meminda terma ini. Tempoh notis pindaan belum ditetapkan.</li>
+          <li><strong>Undang-undang.</strong> Terma ini tertakluk kepada undang-undang Malaysia.</li>
+        </ol>
       </section>
 
       <section className="mt-8">
