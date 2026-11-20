@@ -13,6 +13,7 @@ const MODUL = [
   ["/admin/pelajar", "Pelajar & enrollment", "Pelajar"],
   ["/admin/kursus", "Kursus & sesi live", "Kursus"],
   ["/admin/refund", "Refund", "Refund"],
+  ["/admin/affiliate", "Affiliate & bank", "Affiliate"],
   ["/admin/staf", "Staf", "Staf"],
 ] as const;
 
