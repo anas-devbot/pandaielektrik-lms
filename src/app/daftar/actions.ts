@@ -39,10 +39,12 @@ export async function daftar(_: FormState, form: FormData): Promise<FormState> {
   const supabase = await createClient();
   // Pautan pengesahan emel melalui /auth/callback (tukar kod kepada sesi), bukan terus ke laman utama.
   const base = process.env.NEXT_PUBLIC_SITE_URL;
+  // Destinasi tetap sahaja (bukan parameter bebas): pelajar ke /dashboard, pendaftaran affiliate ke /affiliate/dashboard.
+  const selepas = form.get("tujuan") === "affiliate" ? "/affiliate/dashboard" : "/dashboard";
   const { data, error } = await supabase.auth.signUp({
     email, password,
     options: {
-      emailRedirectTo: `${base}/auth/callback?next=/dashboard`,
+      emailRedirectTo: `${base}/auth/callback?next=${selepas}`,
       data: {
         full_name: fullName, privacy_accepted: true, privacy_version: PRIVACY_VERSION,
         phone, gender, age_range: ageRange, state, district,
@@ -50,5 +52,5 @@ export async function daftar(_: FormState, form: FormData): Promise<FormState> {
     },
   });
   if (error) return { ...keep, error: "Pendaftaran gagal. Semak maklumat anda dan cuba lagi." };
-  redirect(data.session ? "/dashboard" : "/daftar/semak-emel");
+  redirect(data.session ? selepas : "/daftar/semak-emel");
 }

@@ -79,7 +79,7 @@ export default async function Page() {
       <section className="mt-8">
         {!p ? (
           <>
-            <p>Untuk mohon, sila log masuk atau daftar akaun pelajar dahulu.</p>
+            <p>Untuk mohon, sila log masuk dahulu. Pendaftaran akaun affiliate dibuka melalui pautan jemputan.</p>
             <Link href="/log-masuk?next=%2Faffiliate" className={buttonClass("primary", "mt-3")}>Log masuk untuk mohon</Link>
           </>
         ) : p.role !== "student" ? (

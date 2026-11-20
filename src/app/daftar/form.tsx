@@ -6,7 +6,7 @@ import { JANTINA, JULAT_UMUR, NEGERI } from "@/lib/profil";
 import { Button } from "@/components/button";
 import { Field, FormError, SelectField } from "@/components/auth";
 
-export default function DaftarForm({ notice }: { notice: { title: string; org: string; intro: string; sections: readonly { heading: string; paragraphs: readonly string[] }[]; closing: readonly string[] } }) {
+export default function DaftarForm({ notice, tujuan }: { tujuan?: "affiliate"; notice: { title: string; org: string; intro: string; sections: readonly { heading: string; paragraphs: readonly string[] }[]; closing: readonly string[] } }) {
   const [state, action, pending] = useActionState(daftar, undefined);
   const pwRef = useRef<HTMLInputElement>(null);
   const [tunjuk, setTunjuk] = useState(false);
@@ -68,6 +68,7 @@ export default function DaftarForm({ notice }: { notice: { title: string; org: s
         <span>Saya telah membaca dan bersetuju dengan notis privasi di atas.</span>
       </label>
       {state?.error && <FormError>{state.error}</FormError>}
+      <input type="hidden" name="tujuan" value={tujuan ?? "pelajar"} />
       <Button type="submit" loading={pending}>Daftar</Button>
     </form>
   );

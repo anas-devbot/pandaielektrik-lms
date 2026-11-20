@@ -1,9 +1,8 @@
-import Link from "next/link";
 import { requireRole } from "@/lib/auth";
 import { formatRM } from "@/lib/affiliate";
 import { createClient } from "@/lib/supabase/server";
-import { buttonClass } from "@/components/button";
 import { BankForm } from "../bank-form";
+import { MohonAffiliateForm } from "../forms";
 
 export const dynamic = "force-dynamic";
 
@@ -21,8 +20,11 @@ export default async function Page() {
     return (
       <main className="mx-auto w-full max-w-2xl px-4 py-6">
         <h1 className="font-serif text-3xl font-semibold">Dashboard affiliate</h1>
-        <p className="mt-2">Anda belum mendaftar sebagai affiliate.</p>
-        <Link href="/affiliate" className={buttonClass("primary", "mt-4")}>Lihat program affiliate</Link>
+        <p className="mt-2">Anda belum mendaftar sebagai affiliate. Pilih kod rujukan dan setuju dengan draf terma untuk mohon.</p>
+        <section className="mt-4 rounded-lg border border-border bg-surface p-4">
+          <h2 className="text-xl font-semibold">Mohon jadi affiliate</h2>
+          <MohonAffiliateForm />
+        </section>
       </main>
     );
   }
