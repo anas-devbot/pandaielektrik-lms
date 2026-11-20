@@ -29,5 +29,8 @@ t("self-referral: user_id sama ditolak walaupun emel lain", () => assert.equal(
 t("pembeli emel berbeza dibenarkan", () => assert.equal(
   A.isSelfReferral({ userId: "u3", email: "pembeli@test.com" }, { userId: "u2", email: "planetrizq+uji@gmail.com" }), false));
 
+t("formatRM positif", () => assert.equal(A.formatRM(2980), "RM29.80"));
+t("formatRM negatif (pelarasan)", () => assert.equal(A.formatRM(-500), "-RM5.00"));
+
 console.log(fail ? `\n${fail} GAGAL` : "\nSEMUA lulus");
 process.exit(fail ? 1 : 0);

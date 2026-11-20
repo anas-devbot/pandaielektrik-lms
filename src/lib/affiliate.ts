@@ -52,3 +52,8 @@ export function isSelfReferral(
 ): boolean {
   return buyer.userId === affiliate.userId || normalizeEmail(buyer.email) === normalizeEmail(affiliate.email);
 }
+
+/** Papar sen sebagai RM (2 titik perpuluhan). Negatif untuk pelarasan. */
+export function formatRM(sen: number): string {
+  return `${sen < 0 ? "-" : ""}RM${(Math.abs(sen) / 100).toFixed(2)}`;
+}

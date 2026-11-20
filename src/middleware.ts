@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { REF_COOKIE, REF_COOKIE_MAX_AGE_SEC, encodeRefCookie, parseRefParam } from "@/lib/affiliate";
 
 // Laluan yang perlu log masuk. Laluan lain (landing, /affiliate) hanya terima atribusi ?ref=.
-const PROTECTED = /^\/(dashboard|staff|admin|beli|pesanan|belajar|kuiz|bahagian2|praktikal|refund)(\/|$)/;
+const PROTECTED = /^\/(dashboard|staff|admin|beli|pesanan|belajar|kuiz|bahagian2|praktikal|refund|affiliate\/dashboard)(\/|$)/;
 
 // Segarkan sesi dan halang tetamu daripada kawasan log masuk. Semakan PERANAN dibuat dalam setiap halaman (requireRole).
 export async function middleware(req: NextRequest) {
@@ -41,4 +41,4 @@ function withRef(res: NextResponse, req: NextRequest) {
   return res;
 }
 
-export const config = { matcher: ["/", "/affiliate", "/dashboard/:path*", "/staff/:path*", "/admin/:path*", "/beli/:path*", "/pesanan/:path*", "/belajar/:path*", "/kuiz/:path*", "/bahagian2/:path*", "/praktikal/:path*", "/refund/:path*"] };
+export const config = { matcher: ["/", "/affiliate", "/dashboard/:path*", "/staff/:path*", "/admin/:path*", "/beli/:path*", "/pesanan/:path*", "/belajar/:path*", "/kuiz/:path*", "/bahagian2/:path*", "/praktikal/:path*", "/refund/:path*", "/affiliate/dashboard/:path*"] };
