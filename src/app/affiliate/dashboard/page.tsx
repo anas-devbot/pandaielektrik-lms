@@ -3,6 +3,7 @@ import { requireRole } from "@/lib/auth";
 import { formatRM } from "@/lib/affiliate";
 import { createClient } from "@/lib/supabase/server";
 import { buttonClass } from "@/components/button";
+import { BankForm } from "../bank-form";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +14,8 @@ const LABEL: Record<string, string> = { pending: "Menunggu kelulusan", approved:
 export default async function Page() {
   await requireRole(["student"]);
   const supabase = await createClient();
-  const { data: aff } = await supabase.from("affiliates").select("code, status, rate_pct, is_test").maybeSingle();
+  // Lajur bank: nama bank, nama akaun, 4 digit akhir sahaja (ciphertext tidak boleh dibaca klien, lihat migration B8a)
+  const { data: aff } = await supabase.from("affiliates").select("code, status, rate_pct, is_test, bank_name, bank_account_name, bank_account_last4").maybeSingle();
 
   if (!aff) {
     return (
@@ -59,6 +61,20 @@ export default async function Page() {
         <p className="mt-1 text-sm text-muted">Kod: <span className="font-semibold text-ink">{aff.code}</span> · Kadar {aff.rate_pct}%</p>
         <input readOnly value={pautan} aria-label="Pautan rujukan"
           className="mt-2 block w-full rounded-md border border-border bg-paper px-3 py-3 text-base" />
+      </section>
+
+      <section className="mt-6 rounded-lg border border-border bg-surface p-4">
+        <h2 className="text-base font-semibold">Akaun bank penerima bayaran</h2>
+        {aff.bank_name ? (
+          <div className="mt-2 text-sm">
+            <p><span className="text-muted">Bank:</span> <strong>{aff.bank_name}</strong></p>
+            <p><span className="text-muted">Nama akaun:</span> {aff.bank_account_name}</p>
+            <p><span className="text-muted">No. akaun:</span> <span className="tabular-nums">•••• {aff.bank_account_last4}</span></p>
+          </div>
+        ) : (
+          <p className="mt-2 text-sm text-warning">Belum ada akaun bank. Isi di bawah supaya AHZ boleh bayar komisen anda.</p>
+        )}
+        <BankForm current={!!aff.bank_name} />
       </section>
 
       <section className="mt-6 grid grid-cols-2 gap-3">
